@@ -1,0 +1,2577 @@
+---
+title: "Lecture 01"
+output:
+  html_notebook: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+# This allows the file to be LIVE and run without errors stopping it.
+knitr::opts_chunk$set(error = TRUE)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_services_slide.png?raw=true" width="700"/>
+:::
+
+# Introduction to R
+
+# Lecture 01: Basics of R and R Markdown Notebooks
+
+# Student Name:
+
+# Student ID: 
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/R_for_data_science.png?raw=true" width="600"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.1.0 About Introduction to R
+
+Introduction to R is brought to you by the **Centre for the Analysis of Genome Evolution & Function (CAGEF)** bioinformatics training initiative. This course was developed based on feedback on the needs and interests of the Department of Cell & Systems Biology and the Department of Ecology and Evolutionary Biology.
+
+The structure of this course is a code-along style; it is 100% hands on! A few hours prior to each lecture, links to the materials will be available for download at [QUERCUS](https://q.utoronto.ca/). The teaching materials will consist of an R Markdown Notebook with concepts, comments, instructions, and blank coding spaces that you will fill out with R by coding along with the instructor. Other teaching materials include a live-updating HTML version of the notebook, and datasets to import into R - when required. This learning approach will allow you to spend the time coding and not taking notes!
+
+As we go along, there will be some in-class challenge questions for you to solve either individually or in cooperation with your peers. Post lecture assessments will also be available (see syllabus for grading scheme and percentages of the final mark) through [DataCamp](https://Datacamp.com) to help cement and/or extend what you learn each week.
+
+### 0.1.1 Where is this course headed?
+
+We'll take a blank slate approach here to R and assume that you pretty much know *nothing* about programming. From the beginning of this course to the end, we want to take you from some potential scenarios such as...
+
+-   A pile of data (like an excel file or tab-separated file) full of experimental observations that you don't know what to do with it.
+
+-   Maybe you're manipulating large tables all in excel, making custom formulas and pivot tables with graphs. Now you have to repeat similar experiments and do the analysis again.
+
+-   You're generating high-throughput data and there aren't any bioinformaticians around to help you sort it out.
+
+-   You heard about R and what it *could* do for your data analysis but don't know what that means or where to start.
+
+and get you to a point where you can...
+
+-   Format your data correctly for analysis.
+
+-   Produce basic plots and perform exploratory analysis.
+
+-   Make functions and scripts for re-analysing existing or new data sets.
+
+-   Track your experiments in a digital notebook like R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data-science-explore.png?raw=true" width="500"/>
+:::
+
+### 0.1.2 How do we get there? Step-by-step.
+
+In the first lesson, we will talk about the basic data structures and objects in R, get cozy with the R Markdown Notebook environment, and learn how to get help when you are stuck because everyone gets stuck - a lot! Then you will learn how to get your data in and out of R, how to tidy our data (data wrangling), and then subset and merge data. After that, we will dig into the data and learn how to make basic plots for both exploratory data analysis and publication. We'll follow that up with data cleaning and string manipulation; this is really the battleground of coding - getting your data into just the right format where you can analyse it more easily. We'll then spend a lecture digging into the functions available for the statistical analysis of your data. Lastly, we will learn about control flow and how to write customized functions, which can really save you time and help scale up your analyses.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Draw_an_Owl.jpg?raw=true" width="700"/>
+:::
+
+Don't forget, the structure of the class is a **code-along** style: it is fully hands on. At the end of each lecture, the complete notes will be made available in a PDF format through the corresponding Quercus module so you don't have to spend your attention on taking notes.
+
+------------------------------------------------------------------------
+
+### 0.1.3 What kind of coding style will we learn?
+
+There is no single path correct from A to B - although some paths may be more elegant, or more efficient than others. With that in mind, the emphasis in this lecture series will be on:
+
+1.  **Code simplicity** - learn helpful functions that allow you to focus on understanding the basic tenets of good data wrangling (reformatting) to facilitate quick exploratory data analysis and visualization.
+2.  **Code readability** - format and comment your code for yourself and others so that even those with minimal experience in R will be able to quickly grasp the overall steps in your code.
+3.  **Code stability** - while the core R code is relatively stable, behaviours of functions can still change with updates. There are well-developed packages we'll focus on for our analyses. Namely, we'll become more familiar with the `tidyverse` series of packages. This resource is well-maintained by a large community of developers. While not always the "fastest" approach, this additional layer can help ensure your code still runs (somewhat) smoothly later down the road.
+
+------------------------------------------------------------------------
+
+## 0.2.0 Class Objectives
+
+This is the first in a series of seven lectures. At the end of this session you will be familiar with the RStudio environment and the R-kernel associated with it. You will know about basic data structures in R and how to create them. You will also be able to install and load packages. Our topics are broken into:
+
+1.  Familiarizing yourself with RStudio, RMarkdown Notebooks, and the R-kernel.
+2.  Getting started with programming.
+3.  Data types in R.
+4.  Understanding the Factor data type!
+
+These concepts are necessary for coding best practices and to understand your data types for analysis.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Data-Wrangling-Is-The.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.3.0 A legend for text format in R Markdown
+
+-   `Grey background`: Command-line code, R library and function names. Backticks are also use for in-line code.
+-   *Italics* or ***Bold italics***: Emphasis for important ideas and concepts
+-   **Bold**: Headers and subheaders
+-   [Blue text](): Named or unnamed hyperlinks
+-   `...` fill in the code here if you are coding along
+
+::: {.alert .alert-block .alert-info}
+**Blue box:** A key concept that is being introduced
+:::
+
+::: {.alert .alert-block .alert-warning}
+**Yellow box:** Risk or caution
+:::
+
+::: {.alert .alert-block .alert-success}
+**Green boxes:** Recommended reads and resources to learn R
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Red boxes:** A comprehension question which may or may not involve a coding cell. You usually find these at the end of a section.
+:::
+
+------------------------------------------------------------------------
+
+## 0.4.0 Lecture and data files used in this course
+
+### 0.4.1 Weekly Lecture and skeleton files
+
+Each week, new lesson files will appear within your RStudio folders. We are pulling from a GitHub repository using this [Repository git-pull link](https://r.datatools.utoronto.ca/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fuoft-csb-datasci%2F2025-09-IntroR&urlpath=rstudio%2F&branch=main). Simply click on the link and it will take you to the [University of Toronto datatools Hub](https://datatools.utoronto.ca). You will need to use your UTORid credentials to complete the login process. From there you will find each week's lecture files in the directory `/2025-09-IntroR/Lecture_XX`. You will find a partially coded `skeleton.Rmd` file as well as all of the data files necessary to run the week's lecture.
+
+Alternatively, you can download the R-Markdown Notebook (`.Rmd`) and data files from the RStudio server to your personal computer if you would like to run independently of the Toronto tools.
+
+### 0.4.2 Live-coding HTML page
+
+A live lecture version will be available at [camok.github.io](https://uoft-csb-datasci.github.io/2025-09.IntroToR/index.html) that will update as the lecture progresses. Be sure to refresh to take a look if you get lost!
+
+### 0.4.3 Post-lecture PDFs and Recordings
+
+As mentioned above, at the end of each lecture there will be a completed version of the lecture code released as an HTML file under the Modules section of Quercus.
+
+------------------------------------------------------------------------
+
+# 1.0.0 What is R?
+
+*R* is a statistical programming language first developed by Ross Ihaka and Robert Gentleman at the University of Auckland, New Zealand around 1993 before becoming an open source project in 1997. It is based on a programming language ***S*** and was named in part as an homage to this inspiration as well as it's original developers.
+
+While this language started as an experiment by the original authors, it soon surpassed the utility and function of its predecessor and is now one of the most powerful statistical programming languages and amongst some of the most popular data science programming languages.
+
+### 1.0.1 Why learn R?
+
+While our friend [Python](https://www.python.org/) may be the Belle of the ball for many data scientists, R was built for statistical analysis and has been extensively developed by the community to produce publication-quality visualizations. You'll find many helpful biology/data science packages are built for R as well including:
+
+-   `DESeq2`: meant for high-throughput RNAseq differential expression analysis
+-   `ggplot2`: the workhorse of data visualization, it is the basis and foundation for additional visualization packages
+-   `biocmanager`: provides access to the vast depth of **Bioconductor** libraries which include analysis of microarray data, gene annotation, differential gene expression and more!
+-   `Mlr` (and others): for machine-learning tasks
+-   `RCrawler`: for data scraping/mining web pages from across the internet
+-   `Spectra`: mass spectrometry analysis in R
+
+More importantly, YOU may have data or a problem in your own studies that you want to solve. The techniques and methods you'll learn in this course will be the foundation of the data science journey towards understanding your data or conquering your problem!
+
+------------------------------------------------------------------------
+
+## 1.1.0 R-Markdown Notebooks and the R-kernel
+
+Work with your R-Markdown Notebook on the University of Toronto DataHub will all be contained within a new browser tab with the address bar showing something like `https://r.datatools.utoronto.ca/user/yourUser.ID@utoronto.ca/rstudio/`.
+
+All of this is running non-locally on a University of Toronto server rather than your own machine. You'll see a directory structure from your home folder:
+
+i.e. `\2024-09-IntroR\` and a folder to `Lecture_01` within. Clicking on that, you'll find `Lecture_01_RStudio.skeleton.Rmd` which is the notebook we will use for today's code-along lecture.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RServer_screenshot.png?raw=true" width="1000"/>
+:::
+
+### 1.1.1 Why is this class using R Markdown Notebooks?
+
+We've implemented the class this way to reduce the burden of having to install various programs. While installation can be a *little* tricky, it's really not that bad. For this course, however, you don't need to go through all of that just to learn introductory R.
+
+R markdown notebooks also give us the option of inserting "markdown" text much like what you're reading at this very *exact* moment. So we can intersperse ideas and information between our learning code blocks.
+
+There is, however an appendix section at the end of this lecture detailing how to install the R-kernel itself and the integrated development environment (IDE) called RStudio. Check out section ***7.0.0*** for more information.
+
+------------------------------------------------------------------------
+
+## 1.2.0 A quick intro to the R environment
+
+R is a language and an **environment** because it has the tools and software for the storage, manipulation, statistical analysis, and graphical display of data. It comes with about 15 built-in 'packages' and is based on a simple programming language ("S"). The core information and programming that makes up R is called the kernel. We may refer to this concept interchangeably as the **R-kernel** or **r-base**. A useful resource is the ["Introduction to R"](https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf) found on CRAN.
+
+::: {.alert .alert-block .alert-info}
+**More than just popcorn:** The R-kernel *interprets* the human-readable code we create (**syntax**) to perform operations behind the scenes. By combining the available basic functions provided by the R-kernel, we can create more complex actions culminating in output from mathematical analysis to beautiful data visualizations.
+:::
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/R_console.png?raw=true" width="1000"/>
+:::
+
+------------------------------------------------------------------------
+
+### 1.2.1 Packages contain useful functions
+
+So... what are in these packages? A **package** can be a collection of
+
+-   functions
+
+-   data objects
+
+-   compiled code
+
+-   functions that *override* base functions in R
+
+**Functions** are the basic workhorses of R; they are the tools we use to analyze our data. Each function can be thought of as a unit that has a specific task. A function (usually) takes input, evaluates it using an expression (e.g. a calculation, plot, merge, etc.), and returns an output (a single value, multiple values, a graphic, etc.).
+
+In this course we will rely a lot on a suite of packages called the `tidyverse` which, itself, is also dependent upon a series of other packages.
+
+### 1.2.2 Useful packages are archived with CRAN and Bioconductor
+
+Users have been encouraged to make their own packages. There are now over 20,000 packages on R repositories (banks of packages), including more than 18,000 on CRAN (Comprehensive R Archive Network) and about 2,100 on Bioconductor.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/cran_pkg.png?raw=true" width="600"/>
+:::
+
+The "**Comprehensive R Archive Network**" (CRAN) is a collection of sites that have the same R and related R material:
+
+-   new and previous versions of R software
+
+-   documentation
+
+-   packages and collections of R packages to download that might be useful in a particular field (CRAN Task Views)
+
+-   links to the R journal and R search sites, bug reports and fixes
+
+Different sites (for example, we used <http://cran.utstat.utoronto.ca/>), are called *mirrors* because they reflect the content from the master site in Austria. There are mirrors worldwide to reduce the burden on the network. CRAN will be referred to here as a main repository for obtaining R packages.
+
+[Bioconductor](https://www.bioconductor.org/) is another repository for R packages, but it specializes in tools for high-throughput genomics data. One nice thing about Bioconductor is that it has decent vignettes. A ***vignette*** is the set of documentation for a package, explaining its functions and usages in a tutorial-like format.
+
+------------------------------------------------------------------------
+
+## 1.3.0 R-Markdown notebooks run the programming language kernels R
+
+Behind the scenes of each R-Markdown notebook a programming kernel is running. Our notebooks, when encountering code cells, use the R-kernel to interpret each code cell as if it were written specifically for the R language. R-kernel code cells are denoted by a structured set of syntax:
+
+$$```{r}  # code goes here ```$$
+
+Note, however, that there are multiple different kernels (languages) that can be implemented in our R-Markdown notebook, including Python! Additional parameters can be added to the definition of the coding cell, `{r}` , to [generate specific behaviours](https://rmarkdown.rstudio.com/lesson-3.html). As we move from code cell to new code cell, all of the objects we have created are stored within memory. We can refer to these as we run the code and move forward but if you overwrite or change them by mistake, you may to have rerun multiple cell blocks!
+
+There are some options in the "Code" menu that can alleviate these problems such as **Code \> Run Region \> Run All Chunks Above**. If you think you've made a big error by overwriting a key object, you can use that option to "re-initialize" all of your previous code!
+
+While your code is running, you may be able to see a small progress bar in the bottom right corner. There is no way to know for sure if a code cell has been run unless it produces a set of output or error.
+
+**Remember these friendly keys/shortcuts:**
+
+-   `Alt` + `Ctrl` + `I` to insert a code cell (R-kernel by default)
+-   `Arrow` keys to navigate up and down (and within a cell).
+-   `Ctrl`+`Enter` to run the current line in a cell.
+-   `Ctrl` + `Shift`+`Enter` to run the entire code cell.
+-   `Ctrl`+`Shift` + `C` to quickly comment and uncomment single or multiple lines of code. You can also comment out Markdown code.
+-   `Tab` can be used while coding to autocomplete variable, function and file names, and even look at a list of possible parameters for functions.
+
+### 1.3.1 Navigating the menu bar
+
+If you can't remember your keyboard shortcuts, you can always access the same commands (and more!) through the menu bar.
+
+-   **File**: New File, Open File, Save as, Rename, Knit Document, Close ...
+-   **Edit**: Cut, Copy, Paste, Clear All Output ...
+-   **Code**: Insert Chunk, Run Select Lines, Run Region ...
+-   **Session**: Terminate R, Restart R, Quit Session ...
+-   **Tools**: Install Packages ...
+
+^1^kernels are separate processes to run code that are started by the server that runs your code.
+
+### 1.3.2 Why would you want to use an R-Markdown Notebook?
+
+Depending on your needs, you may find yourself doing the following:
+
+-   Analysing data for your project using available packages
+-   Re-analysing data for your project
+-   Analysing multiple datasets for your project
+-   Collaborating on data and analyses for your project
+-   **Explaining** your data and analyses to a supervisor or collaborator!
+
+RStudio and the R-Markdown notebook allows you to alternate between "markdown" notes and "code" that can be run or re-run on the fly.
+
+Each data run and it's results can be saved individually as a new notebook to compare data and small changes to analyses!
+
+### 1.3.3 What is markdown language?
+
+Markdown is a markup language that lets you write HTML and Java Script code in combination with other languages. This allows you to make html, pdf, and text documents that are combinations of text and code, enhancing reproducibility, a key aspect in scientific work. Having everything in a single place also boosts productivity during results interpretation - no need to go back and forth between tabs, pages, and documents. They can all be integrated in a single document, allowing for a more fluid narrative of the story that you are communicating to your audience (less distractions for you!). For example, the lines of code below and the text you are reading right now were created in R-Markdown. (Do not worry about the R code just yet. We will get there sooner than you think).
+
+As mentioned, R-Markdown also allows you to write in [LaTeX](https://www.latex-project.org/about/), a document preparation system to write mathematical notation. To identify LaTeX code, it must be wrapped between single dollar signs (\$) for inline notation or double dollar signs (\$\$), one at the beginning of the equation and one at the end. For example, the equation ***Yi = beta0 + beta1 xi + epsilon_i, i=1, ..., N*** can be transformed into LaTeX code by adding some characters:
+
+`Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1, \dots, N`
+
+Now, if we use \$\$ before and after the LaTeX code, this is what we get:
+
+$$ 
+Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1, \dots,N 
+$$
+
+See? Just like that! Here is an example of a table made in Markdown, showing some of the most popular R libraries for data science:
+
+| Library   | Use                                                            |
+|------------------|------------------------------------------------------|
+| tidyverse | Simplified tabular-data processing functions                   |
+| ggplot2   | Data visualization package typically included in the tidyverse |
+| shiny     | Used to create interactive R-based web pages and interfaces    |
+| car       | Popular statistical analysis with Type II and III ANOVA tables |
+
+These are just a few examples of what you can do with RStudio and Markdown. To find out more on how to get the best of Markdown, head on over to the [R Markdown cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
+
+Once you are finished writing your code and interpreting those results in a markdown notebook, you can render the notebook into pdf, html, and many other formats. There are several ways to achieve this. The easiest option is to go to **File \> Knit Document** or just hit the **Preview** button located with other icons just below each tab. Afterwards there should be an option to view in browser at which point you can save as an HTML or print it to PDF.
+
+------------------------------------------------------------------------
+
+## 1.4.0 *RStudio* is an integrated development environment (IDE) for R
+
+A flagship IDE for R is RStudio. It runs the R-kernel but offers additional tools and interfaces that allow the user and programmer to see and understand their code much better than just R by itself.
+
+RStudio simplifies some basic tasks like
+
+-   installing libraries (even older versions of libraries)
+
+-   viewing environmental variables and objects
+
+-   accessing help information on functions
+
+-   Autocompleting programming calls to functions and variables
+
+-   Debugging broken code with step-through and tracing
+
+### 1.4.1 Why would you want to use R and RStudio?
+
+**"What if I'm doing more than just running data through packages?"**
+
+-   Building code from scratch
+-   Working with non-standard file types
+-   Performing extensive analysis on large datasets
+-   Generating multiple output files
+-   Creating functions and libraries to reference in other scripts
+-   Debugging or stepping slowly through complex code
+-   Publishing complex code for a manuscript(?)
+
+As a development environment **RStudio** offers features like debugging, and access to environmental variable states. It is a fully integrated development environment that makes it easy to look for help on package and function information, saving data states to come back to later, working on multiple scripts that may reference into each other. It has a clear user interface that can make looking at certain objects like "tables" much easier too.
+
+### 1.4.2 Running RStudio on the University of Toronto datatools hub
+
+For simplicity and consistency, we will be running our course on the University of Toronto datatools hub. By running on the same servers, we will be able to experience the same results and will be insulated from small differences in packages and implementations between RStudio versions and some operating systems.
+
+There are, however, still a few small problems that plague the servers, including memory limitations. While we will try to keep under the 2Gb memory limit, small errors in coding could result in large memory consumption. Once your memory limit has been reached, the server may become unresponsive, requiring you to restart your session. To avoid major interruptions:
+
+1.  Save your skeleton notebooks often!
+    -   This is as simple as using the **`[ctrl]+s`** keyboard shortcut or the floppy disk icon on the top left of the window. This will ensure that completed code is not lost as skeleton notebooks are due for submission before the next lecture.
+    -   You can also alter R so that it will automatically save your work when you are idle (ie not typing) for more than a set number of seconds. Go to **`Tools > Global Options > Code > "Saving" Tab`** and on the bottom of this pane find the `When editor is idle:` drop down box. Alter the value to "**Save and write changes**" and set an `Idle period:` of 500ms or 1000ms.
+2.  A session restart will mean that all variables have been cleared from memory. You can re-run your code in 3 ways:
+    -   From the menu, select **`Code > Run Region > Run all chunks above`**.
+    -   Within the code cell you want to run next, click on the **`Run all chunks above`** icon on the top right of the code cell. This is the second of 3 icons and looks like a downward pointing triangle above a small line.
+    -   Use the shortcut keys **`[ctrl] + [alt] + [shift] + p`** after positioning your cursor in correct code cell.
+    -   Use these methods from the code cell that you'd like to run next. All previous code will run up to (but excluding) your current code position.
+
+::: {.alert .alert-block .alert-info}
+**Error-proof your code:** If you are creating a tutorial or intentionally introducing errors, the R-kernel will normally terminate the **`Run all chunks above`** command at the first error-producing code chunk. However, using the `{r, error=TRUE}` definition, will allow the kernel to continue past a code chunk error.
+:::
+
+------------------------------------------------------------------------
+
+## 1.5.0 Which should I use: R-Markdown or just R scripts?
+
+I suggest you try out both! **Find what's comfortable for you and experiment with whatever works best for your needs!**
+
+*Personally* I use R/RStudio to generate code scripts but after building this class as a *R-Markdown Notebook*, this really is a good tool for running smaller code snippets, especially in the context of working or talking with supervisors and collaborators. Many times your supervisors may want to know something like
+
+-   "What happens if we change the analysis to use X groups instead of Y?"
+-   "What does this look like if we use the median instead of the mode?"
+-   "Can you add/remove those weird points from your dataset?"
+
+You can make quick changes on the fly and see the results there in the notebook without pulling up extra windows or programs. New runs can be saved in different versions of the notebook with quick footnotes on what has changed. When preparing visualizations or analyses for manuscripts it can be quite useful to run a Notebook where you can track various parameters you are tweaking or changing.
+
+Note that R Markdown notebooks can even accommodate other languages like Linux-based Bash and Python so you can mix programming languages as you need. This is actually an helpful way to generate clearly-written bioinformatics pipelines as well.
+
+Again, consider it on a case-by-case basis but we will begin with simple coding and the R-Markdown notebook format.
+
+------------------------------------------------------------------------
+
+## 1.6.0 Making (Coding) Life Easier
+
+Let's discuss some important behaviours before we begin coding: - Code annotation (commenting) - Variable naming conventions - Best practices
+
+### 1.6.1 Annotate your code with the hash symbol `#`
+
+**Why bother?**
+
+-   "Can you rerun this analysis and change X parameter?" - *your curious PI*
+-   "Can you make this plot, but with dashed lines, a different axis, with error bars?" - *your experienced PI*
+-   "Can I borrow your code?" - *a collaborator, officemate or your code-literate PI*
+-   "Why is that object being sent to that function? What is it returning?" - *You, Me, and every PI ever*
+
+**Your worst collaborator is potentially you in 6 days or 6 months. Do you remember what you had for breakfast last Tuesday?**
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/LOTR_elvish.png?raw=true" width="800"/>
+
+Credit: <https://www.testbytes.net/blog/programming-memes/>
+:::
+
+You can annotate your code for selfish reasons, or altruistic reasons, but annotate your code.
+
+------------------------------------------------------------------------
+
+**How do I start?**
+
+-   It is, in general, part of best coding practices to keep things tidy and organized.
+
+-   A hash-tag `#` will comment your text. Inside a code cell in an R-Markdown Notebook or anywhere in an R script, all text *after* a hashtag will be ignored by R and by many other programming languages. It's very useful to add comments about changes in your code, as well as detailed explanations about your scripts.
+
+-   Put a description of what you are doing near your code at every process, decision point, or non-default argument in a function. For example, why you selected `k=6` for an analysis, or the Spearman over Pearson option for your correlation matrix, or quantile over median normalization, or why you made the decision to filter out certain samples.
+
+-   Break your code into sections to make it readable. As you learn Flow Control (**Lecture 07**) you will realize scripts are just a series of steps and major steps should be titled/outlined with your reasoning - much like when presenting your research.
+
+-   Give your objects informative object names **that are not the same as function names**.
+
+**Comments may/should appear in three places:**
+
+-   **At the beginning of your script:** What's the objective of your script?
+-   **Above every function you create:** Why did you have to write your own function versus those that are already available in package x?
+-   **In-line or in-between lines of code:** Why did you write that piece of code? What does it do? Why did you change a function's defaults?
+
+```         
+# At the beginning of the script, describing the purpose of your script and what you are trying to solve
+
+bedmasAnswer <- 5 + 4 * 6 - 0 #In line: Describing a part of your code that is not obvious what it is for. 
+
+#---------- Section dividers helps organize code structure ----------#
+## Feel free to add extra hash tags to visually separate or emphasize comments
+```
+
+------------------------------------------------------------------------
+
+Maintaining well-documented code is also good for mental health!
+
+**Keyboard shortcuts in RStudio:**
+
+-   Comment/Uncomment lines `CTRL + SHIFT + C` (Windows, Linux) / `Command + SHIFT + C` (Mac)
+-   Reflow Comment (Wrap comments) `CTRL + SHIFT + /` (Windows, Linux) / `Command + SHIFT + /` (Mac)
+
+------------------------------------------------------------------------
+
+### 1.6.2 Naming conventions for files, objects, and functions
+
+-   Cannot start with a number
+-   Cannot contain spaces or special characters in the name
+-   Avoid naming your variables using names already used by R (`for`, `next`, `while`, etc.).
+-   Consider appending the object type to your variable name (data frame = df, list = list or ls, etc.)
+
+**Basically, you have the following options:**
+
+-   All lower case: e.g. **myfirstobject**
+-   Period separated (not compatible with all programming languages): e.g. **my.first.object**
+-   Use underscores: e.g. **my_first_object**
+-   camelCase1: e.g. **myFirstObject**
+-   CamelCase2: e.g. **MyFirstObject**
+
+The most important aspects of naming conventions are being concise and consistent! Throughout this course you'll most often see the **underscore_separated.object_type** style to name variables.
+
+### 1.6.3 Best Practices for Writing Scripts
+
+-   Start each script with a description of what it does.
+
+-   Then load all required packages.
+
+-   Consider what working directory you are in when sourcing a script.
+
+-   Use comments to mark off sections of code.
+
+-   Put function definitions at the top of your file, or in a separate file if there are many.
+
+-   Name and style code consistently.
+
+-   Break code into small, discrete pieces.
+
+-   Factor out common operations rather than repeating them.
+
+-   Keep all of the source files for a project in one directory and use relative paths to access them.
+
+-   Keep track of the memory used by your program.
+
+-   Always start with a clean environment instead of saving the workspace.
+
+-   Keep track of session information in your project folder.
+
+-   Have someone else review your code.
+
+-   Use version control.
+
+For more information on best coding practices, please visit [swcarpentry](https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/)
+
+------------------------------------------------------------------------
+
+## 1.7.0 Trouble-shooting basics
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/GooglingForProgrammers.jpg?raw=true" width="700"/>
+:::
+
+We *all* run into problems. We'll see a lot of mistakes happen in class too! That's OK if we can learn from our errors and quickly (or eventually) recover.
+
+### 1.7.1 Common errors
+
+-   *file does not exist*: Use `getwd()` to check where you are working, type`list.files()` or the `Files` pane to check that your file exists there, and `setwd()` to change your directory if necessary. Preferably, work inside an *R project* with all project-related files in that same folder. Your working directory will be set automatically when you open the project (this can be done by using `File -> New Project` and following prompts). For more information on directory structure, see **section 8.0.0**.
+
+-   *typos*: R is case sensitive so always check that you've spelled everything right. Become familiar with using the *tab-autocompletion* feature when possible.
+
+-   *open quotes, parentheses, brackets*:
+
+    -   **RStudio** will highlight the current cursor-denoted bracket set in $\color{grey}{\text{dark grey}}$. If the bracket is unmatched on either side, it will not show a grey highlight.
+    -   When saving **RStudio** produces $\color{red}{\text{x}}$ icons on your left sidebar if your final bracket is not closed.
+
+-   *data type*: Use commands like `typeof()` and `class()` to check what type of data you have. Use `str()` to peak at your data structures if you're making assumptions about it.
+
+-   *unexpected answers*: To access the *help menu*, type `help("function")`, `?function` (using the name of the function that you want to check), or `help(package = "package_name")`.
+
+    -   The result will be shown in the lower-right pane under the `Help` tab (which is also searchable).
+
+-   *function not found*: Make sure the package name is properly spelled, installed, AND loaded. Libraries can be loaded to the environment using the function `library("package_name")`. If you only need one function from a package, or need to specify to what package a function belongs because there are functions with the same name that belong to different packages, you can use a double colon, i.e. `package_name::function_name`.
+
+-   *the R bomb!!*: The `session aborted` can happen for a variety of reasons, like not having enough computational power to perform a task or also because of a system-wide failure.
+
+    -   restart the whole program and see if it works the next time.
+    -   Use the RStudio debugging tools to run and step into your code at the same time.
+    -   You can use the Environment pane to see the values of variables (or their lack thereof)
+
+-   **cheatsheets**: Meet your new best friends: [cheatsheets](https://rstudio.com/resources/cheatsheets/)!
+
+### 1.7.2 Beginner Advice
+
+-   Try to solve a problem yourself but set a ***30 minute cut-off*** on being stuck.
+-   Look at the error and read the actual text to see if it is helpful
+-   Check for syntax errors! A missing `,` or extra `)` still happens to me too!
+
+At this level, many people have had and solved your problem. Beginners get frustrated because they get stuck and take hours to solve a problem themselves. Set your limit, stay within it, then go online and get help.
+
+### 1.7.3 Finding answers online
+
+-   99% of the time, someone has already asked your question
+-   Google, Stack overflow, R Bloggers, SEQanswers, Quora, ResearchGate, RSeek, twitter, even reddit
+-   Including the program, version, error, package and function helps, be specific. Sometimes is useful include your operating system and version (Windows 10, Ubuntu 18, Mac OS 10, etc.).
+
+### 1.7.3.1 Asking a question
+
+-   Summarize your question in the title (be concise and objective!).
+-   Introduce your question, how you ran into the problem, **and how you tried to solve it yourself**. If you haven't done the bolded thing, do the bolded thing.
+-   Show enough of your code and data for others to try to reproduce the problem/error.
+-   Add tags that match your problem.
+-   Respond to the feedback and vote for the answer that you picked. People put in their free time to answer and help you.
+-   Take a look at [StackOverflow's tips on how to ask questions](https://stackoverflow.com/help/how-to-ask), as well as [CRAN's](https://www.r-project.org/posting-guide.html)
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/StackOverflow.png?raw=true" width="500"/>
+:::
+
+**Remember**: Everyone looks for help online **ALL THE TIME**. It is very common. Also, with programming there are multiple ways to come up with an answer, even different packages that let you do the same thing in different ways. You will work on refining these aspects of your code as you go along in this course and in your coding career.
+
+Last but not least, to make life easier: Under the `Help` pane, there is a *Cheatsheet of Keyboard Shortcuts* or a browser list [here](file:///usr/lib/rstudio/www/docs/keyboard.htm).
+
+------------------------------------------------------------------------
+
+## 1.8.0 Programming in the age of Artificial Intelligence
+
+It should be noted with some skepticism, that we are in a wonderous time driven more and more by artificial intelligence. You may wonder, what the utility of this course is when you can simply ask [ChatGPT](https://chatgpt.com/) to help you code. In fact, there are any number of [coding assistants](https://www.google.com/search?q=AI+coding+assistants) that are available now to help produce or critique your code. We won't go into the current and future *perils of AI* since that's a whole other kind of discussion.
+
+Regardless, these tools are a great coding time-saver but still most useful in the hands of those with programming experience. Much like learning the best way to Google a subject, you should have a basic understanding of programming before proceeding to use these tools. This course seeks to arm you with the tools you need for understanding and creating code for working with standard collections of measured biological data. Once you have these concepts in-hand, you will know how to ask coding assistants for help or direction. Otherwise, you might find yourself in an amorphous space without a proper direction and no plan for how to handle your data.
+
+I do encourage you to work with these tools as you continue this journey *after* this introductory course. Each of you will be working with specialized data or statistics in some way and having an assistant will save you some time ***if*** you can understand the code it will return to you. So take the time, learn the material, figure out the ***kind*** of questions you should be asking, and use the tools!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/ChatGPT_screenshot.png?raw=true" width="600"/>
+:::
+
+You can ask ChatGPT how to make a dataframe is, but ***what is*** a dataframe?
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Section 1.0.0 Comprehension Question:** What are the main differences between an R-markdown Notebook **code cell** and a section of **markdown** text?.
+:::
+
+------------------------------------------------------------------------
+
+## Section 1.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 2.0.0 Using R
+
+Remember that before we are up and running we really need to lay the foundation for this complex language. Enough theory. Let's get started!
+
+## 2.1.0 Basic use of R
+
+R can do anything your basic, scientific, or graphic calculator can.
+
+### 2.1.1 Basic math and functions
+
+```{r}
+# addition
+...
+```
+
+```{r}
+# exponents
+...
+```
+
+```{r}
+# basic math functions
+...
+```
+
+```{r}
+# advanced math functions
+...
+```
+
+```{r}
+# access to constants
+...
+
+# This is a function to calculate the powers of e
+...
+```
+
+### 2.1.2 Plot equations
+
+```{r}
+# Plot a quick equation!
+curve(..., from=0, to=2)
+```
+
+```{r}
+# Plot a parabola
+curve(10*x^2, ...)
+```
+
+------------------------------------------------------------------------
+
+## 2.2.0 Functions do the work for us
+
+You may have noticed above that we did some crazy looking stuff involving parentheses `( )`. There are actually many functions for `( )` within R but this is all dependent upon context.
+
+1.  Most broadly we use `( )` to contain or separate actions and expressions. The development of R centres around a much older programming language but, in a nutshell, everything is evaluated from the innermost `( )` to the outermost set of `( )`.
+
+2.  A secondary purpose of `( )` is to indicate to R that you would like to activate a function by passing the contents of `( )` to the pre-existing function. This takes the form of
+
+    `function_name(parameter_1 = argument_1 , parameter_2 = argument_2, .., parameter_n = argument_n)`.
+
+    or more simply
+
+    `function_name(argument_1, argument_2, ..., argument_n)` but argument order in this case is quite important and must match with the pre-defined parameter order.
+
+3.  Within your function call, arguments are separated using a `,`.
+
+We'll talk about the structure of functions in more detail as the course progresses BUT know that
+
+1.  functions are used to perform common operations that may combine multiple actions or calculations.
+2.  functions are programmed or ***defined*** and they use ***arguments*** as a way to retrieve input or information to perform their jobs.
+3.  functions may or may not ***return*** a value upon their completion.
+4.  The terms **parameter** and **argument** are often used interchangeably but *by definition* parameters are [**p**]{.underline}laceholders/variables, while arguments represent [**a**]{.underline}ctual values.
+
+### 2.2.1 Use the `help()` function or `?` to learn more about functions
+
+Often you may forget what the simple or complicated requirements of a function are but you can use `?` or `help(function_name)` to retrieve a description of a function which includes a description of the input arguments and output (if any) that is returned.
+
+```{r, eval = FALSE}
+# Use ? to retrieve a description of help()
+...
+# Note the lack of ()? 
+# We don't want to invoke the function but rather just provide it's name!
+```
+
+```{r, eval = FALSE}
+# Here we are using the () to define the function we want to know more about
+help(help)
+```
+
+```{r, eval = FALSE}
+# A list of common functions that we don't have time to explore
+...
+
+# ?c
+# ?seq
+# ?setwd
+# ?sort
+# ?dir
+# ?head
+# ?names
+# ?summary
+# ?dim
+# ?range
+# ?max
+# ?min
+# ?sum
+# ?pairs
+# ?plot
+```
+
+------------------------------------------------------------------------
+
+### 2.2.2 R evaluates functions by the order of parentheses
+
+Remember back in section 2.2.0 we mentioned how R interprets brackets? When working or reading functions in R, it should be noted that functions are generally evaluated (or run) by the R interpreter from left to right and from inner-most parentheses to outer-most. This means you can indeed provide a function as a parameter to another function.
+
+When writing code, it can quickly become complicated with inner functions like this:
+
+`function_1(function_2(function_3())) + function_4()`
+
+As we can see from above, `function_3()` must be evaluated first as it serves as an argument to `function_2()`, which must itself be evaluated so it can be used as an argument to `function_1()` before being added to `function_4()`. Imagine having multiple parts of these all happening in a single line of code? It can certainly hinder code readability down the road.
+
+Of course there are [more complex function evaluations](https://stackoverflow.com/questions/23689211/precedence-of-a-function-call-in-r) but we won't really tread there in this course.
+
+Furthermore, we will learn to remedy this kind of issue further down the road by writing our code in a way that flows more logically for readers. However, it is best to keep these ideas in mind when trying to read someone else's code.
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Section 2.0.0 Comprehension Question:** In what order will the functions in the following code be evaluated?
+
+$$
+function_2(function_4(function_3(), function_1()), function_5(function_6()))
+$$
+:::
+
+------------------------------------------------------------------------
+
+## Section 2.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 3.0.0 A [quick] intro to R's variables, data types, and data structures
+
+## 3.1.0 Assigning variables
+
+Up until now we've simply been calculating with R and the output appears after the code cell. There is nothing left behind in the R interpreter or memory. If we wanted to hold onto a number or calculation we would need to ***assign*** it to a named variable. In fact R has multiple methods for assigning a value to a variable and an order of precedence!
+
+`->` and `->>` **Rightward assignment**: we won't really be using this in our course.
+
+`<-` and `<<-` **Leftward assignment**: assignment used by most 'authentic' R programmers but really just a historical throwback.
+
+`=` **Leftward assignment**: commonly used token for assignment in many other programming languages but carries dual meaning!
+
+**Notes**
+
+-   assignment to a variable *does not* produce any output.
+-   R processes at each new line unless you use a semicolon (`;`) to separate commands
+-   In RStudio, you can use `Alt` + `-` to produce the `<-` symbol
+
+Let's try some exercises.
+
+```{r}
+# Assign with the standard =
+
+...
+
+# Use the print command to print simple and complex expressions
+print(a)
+
+# Or just evaluate the expression to standard output
+...
+```
+
+```{r}
+#Left hand assigner (original way to assign results) 
+# sometimes the <- is necessary for functions originally created in S. 
+# Often seen on R help forums if you Google future issues
+
+a <- 3 
+a
+```
+
+```{r}
+#Right hand assigner
+
+3 ...
+d
+```
+
+```{r}
+# Assign some variables
+a = 4
+b = 2
+
+# Multiply them
+...
+```
+
+```{r}
+# each code after a semicolon is interpreted as a new line
+a=4... b=2... a*b 
+```
+
+------------------------------------------------------------------------
+
+### 3.1.1 Blank spaces are usually ignored by the interpreter
+
+White space is used to separate between commands and variables as the code is run but the ***total*** number of spaces is irrelevant to the interpreter when it is running your code.
+
+Let's see it in action
+
+```{r}
+b <- 2
+
+a<-3;b*a
+
+# versus
+
+a = 3; ...
+```
+
+------------------------------------------------------------------------
+
+Here's a more complex example of code:
+
+```         
+for (i in unique(raw_area_long$date)){sub.dat<-subset(raw_area_long, raw_area_long$date==i)
+umoles<-(((sub.dat$area[sub.dat$date==i]-calib_coeff$intercept[calib_coeff$date==i])/calib_coeff$slope[calib_coeff$date==i])/1000)*sub.dat$headspace_mL[sub.dat$date==i]}
+```
+
+Using spaces to organize the above code, we can clarify what's happening! Notice we even use indentation to help sort out the ***flow*** of our code. We'll talk more about that in detail in **lecture 07**.
+
+```         
+for (i in unique(raw_area_long$date)) {
+  
+  sub.dat <- subset (raw_area_long, raw_area_long$date == i) 
+  umoles <- ( ( ( sub.dat$area[sub.dat$date == i] - 
+                    calib_coeff$intercept [calib_coeff$date == i] ) / 
+                  calib_coeff$slope [ calib_coeff$date == i] ) / 1000 ) * 
+    sub.dat$headspace_mL 
+
+}
+```
+
+------------------------------------------------------------------------
+
+### 3.1.1.1 A special case where blank space can change interpretation
+
+Due to the nature of how the R-kernel ***interprets*** the order/context of symbols, and how symbols can be combined, we must address the importance of `<-` versus `< -`.
+
+-   The former case `<-` is our symbol for leftward assignment
+
+-   The latter case breaks our symbol into two parts to create an *expression* (more on that in section **3.2.0**)
+
+```{r}
+# Assignment 
+a <- 3
+
+# Evaluation
+a ...
+
+# Evaluation with extra space!
+a < -...
+```
+
+------------------------------------------------------------------------
+
+### 3.1.1.2 A case where blank space amounts matter
+
+Under some special circumstances, spaces are required, e.g. when using function `paste()` and its argument `sep = ' '`.
+
+```{r}
+# No spaces
+paste("Can", "I", "go", "out", "now", "?", sep = "")
+
+# Single space as a separator
+paste("Can", "I", "go", "out", "now", "?", sep = ...)
+
+# Triple space as a separator
+paste("Can", "I", "go", "out", "now", "?", sep = ...)
+```
+
+------------------------------------------------------------------------
+
+### 3.1.2 R calculates from the right side first before (leftward) assignment
+
+R calculates the right side of the assignment ***first*** and the result is then applied to the left. This is a common paradigm in programming that simplifies variable behaviours for counting and tracking results as they build up over time.
+
+This also allows us to increment variables or manipulate objects to update them!
+
+```{r}
+# What will be the final value of i?
+
+i = 1
+i = ...
+i
+```
+
+This behaviour can be extended in a more complex fashion to encompass multiple variables
+
+::: {.alert .alert-block .alert-info}
+**Remember!** Variables are specific identifiers/placeholders that allow us to ***access*** our data. We can **change** the nature and size of that data simply by reassigning the value of the variable.
+:::
+
+```{r}
+# Remind ourselves the values of a and b
+a;b
+# Use multiple values in an expression assigned to a variable 
+result <- ...
+result
+
+# make a calculation
+result ^ pi
+```
+
+```{r}
+# Use and overwrite the current value of "result"
+result <- ... 
+
+# this PERMANENTLY overwrote your old 'result' object. If this is an important value be sure to keep it safe!
+result
+```
+
+::: {.alert .alert-block .alert-warning}
+**Caution!** Variable names are case-sensitive. When assigning variables, remember to use original, descriptive names to reduce errors in your code. You can use the ***Tab*** key to help autocomplete your code. Walk the fine balance between **descriptive** and *overly long* variable names.
+:::
+
+```{r}
+# Don't forget that variable names ARE case-sensitive
+a = 5
+A = 7
+b = 3
+B = 15
+
+# Output our variable values
+b; B; ...
+```
+
+------------------------------------------------------------------------
+
+## 3.2.0 Data types are the basic building blocks of R
+
+Data types are used to classify the basic spectrum of values that are used in R. Here's a table describing *some* of the common data types we'll encounter.
+
+| Data type | Description | Example |
+|:---------------|:--------------------------------------|:---------------|
+| character | Can be single or multiple characters (strings) of letters and symbols. Assigned using double `'` or `"` | a#c&E |
+| integer | Whole number values, either positive or negative | 1 |
+| double | Any number that is not an integer, AKA *numeric* | 7.5 |
+| logical | Also known as a boolean, representing the state of a conditional (question) | TRUE or FALSE |
+| NA | Represents the value of "Not Available" usually seen when imported data has missing values | NA |
+
+### 3.2.1 Data structures hold single or multiple values
+
+The job of data structures is to "host" the different data types. There are five basic types of data structures that we may encounter while using R:
+
+| Data structure | Dimensions | Restrictions |
+|:-----------------|:-----------------|:------------------------------------|
+| vector | 1D | Holds a single data type |
+| matrix | 2D | Holds a single data type |
+| array | nD | Holds a single data type |
+| data frame | 2D | Holds multiple data types with some restrictions |
+| list | 1D (technically) | Holds multiple data types AND structures |
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data_structures.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+### 3.2.2 Atomic values - *"One is the loneliest data type"*
+
+One single value from any of the above data types. It is the smallest possible "unit" of data within R.
+
+Fun fact: although these may be thought of as stand-alone objects, these are actually vectors with a single element!
+
+```{r}
+# It doesn't matter what your variable is named, an atomic is still a single value
+X <- ...
+
+str(X)
+X
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3 Vectors are like a queue of a single data type
+
+There is a numerical order to a vector, much like a queue AND you can access each element (piece of data) individually or in groups.
+
+Here are what vectors of each data 'type' would look like.
+
+::: {.alert .alert-block .alert-warning}
+**Note:** character items must be in a set of either single **or** double quotations. An 'L' is placed next to a number to specify it as an integer rather than a double. You may decided to use this notation in order to specifically save on memory as integers use less than doubles!
+:::
+
+```{r}
+# character vectors
+character_vector <- c(...)
+character_vector
+```
+
+```{r}
+# numeric vectors
+numeric_vector <- c(...) # The colon specifies an inclusive range of values
+numeric_vector
+```
+
+```{r}
+# logical vectors
+logical_vector <- c(...) # TRUE and FALSE are also know as "boolean" values
+logical_vector
+```
+
+```{r}
+# Integer vectors
+integer_vector <- c(...) 
+# The "L" makes the numbers integers. Can be used to get your code to run faster and consume less memory. 
+# A double ("numeric") vector uses 8 bytes per element. An integer vector uses only 4 bytes per element
+
+integer_vector
+```
+
+```{r}
+# What happens if we try to include more than one type of data?
+mixed_vector <- c(...)
+mixed_vector
+
+# Let's look at the structure of our vector
+str(mixed_vector)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3.1 Coercion changes data from one type to another (if possible)
+
+R will *coerce* (force) your vector to be of one data type, in this case the type that is most inclusive is a character vector. When we explicitly force a change from one data type to the next, it is known as ***conversion*** or ***casting***.
+
+```{r}
+# Let's convert our mixed_vector
+...; into_numeric
+
+# What about our logical_vector?
+as.numeric(...)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3.2 What happened to our data??
+
+Let's highlight the unexpected result from above for a couple of reasons:
+
+1.  Keep your data types in mind. It is good practice to look at your object or the global environment to make sure the object that you just made is what you think it is.
+
+2.  It can be useful for data analysis to be able to switch from TRUE/FALSE to 1/0, and it is pretty easy, as we have just seen.
+
+::: {.alert .alert-block .alert-success}
+**Learn more about data-type coercion:** If you're interested in learning the order of operations for coercion, you can find more information on how R handles it in [R in a nutshell](https://www.oreilly.com/library/view/r-in-a/9781449358204/ch05s08.html)
+:::
+
+### 3.2.3.3 Vector contents can be individually named using the `names()` function
+
+Within a vector, each individual element can be assigned to a character-based name. This can act as a way to locate values based on what they represent and not by their position within the vector.
+
+```{r}
+names(logical_vector) <- c(...)
+logical_vector
+```
+
+```{r}
+#is equivalent to 
+
+logical_vector <- c("male" = TRUE, "elderly" = FALSE, "heart attack" = ...)
+
+logical_vector
+```
+
+```{r}
+# or using a ;
+
+logical_vector <- c("male" = TRUE, "elderly" = FALSE, "heart attack" = TRUE); logical_vector
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3.4 Use `length()` to identify the number of elements in a vector
+
+Remember that a vector is a container for your data which you can think of as a queue of boxes where each box contains a value. We can retrieve the length of this queue using the `length()` function. We'll learn additional functions later that we can apply broadly to retrieve information about various objects.
+
+```{r}
+# The number of elements in a vector is its length.
+length(character_vector)
+
+length(numeric_vector)
+
+length(...)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3.5 Use the `[ ]` indexing notation to extract values
+
+For most data structures in R, you can use index notation to extract values from the object. To accomplish this, use the square brackets `[ ]`, separating dimensions using a comma (`,`). You can create indices using:
+
+-   Positive integers (select values)
+-   Negative integers (exclude values)
+-   Zero
+-   Blank spaces (multi-dimensional indexing)
+-   Logical values (must match container size)
+-   Element names
+
+These indices can be supplied singly, as a vector with `c()`, or a range with `start:end`. Note, however, that you ***cannot mix*** positive and negative values! Throughout the course, we may also refer to the act of ***indexing*** portions of a data structure as ***slicing***.
+
+::: {.alert .alert-block .alert-warning}
+**Watch out!** Indexing in R follows real-world arithmetic notation where vectors are represented as n-tuples indexed from 1 to n. This might be unfamiliar if you're coming from a 0-indexed system like C++, Java, or Python.
+:::
+
+```{r}
+# Display our character vector again
+character_vector
+
+# You can grab a specific element by its index
+character_vector[...]
+```
+
+```{r}
+# Use the ":" to generate a range of indices automatically as a vector
+
+1:10 # All positive values
+
+... # Negative values to 0
+
+... # A range spanning across negative to positive values
+```
+
+```{r}
+#second and third element in the vector inclusive (varies across programming languages)
+character_vector[...]
+```
+
+```{r}
+#you can use negative indexing to select 'everything but'
+character_vector[...]
+
+character_vector[...]
+```
+
+```{r, error = TRUE}
+# You can't mix negative and positive values!
+character_vector[c(-1, 2)]
+```
+
+```{r}
+# You can grab elements by their assigned "names"
+logical_vector[...]
+
+logical_vector[...]
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Section 3.2.3 Comprehension Question:** Look at the following code. What do you expect the result to be when you run it? Why/How do you think this happens? **Hint:** think again about how sequences of numbers are generated above using the **[start:end]** notation.
+:::
+
+```{r}
+# comprehension answer code 3.2.3
+compQ <- c(2:11); compQ
+
+compQ[-5:0]
+```
+
+------------------------------------------------------------------------
+
+## Section 3.2.3 comprehension answer:
+
+------------------------------------------------------------------------
+
+### 3.2.4 Matrices are 2-dimensional containers of a single data type
+
+Thus matrices are like a 2D version of vectors. They can be accessed similarly to vectors but in a `[row,column]` format
+
+### 3.2.4.1 A reminder about functions inside functions
+
+Recall that in R, functions within functions are read inside-out, i.e. moving from the inner most parenthesis and outwards:
+
+`matrix(c(rep(0, 10), rep(1,10)), nrow = 5, ncol = 5)`
+
+Here the two `rep(...)` functions will be evaluated before evaluating `matrix(...)`
+
+Note that the `rep(value, times)` function produces a vector by ***repeating*** the parameter `value` by the specified parameter `times`. Let's build a matrix with our code and see what it looks like.
+
+```{r}
+# What will the output be?
+# Note that each "parameter" has been separated to its own line
+my_matrix <- matrix(c(...), 
+                    nrow = ..., 
+                    ncol = ...)
+
+my_matrix
+```
+
+```{r}
+# Equivalent result by calling rep just once
+
+my_matrix <- matrix(c(...), 
+                    nrow = 5, 
+                    ncol = 5)
+
+my_matrix
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4.2 Vector recycling occurs on some element-wise operations
+
+What happened above? Look up the `matrix()` function. Why did R not throw an error but rather gave us:
+
+`Warning: data length differs from size of matrix: [20 != 5x5]`?
+
+A special property of vectors in R called **vector recycling** allows the values of a smaller vector to be reused in certain math operations (i.e. addition, subtraction, and even indexing!) ***as long as*** the larger vector is a multiple of the smaller.
+
+How would I make this same matrix from above without vector recycling as part of the `matrix()` function? Can you think of 2 ways?
+
+```{r}
+# Make a matrix by recycling within rep() but not within the matrix() call
+my_matrix <- matrix(c(rep(..., 
+                          each = ..., 
+                          times = ..., 
+                          length = ...)), 
+                    nrow = 5, 
+                    ncol = 5)
+
+# print the matrix
+my_matrix; print("version 1")
+```
+
+```{r}
+# No recycling in generating the initial vector
+my_matrix <- matrix(c(rep(0, 10), rep(1,10), rep(0, 5)), nrow = 5, ncol = 5)
+my_matrix; print("version 2")
+```
+
+```{r}
+# Just write out the entire vector you want to convert to matrix
+# Note: this is the worst way to do this!
+my_matrix <- matrix(c(0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), nrow = 5, ncol = 5)
+my_matrix; print("version 3")
+```
+
+```{r}
+# We can replicate through coercion of a Logical to Numeric
+my_matrix <- matrix(as.numeric(c(rep(FALSE, 10), rep(TRUE,10), rep(FALSE, 5))), nrow = 5, ncol = 5)
+my_matrix; print("version 4")
+```
+
+```{r}
+#This may be a good time to mention that TRUE and FALSE can be abbreviated to T and F
+my_matrix <- matrix(as.numeric(c(F,F,F,F,F,F,F,F,F,F,T,T,T,T,T,T,T,T,T,T,F,F,F,F,F)), nrow = 5, ncol = 5)
+my_matrix; print("version 5")
+```
+
+------------------------------------------------------------------------
+
+**Notice how the matrices are populated one column at a time?**
+
+*Challenge: What do you think this matrix will look like?*
+
+`my_matrix <- matrix(c(0,0,0,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0), nrow = 5, ncol = 5)`
+
+```{r}
+matrix(c(0,0,0,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0), nrow = 5, ncol = ...)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4.3 Bracket and parentheses location matters!
+
+Remember that each call to a function whether it is `c()`, `rep()`, `matrix()`, etc., uses parentheses to define the start and end of parameters that are being supplied. Some of the hardest-to-find errors in our code involves the misplacement or incorrect pairings of `()` in multi-layered functions.
+
+```{r}
+...(c(rep(0, 10), rep(1,10), nrow = 5, ncol = 5))
+```
+
+**What happened above?**
+
+R code is evaluated inside-out but the brackets here are poorly positioned. With the command above you end up with a single column matrix of numbers equivalent to c(0x10, 1x10, 5, 5).
+
+**Remember** to be mindful of your bracket placement or you'll be in for some headaches!
+
+------------------------------------------------------------------------
+
+### 3.2.4.4 Challenge
+
+Make a 4 x 4 matrix that looks like this, using the `seq()` function at least once.
+
+```         
+2   4   6   8
+10  12  3   6
+9   12  0   1
+0   1   0   1
+```
+
+`seq()` produces a vector of numbers using the the parameters `from`, `to`, and `by` which makes the process of generating a pattern of numbers much simpler for you.
+
+```{r}
+# Define a matrix using a few different seq() calls
+matrix(c(seq(...), 
+         seq(3,12,3),                    # Note we don't have to name the parameters 
+         rep(seq(0,1,1), 3)),            # This last call is a bit repetitive
+       nrow = 4, ncol = 4, 
+       byrow = TRUE)                     # Notice also we are filling by row instead of by column
+```
+
+```{r}
+# Compare that to this version
+matrix(c(seq(from = 2, to = 12, by = 2), 
+         seq(3,12,3), 
+         rep(c(0,1), 3)), # simplified 
+       nrow = 4, ncol = 4, byrow = TRUE)
+```
+
+```{r}
+# Or hard-code that last section instead
+matrix(c(seq(2, 12, 2), 
+         seq(3,12,3), 
+         c(0,1,0,1,0,1)), 
+       nrow = 4, ncol = 4, byrow = TRUE)
+```
+
+```{r}
+# Replace your 1s and 0s with booleans for coercion
+matrix(c(seq(2, 12, 2), 
+         seq(3,12,3), 
+         rep(c(F,T), 3)), 
+       nrow = 4, ncol = 4, byrow = TRUE)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4.5 A matrix is a 2D object
+
+As you've noticed by now, the matrix is a 2D object so there are a few more properties and tricks to it than a simple vector. We can use a number of useful functions to gain insights about our object:
+
+-   `str()` provides a summary of our data structure.
+-   `nrow()` provides the number of rows.
+-   `ncol()` provides the number of columns.
+-   `dim()` reports the number of (rows, columns).
+-   `length()` gives a report on the total number of entries.
+
+Let's try these out and see for ourselves.
+
+```{r}
+# A matrix is a 2D object. We can now check out a couple more properties - like the number of rows and columns.
+my_matrix
+
+print("structure")
+...(my_matrix)
+
+print("rows")
+...(my_matrix)
+
+print("columns")
+...(my_matrix)
+
+print("dimensions")
+...(my_matrix) # reported as rows vs columns
+
+print("length")
+...(my_matrix)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4.6 Use `[row, column]` notation to access portions of a matrix
+
+Recall the `[ ]` indexing notation from vectors can be applied to matrices as well. The major difference is the requirement to use a `,` even when "slicing" a matrix only by rows or columns. Leaving an empty character (also known as open notation) before or after the comma is equivalent to saying "all elements".
+
+```{r}
+#To access a specific row or column we can still use indexing.
+
+# Return rows 3:5 and all columns
+my_matrix[...,]
+
+# Return all rows, and column 4
+my_matrix[, ...]
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4.7 Subsetting a matrix returns a vector or matrix
+
+Note that when we are sub-setting a single row or column, we end up with a vector, otherwise another matrix is returned. We'll utilize the `is.vector()` function here to help us out. It will return a `TRUE` (yes, it is a vector!) or `FALSE` result depending on the nature of the object supplied.
+
+```{r}
+# Is a Matrix just a vector?
+...(my_matrix)
+
+# What is returned when we slice off a column
+is.vector(my_matrix[,4])
+
+# Look at the object returned for a vector
+str(my_matrix[,4])
+
+# vs. a matrix
+str(my_matrix[...])
+```
+
+```{r}
+# It is common to transpose matrices. Note that the set of ones will now be in rows rather than columns.
+
+...
+```
+
+------------------------------------------------------------------------
+
+### 3.2.5 Data Frames
+
+### 3.2.5.1 Object classes
+
+Now that we have had the opportunity to create a few different objects, let's talk about what an object *class* is. An object class can be thought of as how an object will behave in a function. Because of this
+
+-   data frames, lists and matrices have their own classes
+-   vectors inherit from their data type (i.e. vectors of characters behave like characters)
+
+```{r}
+class(character_vector)
+class(numeric_vector)
+class(...)
+```
+
+Some R package developers have created their own object classes. We won't deal with this today, but it is good to be aware of from a trouble-shooting perspective that your data may need to be formatted to fit a certain class of object when using different packages.
+
+------------------------------------------------------------------------
+
+### 3.2.5.2 Data frames are groups of vectors disguised as matrices
+
+Whereas matrices are limited to a single specific type of data within each instance, data frames are like vectors to the extent that they can hold different types of data. More specifically
+
+1.  **Within a column**, all members must be of the same data type (i.e. character, numeric, Factor, etc.)
+2.  **All columns** must have the same number of rows (hence the matrix shape)
+
+This object allows us to generate tables of mixed information (i.e. tabular data) much like an Excel spreadsheet.
+
+To make a new data frame (AKA *instantiate* it), we use the `data.frame()` function which takes the form of:
+
+```         
+data.frame(column_name1 = vector1, column_name2 = vector2, ..., column_nameN = vectorN)
+```
+
+```{r, error = TRUE}
+# Let's make a data frame
+# Recall that we can generate a vector simply using c(data1, data2, ..., dataN)
+
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', ...),
+                            numCol = c(...),
+                            logCol = c(TRUE, FALSE, TRUE))
+
+## Oops! This will break the second rule of data frame club
+```
+
+```{r}
+# Let's make a data frame correctly
+
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(...),
+                            logCol = c(TRUE, FALSE, TRUE))
+
+my_data_frame
+```
+
+Many R packages have been made to work with data in data frames, and this is the class of object where we will spend most of our time.
+
+Let's use some of the functions we have learned for finding out about the structure of our data frame.
+
+```{r}
+# What is the structure of a data frame?
+...
+```
+
+::: {.alert .alert-block .alert-success}
+**Is a Data Frame the right tool for you?** While a data frame is more flexible in the data it can hold, it comes at a price: more memory and slower access. A matrix contains just a single data type and thus can potentially take a smaller memory footprint overall. When working with your data, consider if you need the power of a **data frame** (multiple data types, statistical analyses, etc.) or just a **matrix** (numerical values, simple mathematical calculations). In most cases you'll resort to a data frame but it's good to keep in mind that matrices can simplify things for you!
+:::
+
+------------------------------------------------------------------------
+
+### 3.2.5.3 Casting a matrix to a data frame using `as.data.frame()`
+
+We can also convert between data types if they are similar enough. For example, I can convert the `my_matrix` object into a data frame. Since a data frame can hold any type of data, it can hold all of the numeric data in `my_matrix`.
+
+```{r}
+# What does our original matrix look like?
+my_matrix
+# cast a matrix to a dataframe
+new_data_frame <- ...(my_matrix)
+new_data_frame
+```
+
+------------------------------------------------------------------------
+
+### 3.2.5.4 You can access and rename data frame columns (like a header!) with `colnames()`
+
+Notice that after converting our matrix, column names have been automatically assigned as generic identifiers. Sometimes you may wish to ***rename*** these for whatever reason. You can even rename specific columns as you see fit.
+
+```{r}
+# Note that R just made up column names for us. We can provide our own vector of column names.
+... <- c("col1", "col2", "col3", "col4", "col5")
+
+#equivalent to
+... <- c(paste0(rep("col",5), 1:5))
+new_data_frame
+```
+
+```{r}
+# Rename our columns using specific positions
+colnames(new_data_frame)[...] = c("newcol1", "newcol3", "newcol5")
+
+# Let's check our handiwork
+new_data_frame
+```
+
+::: {.alert .alert-block .alert-success}
+**The paste() and paste0() functions** allow you to concatenate (that means join!) multiple sets of characters or character-like vectors together into a single character or collapse them into a single character object. You can even choose how you'd like to separate the values in a vector using the **sep** parameter or the **collapse** parameter to determine how mlutiple vectors will be joined. It all depends on what you want to achieve.
+:::
+
+------------------------------------------------------------------------
+
+### 3.2.5.5 You can't always cast a data frame to a matrix as expected
+
+Casting (like coercion) can only be accomplished if the objects or data types (within) are compatible. We can convert our `new_data_frame` to a matrix but what about `my_data_frame` which is made of up characters, numbers, and logicals?
+
+```{r}
+# In contrast, our data frame with multiple data types cannot be converted into a matrix
+# A matrix can only hold one data type. We could however, transform our new_data_frame back into a matrix. 
+# The matrix will retain our column heading.
+
+new_matrix <- ...(my_data_frame)
+str(new_matrix)
+new_matrix
+```
+
+```{r}
+# Let's look at the "numCol" column closer
+str(new_matrix[...])
+```
+
+Notice that the numeric vector is now character!
+
+------------------------------------------------------------------------
+
+### 3.2.5.6 Some useful data frame commands (for now)
+
+`nrow(new_data_frame)` \# retrieve the number of rows in a data frame
+
+`ncol(new_data_frame)` \# retrieve the number of columns in a data frame
+
+`new_data_frame$column_name` \# Access a specific column by it's name
+
+`new_data_frame[x,y]` \# Access a specific element located at row x, column y
+
+There are many more ways to access and manipulate data frames that we'll explore further down the road
+
+------------------------------------------------------------------------
+
+### 3.2.6 Lists are amorphous bundles strung together with code
+
+Lists can hold ***mixed data types*** of different dimensions. These are especially useful for bundling data of different types for passing around your scripts! Rather than having to call multiple variables by name, you can store them in a single list!
+
+We use the `list()` function to instantiate a `list` object. Like a vector, we can specifically name each element/object within a list. The elements of a list are also indexed in the order of their initial creation.
+
+```{r}
+# Note that we've separated out each "element" into a new line for readability
+mixed_list <- ...(character = c('bacteria', 'virus', 'archaea'), 
+                   num = c(1:10), 
+                   log = c(TRUE, FALSE, TRUE))
+
+print(mixed_list)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.6.1 Lists can get complicated.
+
+If you forget what is in your list, use the `str()` function to check out its structure. It will tell you the number of items in your list and their data types. Notice that R has chosen the data types of our vectors for us when we first instantiate them into `mixed_list`.
+
+You can (and should) call `str()` on any R object. You can also try it on one of our vectors.
+
+```{r}
+str(mixed_list)
+
+str(...)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.6.2 Accessing elements from a list with `[[ ]]` and `[ ]`
+
+Accessing lists is much like opening up a box of boxes of chocolates. You never know what you're gonna get when you forget the structure!
+
+You can access elements with a mixture of number and naming annotations:
+
+-   `[x]`, `[x:y]`, `[c(x, y, z)]` returns a list object containing the elements requested
+
+-   `$element_name` returns the named element
+
+-   `[[x]]` directly returns the x^th^ "element" of the list and can only be use to access a single element at a time. That element could be another object like a vector or dataframe, or just a single atomic depending on your list.
+
+```{r}
+# To subset for 'virus', I first have to subset for the character element of the list. 
+# Kind of like a Russian nested doll or a present, where you have to open the outer layer to get to the next.
+
+# Retrieve a single element directly
+print("Retrieve a single element")
+mixed_list...
+
+# What kind of object is that?
+print("What kind of object is it?")
+str(mixed_list[[1]])
+
+# Compare to using single []
+print("Contrast to using the [] notation")
+str(mixed_list[1])
+
+# Access using a named element
+print("What is returned using an element's name?")
+str(mixed_list$...)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.6.3 Use additional levels of `[ ]` notation to access sub-elements of a list
+
+Unlike a data frame or array object, where we can access individual elements with simple `[x, y, z]` notation, we need to take an extra step to retrieve our list elements directly, at which point we can access them based on the appropriate notation. `list` objects are a container for other objects and are therefore agnostic to the nature of these objects.
+
+```{r}
+# Begin with [[]] notation and THEN index [] with the appropriate syntax 
+mixed_list[[1]]...
+mixed_list$character[2]
+
+# This will fail (but not error!) because it returns a list with a single character vector!
+# there is no element [2] in the list.
+mixed_list[1][2]
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Section 3.0.0 Comprehension Question:** What are some important differences between a data frame and a matrix? Can one be converted to the other and in what direction?
+:::
+
+------------------------------------------------------------------------
+
+## Section 3.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 4.0.0 Special data types and features
+
+In R there are a few special data types or classes that are implemented to facilitate real-world concepts and situations beyond numbers and strings. The two cases we will address in this section come with their own behaviours and helper functions so we've set them aside until now.
+
+## 4.1.0 Factors represent categorical data
+
+Ah, the dreaded factors! A factor is a *class* of object used to encode a character vector into **categories**. They are mainly used to store categorical variables (variables consisting of types or groups) and although it is tempting to think of them as character vectors, this is a dangerous mistake (you will get betrayed, badly!). Regardless of the original data types, a factor's labels will always be stored as character information.
+
+Factors make perfect sense if you are a statistician designing a programming language (!) but to everyone else they exist solely to torment us with confusing errors. A factor is really just an integer vector or character data with an additional attribute, called `Levels`, which defines the possible values.
+
+This is used by the R kernel to simplify the process of organizing data based on its categories and also restricts the labeling of data.
+
+Why not just use character vectors, you ask?
+
+Believe it or not factors do have some useful properties. For example, factors allow you to specify all possible values a variable may take even if those values are not in your data set. Think of *conditional formatting* in Excel.
+
+We can directly convert a vector to a factor using the `factor()` function.
+
+```{r}
+crazy_factor = ...(c("up", "down", "down", "sideways", "up"))
+
+crazy_factor
+```
+
+```{r}
+# or
+print(crazy_factor) 
+# print() is needed inside iterative functions (e.g. looping) to actually print the ouput that is being generated
+```
+
+------------------------------------------------------------------------
+
+### 4.1.1 Use `levels()` to access factor information
+
+As we'll see later down the road, you may wish to know how many categories you are working with and what their labels are. You can access this information directly with the `levels()` function which will return a vector object and the `nlevels()` functions which will return the number of levels.
+
+```{r}
+# Access levels of a factor directly with level()
+...(crazy_factor)
+
+# Is it a vector?
+is.vector(levels(crazy_factor))
+```
+
+```{r}
+# How many levels does crazy_factor have?
+...(crazy_factor)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.2 Coerce your factor to an integer with `as.integer()`
+
+That's right, under the hood a factor is just a fancy integer representation of your data, mapped to a set of categories. Thus we can cast or coerce it to an integer without much issue.
+
+```{r}
+# Cast that factor
+...(crazy_factor) 
+
+#Notice the alphabetic rearrangement! It's important to keep this in mind when looping (week 7)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.3 A brief note about R 4.0.x versus r 3.x.x
+
+Since the inception of R, `data.frame()` calls have been used to create data frames **but** the default behaviour was to convert strings (and characters) to factors! This is a throwback to the purpose of R, which was to perform statistical analyses on datasets with methods like **ANOVA** (see lecture 06!) which can examine the relationships between categorical variables (i.e. factors)!
+
+As R has become more popular and its applications and packages have expanded, incoming users have been faced with remembering this obscure behaviour, leading to lost hours of debugging grief as they wonder why they can't pull information from their dataframes to do a simple analysis on *C. elegans* strain abundance via molecular inversion probes in datasets of multiplexed populations. **#SuspiciouslySpecific**
+
+That meant that users usually had to create data frames including the parameter `stringsAsFactors` to make:
+
+`data.frame(name=character(), value=numeric(), stringsAsFactors = FALSE)`
+
+------------------------------------------------------------------------
+
+### 4.1.4 The default behaviour of `data.frame()` creation [does not]{.underline} create factors from strings
+
+Fret no more! As of **R 4.x.x** the default behaviour has switched and `stringsAsFactors=FALSE` is the **default**! Now if we want our characters to be factors, we must convert them ***explicitly***, or turn this behaviour on at the outset of creating each data frame!
+
+```{r}
+# Look at the data frame with and without the stringsAsFactors call
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+...(my_data_frame)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.5 Specify factors during data frame creation with `stringsAsFactors` or `as.factor()`
+
+Depending on your needs, you can specify that *all* columns of strings/text be converted to factors with the `stringsAsFactors` parameter or you can coerce *specific columns* as factors when initializing them using the `as.factor()` function.
+
+```{r}
+# All character vectors become factors
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE), 
+                            ...)
+
+str(my_data_frame)
+```
+
+```{r}
+# Use as.factor on the columns you wish to specify as factors
+my_data_frame <- data.frame(charCol = ...(c('bacteria', 'virus', 'archaea')),
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+str(my_data_frame)
+```
+
+------------------------------------------------------------------------
+
+If we look at the structure again, we still have 3 levels. This is because each unique character element has been encoded as a number. Recall that a column can be subset by index or by its name using the `'$'` operator.
+
+```{r}
+my_data_frame$...
+
+#equivalent to
+
+my_data_frame...
+
+# Just make a vector of the levels
+levels(my_data_frame$charCol)
+
+# How many levels are there?
+nlevels(my_data_frame$charCol)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.6 Factor levels are ordered alphabetically by default
+
+Note that the first character object in the data frame is 'bacteria', however, the first factor level is archaea. R by default puts factor levels in ***alphabetical order***. This can cause problems if we aren't aware of it.
+
+**Always check to make sure your factor levels are what you expect.**
+
+With factors, we can deal with our character levels directly, or their numeric equivalents. Factors are extremely useful for performing group calculations as we will see later in the course.
+
+```{r}
+# Convert our factors to a numeric representation
+...(my_data_frame$charCol)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.7 You can specify the order of your factor levels using the `levels` parameter
+
+Look up the `factor()` function. Use it to make 'bacteria' the first level, 'virus' the second level, and 'archaea' the third level for the data frame `my_data_frame`. Bonus if you can make the level numbers match (1,2,3 instead of 2,3,1). Use functions from the lesson to make sure your answer is correct.
+
+```{r}
+# Set up my_data_frame again
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+# this is okay - specify your levels explicitly rather than allowing it to choose by default
+# this call will replace the 'charCol' column with a new vector of factors.
+my_data_frame$charCol <- factor(my_data_frame$charCol, 
+                                  ... = c('bacteria', 'virus', 'archaea'))
+
+# Note that you could define your factor inside the data.frame()
+
+str(my_data_frame)
+#archaea, bacteria, virus
+#2,3,1
+```
+
+::: {.alert .alert-block .alert-warning}
+**Caution:** By default, **factor()** will set your levels using all of the *unique* values in your vector. However, if you use the **levels** parameter any values that are excluded in your list will automatically be set to a value of **NA**. We'll talk more about what **NA** values are in a bit!
+:::
+
+```{r}
+# Here's an example of misspelling levels. What will happen?
+factor(c("bacteria", "virus", "archaea"), levels=c("bacteria", "virus", "..."))
+```
+
+------------------------------------------------------------------------
+
+### 4.1.8 You can specify an order of precedence in your factor levels
+
+For certain reasons/models that we will ***likely not cover*** in this course, you can make your factors **ordered** which means that there is an order of precedence. This inherent informational order can be used to your advantage when working with data.
+
+```{r}
+# Set up my_data_frame again
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+#this is okay, what we wanted except implies a < relationship
+#class is actually 'ordered' 'factor'
+#Ordered factors differ from factors only in their class, 
+#but methods and the model-fitting functions treat the two classes quite differently.
+my_data_frame$charCol <- factor(my_data_frame$charCol, 
+                                levels = c('bacteria', 'virus', 'archaea'), 
+                                ... = TRUE)
+
+print(my_data_frame$charCol)
+str(my_data_frame)
+#bacteria, virus, archaea
+#1,2,3
+```
+
+------------------------------------------------------------------------
+
+### 4.1.9 You can relabel your factor values with the `labels` parameter but be careful!
+
+Note that you can also label your factors when you make them. You need to be ***extremely*** careful with this. You may have good reasons to do this but remember that you are labeling the ***integer*** that is associated with the factor level after it has been converted. This is the equivalent of relabeling your data!
+
+Let's see what that means!
+
+```{r}
+# When labeling factors can go wrong
+# Run again my_data_frame
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+#factor() will decide the level order on it's OWN before applying the given labels!
+my_data_frame$charCol <- factor(my_data_frame$charCol, 
+                                  ... = c('label_1', 'label_2', '...'))
+
+print(my_data_frame$charCol)
+str(my_data_frame)
+#bacteria, virus, archaea
+#BUT named levels above, therefore
+#bacteria = label_2, virus = label_3, archaea = label_1
+#2,3,1
+```
+
+------------------------------------------------------------------------
+
+### 4.1.10 The `factor()` function applies a default `level` behaviour *before* applying the `labels` parameter
+
+**What just happened to our factor levels?**
+
+When we called `factor(my_data_frame$charCol, labels = c('label_1', 'label_2', 'label_3'))` there was an order of operations that occurred.
+
+1.  `factor()` was used to cast the vector `c('bacteria', 'virus', 'archaea')` into a factor and the levels were assigned by ***alphabetical order***. In this case the default behaviour was equivalent to `levels = c('archaea', 'bacteria', 'virus')`. If we look back at the order of our vector that makes it (2,3,1).
+
+2.  Then we explicitly specify in our call to `factor()` to re-label those character values with labels based on the ***level order***: 1='label_1', 2='label_2', 3='label_3'.
+
+3.  This gives the final result that our variable "charCol" in `my_data_frame` is now renamed for output as c('label_2', 'label_3', 'label_1') which is based on the factor levels and not the original data.
+
+Imagine if we had used the code `labels = c('bacteria', 'virus', 'archaea')`? Would it relabel everything incorrectly? Give it a try yourself!
+
+Now we'll apply our labels *after* explicit leveling.
+
+```{r}
+# Labeling factors correctly
+# Run again my_data_frame
+my_data_frame <- data.frame(charCol = c('bacteria', 'virus', 'archaea'), 
+                            numCol = c(1:3), 
+                            logCol = c(TRUE, FALSE, TRUE))
+
+# You need to supply factor() with the levels and labels if you want them turn our how you envision it
+my_data_frame$charCol <- factor(my_data_frame$charCol, 
+                                ... = c('bacteria', 'virus', 'archaea'), # explicitly order your levels!
+                                ... = c('bacteria_label', 'virus_label', 'archaea_label')) # names the levels
+
+#bacteria, virus, archaea
+#1,2,3
+print(my_data_frame$character)
+str(my_data_frame)
+```
+
+------------------------------------------------------------------------
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/FactorsEverywhere.jpg?raw=true" width="800"/>
+:::
+
+For the most part, factors are important for various statistics involving categorical variables, as you'll see for things like data visualizations (**lecture 04**) and linear models (**lecture 06**). Love 'em or hate 'em, factors are integral to using R so better learn to live with them.
+
+------------------------------------------------------------------------
+
+## 4.2.0 Mathematical operations on data frames
+
+Yes, you can treat data frames like large vectors where mathematical operations can be applied to individual elements or to entire columns or more!
+
+First, let's take a look at our data frame
+
+```{r}
+my_data_frame
+
+# or use the View() function for a pop-up pane that looks a bit like an excel sheet 
+# (more familiar to our eyes)
+
+print(my_data_frame)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.1 Mathematical operations are applied differently depending on data type
+
+Remember that data frames contain columns that could be of ***different*** data types. Not all data types are math compatible! Here's a quick breakdown of what happens when applying math operators to specific data types or classes.
+
+-   numeric data: operations applied as expected
+-   non-numeric (i.e. characters): error will be thrown
+-   factors: warning message and NAs returned
+-   logical data (TRUE/FALSE): coercion to numeric before applying operations
+
+Takeaway lesson: be careful to specify your numeric data for mathematical operations.
+
+```{r}
+# Multiply the entire data frame
+my_data_frame * ...
+
+# Multiple just a single column
+my_data_frame$... * 4
+
+# Slice a column and multiply
+my_data_frame... * 4
+```
+
+------------------------------------------------------------------------
+
+### 4.3.0 Using the `apply()` function to perform actions across data structures
+
+The above are illustrative examples to see how our different data structures behave. In reality, you will want to do calculations across rows and columns, and not on your entire matrix or data frame.
+
+For example, we might have a count table where rows are genes (that's right you can name rows!), columns are samples as shown below:
+
+|       | Site1 | Site2 | Site3 |
+|:------|:-----:|:-----:|:-----:|
+| geneA |   2   |  15   |  10   |
+| geneB |   4   |  18   |   7   |
+| geneC |  12   |  27   |  13   |
+| geneD |   8   |  28   |  15   |
+
+**Question:** How do we calculate the sum of all the counts for each gene?
+
+**Answer:** To do this, we can use the `apply()` function. `apply()` Takes an array, matrix (or something that can be coerced as such, like a numeric data frame), and applies a function over rows or columns. The `apply()` function takes the following parameters:
+
+-   `X`: an array. matrix or something that can be coerced to these objects
+-   `MARGIN`: defines how to apply the function; `1` = by rows, `2` = by columns.
+-   `FUN`: the function to be applied. Supplied as a function name ***without*** the `()` suffix
+-   `...`: this notation means we can pass additional parameters to our function defined by `FUN`.
+
+The `apply()` function returns a vector, array or list depending on the nature of X.
+
+Let's practice by invoking the `sum` function.
+
+```{r}
+# Make a dataframe with 3 columns (Site1, Site2, Site3) and 4 rows (geneA, geneB, geneC, geneD)
+counts <- data.frame(Site1 = c(geneA = 2, geneB = 4, geneC = 12, geneD = 8),
+                     Site2 = c(geneA = 15, geneB = 18, geneC = 27, geneD = 28),
+                     Site3 = c(geneA = 10, geneB = 7, geneC = 13, geneD = 15))
+                     
+counts
+```
+
+```{r}
+#?apply
+
+# This won't work because x is lower case
+# apply(x = counts, MARGIN = 1, FUN = sum)
+
+# The parameter must be named correctly: X
+print("apply() with sum across rows (ie by gene)")
+apply(X = counts, MARGIN = 1, FUN = ...)
+
+print("apply() returns a numeric vector")
+str(...)
+
+class(...)
+```
+
+Note that the output is no longer a data frame. Since the resulting sums would have the dimensions of a 1x4 matrix, the results are instead coerced to a named numeric vector.
+
+------------------------------------------------------------------------
+
+### 4.3.1 The `apply()` function will recognize basic functions.
+
+Let's take a look at some additional functions that might be applied to such a table. We can apply some summary statistics to our data frame by calculating the mean, standard deviation, median and quartile values.
+
+::: {.alert .alert-block .alert-info}
+**Passing a function object:** Again you'll note above that we called upon the **sum()** function but only used **sum** when supplying it as a parameter to **apply()**. In this case, we are passing the **sum** function as a name for the kernel to search internally. It will look in memory for reference to this function and pass that information along to be used on each element of **X**. Using **sum()** will cause an error since that does not exist in the kernel's memory list of R functions.
+:::
+
+```{r}
+# Using apply() across rows
+apply(counts, MARGIN = 1, mean)
+
+apply(counts, MARGIN = 1, sd)
+
+apply(counts, MARGIN = 1, median)
+
+apply(counts, MARGIN = 1, ...)
+```
+
+------------------------------------------------------------------------
+
+When all data values are transformed, the output is a numeric matrix.
+
+### 4.3.2 Supply a custom function to `apply()`
+
+What if I want to know something less generic? We can create a custom function. The `sum` function we called before can also be written as a function taking in `x` (in this case the vector of values from our coerced data frame row by row) and summing them. Other functions can be passed to `apply()` in this way.
+
+```{r}
+apply(X = counts, 
+      MARGIN = 1, 
+      FUN = sum)
+
+#equivalent to
+
+apply(X = counts, 
+      MARGIN = 1, 
+      ...) # Notice the syntax used here? Our function code follows the function() declaration
+```
+
+::: {.alert .alert-block .alert-warning}
+**Why are we using X and x?** If you're following closely, you'll have noted that the **apply()** function has a parameter **X** which represents the ENTIRE object you want to pass along. However, I also mention that we'll use the a *lower-case* **x** to represent each row or column in the custom function we're building! In the case of **x**, we declare it as a parameter first in **function()** but this name is just a *placeholder* and could be more specifically named to a different letter or variable name.
+
+This kind of coding notation or style, however, ***will often be found in the code generated by others***, so be mindful!
+:::
+
+```{r}
+# To reduce confusion you should always clarify your function names!
+apply(X = counts, 
+      MARGIN = 1, 
+      FUN = function(...) sum(...))
+```
+
+------------------------------------------------------------------------
+
+Use the `apply()` function to multiply the counts for each gene by 3.
+
+```{r}
+apply(X = counts, 
+      MARGIN = 1, 
+      function(rowData) (...))
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Section 4.0.0 Comprehension Question:** Look at our final output from above. How does it compare to our original **counts** dataframe? How would you explain the **cause** for the differences between our input and output? **Hint:** read the help page for apply() carefully!
+:::
+
+------------------------------------------------------------------------
+
+## Section 4.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 5.0.0 Class summary
+
+That's a wrap for our first class on R! You've made it through and we've learned about the following:
+
+1.  Best practices in R.
+2.  Basic functions in R.
+3.  Variables, data types and data structures (vectors, lists, and data frames).
+4.  Special data types and features in R (factors and the `apply()` function)
+
+## 5.1.0 Submit your completed skeleton notebook (2% of final grade)
+
+At the end of this lecture a Quercus assignment portal will be available to submit a **RMD** version of your completed skeletons from today (including the comprehension question answers!). These will be due one week later, before the next lecture. Each lecture skeleton is worth 2% of your final grade (1% for completed code, 1% for completed questions) but a **bonus 0.5%** will also be awarded for submissions made within 24 hours from the end of lecture (i.e. 1600 hours the following day). To save your notebook:
+
+1.  From the RStudio Notebook in the lower right pane (**Files** tab), select the skeleton file checkbox (left-hand side of the file name)
+2.  Under the **More** button drop down, select the **Export** button and save to your hard drive.
+3.  Upload your RMD file to the Quercus skeleton portal.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RStudioServerExportFile.png?raw=true" width="700"/>
+:::
+
+## 5.2.0 Post-lecture assessment (6% of final grade)
+
+Soon after the end of each lecture, a homework assignment will be available for you in [DataCamp](https://www.datacamp.com/). Your assignment is to complete all chapters from the **Introduction to R** course which has a total of 6200 points. This is a pass-fail assignment, and in order to pass you need to achieve a least 4,650 points (75%) of the total possible points. Note that when you take hints from the DataCamp chapter, it will reduce your total earned points for that chapter.
+
+In order to properly assess your progress on DataCamp, at the end of each chapter, please print a PDF of the summary. You can do so by following these steps:
+
+1.  Navigate to the **`Learn`** section along the top menu bar of DataCamp. This will bring you to the various courses you have been assigned under **`My Assignments`**.
+2.  Click on your completed assignment and expand each **chapter** of the course by clicking on the **`VIEW CHAPTER DETAILS`** link. ***Do this for all sections on the page***!
+3.  Carefully highlight/select the page starting with the course title (ie Introduction to R) and going to the end of the last section. **Avoid** using `ctrl + A` to highlight all of the visible text.
+4.  Print the page from your browser menu and save as a single PDF. In the options, be sure to print "***selection***" or you may not be able to print the full page. It should print out something like what follows, except with more chapter info.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampIntroR.jpg?raw=true" width="700"/>
+:::
+
+You may need to take several screenshots if you cannot print it all in a single try. Submit the file(s) or a combined PDF for the homework to the assignment section of Quercus. By submitting your scores for each section, and chapter, we can keep track of your progress, identify knowledge gaps, and produce a standardized way for you to check on your assignment "grades" throughout the course.
+
+You will have until 1259 hours on Tuesday, September 9th to submit your assignment (right before the next lecture).
+
+------------------------------------------------------------------------
+
+## 5.3.0 Acknowledgements
+
+**Revision 1.0.0**: materials prepared in R Markdown by Oscar Montoya, M.Sc. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2021 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2022 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.2**: edited and prepared for **CSB1020H F LEC0142**, 09-2023 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2024 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+------------------------------------------------------------------------
+
+## 5.4.0 Your DataCamp academic subscription
+
+This class is supported by DataCamp, the most intuitive learning platform for data science and analytics. Learn any time, anywhere and become an expert in R, Python, SQL, and more. DataCamp's learn-by-doing methodology combines short expert videos and hands-on-the-keyboard exercises to help learners retain knowledge. DataCamp offers 350+ courses by expert instructors on topics such as importing data, data visualization, and machine learning. They?re constantly expanding their curriculum to keep up with the latest technology trends and to provide the best learning experience for all skill levels. Join over 6 million learners around the world and close your skills gap.
+
+Your DataCamp academic subscription grants you free access to the DataCamp's catalog for 6 months from the beginning of this course. You are free to look for additional tutorials and courses to help grow your skills for your data science journey. Learn more (literally!) at [DataCamp.com](https://learn.datacamp.com/).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampLogo.png?raw=true" width="500"/>
+:::
+
+------------------------------------------------------------------------
+
+## 5.5.0 Resources
+
+How to perform Linear algebra in R: <https://github.com/patrickwalls/R-examples/blob/master/LinearAlgebraInR.Rmd>\
+Using R in the command line: <http://stat545.com/block002_hello-r-workspace-wd-project.html>\
+A complete introduction to R: <https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf>\
+Best practices for writing code: <https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/>\
+How to ask for help on Stack Overflow: <https://stackoverflow.com/help/how-to-ask>\
+How to ask for help on the R development project: <https://www.r-project.org/posting-guide.html>\
+What is object-oriented programming? <http://www.quantide.com/ramarro-chapter-07/>
+
+------------------------------------------------------------------------
+
+# 6.0.0 Appendix I: Advanced structures and functions
+
+## 6.1.0 Arrays
+
+Arrays are **n** dimensional objects that hold a single data type. It may be simpler to think of arrays as multiple matrices stacked upon one another. It explains why you are held to a single data type with arrays as they are just an extension of matrices, which are an extension of vectors. You might find these useful for multi-variable experiments that are completed in replicate. You could separate either replicates, conditions, or populations into different dimensions for instance.
+
+To create an array, we give a vector of data to fill the array, and then the dimensions of the array. This code will recycle the vector 1:10 and fill 5 arrays that have 2 x 3 dimensions. To visualize the array, we will print it afterwards.
+
+```{r}
+my_array <- array(data = 1:10, dim = c(2,3,5))
+
+# Note that we need to print the array in order to make it more human-readable in Jupyter notebooks
+print(my_array)
+
+# What are the properties of my_array?
+print("structure")
+str(my_array)
+
+print("dimensions")
+dim(my_array)
+```
+
+```{r}
+# You can make matrices with characters too!
+# This is a constant in R for upper case letters
+LETTERS
+
+print(array(data = LETTERS, dim=c(3,4,2)))
+```
+
+------------------------------------------------------------------------
+
+### 6.1.1 Access elements from an array
+
+You can access the elements within an array much like a vector, data frame, or list using the format `[row, column, matrix_number]` although you could have more dimensions than just 3 so just keep separating dimensions with a `,`.
+
+```{r}
+# This arrangement makes it more clear how we would subset the number 7 out of array 5.
+my_array[1, 2, 5]
+```
+
+```{r}
+# A 2D array is just a matrix. Unless you specify a 3rd dimension.
+
+twoD_array <- array(data = 1:10, dim = c(2,3))
+print(twoD_array)
+```
+
+```{r}
+#equivalent to
+
+twoD_array2 <- array(data = 1:10, dim = c(2,3,1))
+print(twoD_array)
+```
+
+```{r}
+# Check the difference between these two arrays
+all.equal(twoD_array, twoD_array2)
+class(twoD_array)
+class(twoD_array2)
+```
+
+```{r}
+# So you can do math... on an array.
+print("my_array")
+print(my_array)
+
+print("Multiply all elements by 4")
+print(my_array * 4)
+
+print("Multiple a single element by 4")
+print(my_array[1, 2, 5] * 4) # why do we have three indices for this array?
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/MostInterestingArray.jpg?raw=true" width="500"/>
+:::
+
+That's not entirely true as I personally don't often use arrays ***per se*** but I have created array-like objects with **lists**! I wouldn't worry about it too much but you may encounter these objects every once in while.
+
+------------------------------------------------------------------------
+
+# 7.0.0 Appendix I: Installing your own copy of R with Anaconda
+
+## 7.1.0 Jupyter Notebooks and the R kernel
+
+For this introductory course we will be teaching and running code for R through Jupyter notebooks. In this section we will discuss
+
+1.  Installation of Jupyter (through Anaconda)
+2.  Updating the default R package
+3.  Starting up your Jupyter notebooks
+
+### 7.1.1 Installing R and Jupyter Notebooks (via Anaconda3)
+
+As of 2023-08-01, The latest version of Anaconda3 runs with Python 3.11.3
+
+Download the OS-appropriate version from here <https://www.anaconda.com/products/individual>
+
+-   Remember to choose the correct OS
+
+-   All versions should come with Python 3.11
+
+-   Windows:
+
+    -   Use the graphical installer
+    -   64- vs. 32-bit is dependent on your version of windows
+
+-   MacOS:
+
+    -   It is likely easier to use the graphical installer vs. the command line version
+
+-   Unix:
+
+    -   Choose the 64-bit installer best for your linux OS
+
+### 7.1.2 Updating the base version of R
+
+As of 2024-08-28, the lastest version of r-base available for Anaconda is 4.4.1 (Windows) or higher (macOS or Linux) but Anaconda no longer comes pre-installed with R. To save time, you can install just the r-base (version) through the command line using the Anaconda prompt. You'll need to find the menu shortcut to the prompt in order to run these commands. Before class you should update all of your anaconda packages. This will be sure to get you the latest version of Jupyter notebook. Open up the Anaconda prompt and type the following command:
+
+`conda update --all`
+
+It will ask permission to continue at some point. Say 'yes' to this. After this is completed, use either of the following commands to install R (class material is tested on version 4.3.2 this version). The closest version is R 4.3.3 and the version to install will depend on your operating system. You can find the full list of version to install here: <https://anaconda.org/conda-forge/r-base/files>
+
+**Windows 64:** `conda install -c conda-forge/label/main r-base=4.3.3=h34ac71a_14`
+
+**MacOSX 64:** `conda install -c conda-forge/label/main r-base=4.3.3=h11bd7ca_14`
+
+**Linux:** `conda install -c conda-forge/label/main r-base=4.3.3=hefc4705_14`
+
+**Latest Version:** `conda install -c conda-forge r-base`
+
+Anaconda will try to install a number of R-related packages. Say 'yes' to this.
+
+### 7.1.3 Loading the R-kernel for your Jupyter notebook
+
+Lastly, we want to connect your R version to the Jupyter notebook itself. Type the following commands:
+
+**Connect your kernel:** `conda install -c r r-irkernel`
+
+**Install essential R packages:** `conda install -c conda-forge r-essentials`
+
+Jupyter should now have R and essential packages integrated into it. No need to build an extra environment to run it.
+
+### 7.1.3.1 A quick note about Anaconda environments
+
+You may find that for some reason or another, you'd like to maintain a specific R-environment (or other) to work in. Environments in Anaconda work like isolated sandbox versions of Anaconda ***within*** Anaconda. When you generate an environment for the first time, it will draw all of its packages and information from the base version of Anaconda - kind of like making a copy. You can also create these in the Anaconda prompt. You can even create ***new*** environments based on specific versions or installations of other programs. For instance, we could have tried to make an environment for R 4.0.5 with the command
+
+`conda create -n my_R_env -c conda-forge/label/main r-base=4.3.3=h34ac71a_14`
+
+This would create a new environment with version **4.3.3** of R but your **base** version of Anaconda would retain whatever version of R you had previously installed. A small but helpful detail if you are unsure about newer (or older!) versions of packages that you'd like to use.
+
+You can then activate the environment with
+
+`conda activate my_R_env`
+
+and then repeat the additional installation commands from section **7.1.3**.
+
+Likewise, you can update and install packages in new environments without affecting or altering your base environment! Again, it's helpful if you're upgrading or installing new packages and programs. If you're not sure how it will affect what you already have in place, you can just install them straight into an environment.
+
+For more information: <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#cloning-an-environment>
+
+### 7.1.3.2 Using the Anaconda navigator to make a Jupyter notebook
+
+If you are inclined, the Anaconda Navigator can help you make an R environment separate from the base, but you won't be able to perform the same fancy tricks as in the prompt, like installing new packages directly to a new environment.
+
+**Note:** You should consider doing this only if you have a good reason to isolate what you're doing in R from the Anaconda base packages. You will also need to have installed r-base 4.3.3 (see above) to make a new environment with it through the Anaconda navigator.
+
+The Anaconda navigator is a graphical interface that shows all of your pre-installed packages and gives you access to installing other common programs like RStudio (we'll get to that in a moment).
+
+-   Open up your Anaconda Navigator
+-   Click on "Environments" in the left-hand pane.
+-   Click on the "Create" icon at the bottom of the middle pane
+-   You'll receive a dialog window for "Create New Environment".
+-   Name your environment ie: **"R-433"**
+-   Make sure the packages for **Python** (3.11) and **R** (r) are checked off.
+-   Click on the "Create" button and wait patiently for your environment to be created
+
+You will now have an R environment where you can install specific R packages that won't make their way into your Anaconda base.
+
+-   After the environment is made, you can left-click on the green triangle of R-405
+-   Choose "Open with Jupyter Notebook" from the dropdown menu.
+
+You will likely find a shortcut to this environment in your (Windows) menu under the Anaconda folder. It will look something like **Jupyter Notebook (R-405)**
+
+### 7.1.3.3 Installing packages for your personal Jupyter Notebook
+
+Normally I suggest avoiding installing packages through your Jupyter Notebook. Instead, if you want to update your R packages for running Jupyter, it's best to add them through either the Anaconda prompt or Anaconda navigator. Again, using the prompt gives you more options but can seem a little more complicated.
+
+One of the most useful packages to install for R is r-essentials. Open up the Anaconda prompt and use the command: `conda install -c r r-essentials`. After running, the Anaconda prompt will inform you of any package dependencies and it will identify which packages will be updated, newly installed, or removed (unlikely).
+
+Anaconda has multiple channels (similar to repositories) that exist and are maintained by different groups. These various channels port over regular R packages to a format that can be installed in Anaconda and run by R. The two main channels you'll find useful for this are the `r` channel and `conda-forge` channel. You can find more information about all of the packages on [docs.anaconda.com](https://docs.anaconda.com/anaconda/packages/r-language-pkg-docs/). As you might have guessed the basic format for installing packages is this: `conda install -c channel-name r-package` where:
+
+-   `conda install` is the call to install packages. This can be done in a base or custom environment
+-   `-c channel-name` identifies that you wish to name a specific channel to install from
+-   `r-package` is the name of your package and most of them will begin with `r-` i.e. `r-ggplot2`
+
+------------------------------------------------------------------------
+
+## 7.2.0 R and RStudio
+
+### 7.2.1 Installing R
+
+As of 2025-07-21, the version used on \<r.datatools.utoronto.ca\> is 4.3.2, although the latest stable version is 4.5.1 (2025-06-13, Great Square Root):
+
+Windows:\
+- Go to <http://cran.utstat.utoronto.ca/>\
+- Click on 'Download R for Windows'\
+- Click on 'install R for the first time'\
+- Scroll down and find the Previous Releases link located under the "Other builds" section\
+- Find "R 4.3.2 (October 2023)" and click on this. It will take you to a new "directory" - Click on the "R-4.3.2-win.exe" link and download the installer for R. - Double-click on the .exe file once it has downloaded and follow the instructions.
+
+(Mac) OS X:\
+- Go to <http://cran.utstat.utoronto.ca/>\
+- Click on 'Download R for (Mac) OS X'\
+- Identify your MAC processor type (ARM-64 or Intel-based). - Under the "Subdirectories" section of the page, choose "Binaries for MacOS 11 or higher for... " and pick the link on the left that matches your processor type - Under the resulting directory, choose "base/" - Click on "R-4.3.2-arm64.pkg" or "R-4.3.2-x86_64.pkg", depending on which processor link you chose\
+- Open the .pkg file once it has downloaded and follow the instructions.
+
+------------------------------------------------------------------------
+
+Linux:\
+- Open a terminal (Ctrl + alt + t) - sudo apt-get update\
+- sudo apt list -a r-base\
+- You may see multiple versions of r-base available or you may only get one. If 4.3.2 is available to you, then include this in the following commands - sudo apt-get install r-base=4.3.2\
+- sudo apt-get install r-base-dev=4.3.2 (so you can compile packages from source)
+
+------------------------------------------------------------------------
+
+### 7.2.2 Installing RStudio
+
+As of 2025-07-21, the latest RStudio version is 2025.05.1+513
+
+Windows 10/11:\
+- Go to <https://posit.co/download/rstudio-desktop/>\
+- Click on 'RSTUDIO-2025.05.1-513.EXE' to download the installer (or a newer version)\
+- Double-click on the .exe file once it has downloaded and follow the instructions.
+
+(Mac) OS 10.15+:\
+- Go to <https://posit.co/download/rstudio-desktop/>\
+- Click on 'RSTUDIO-2025.05.1-513.DMG' to download the installer (or a newer version)\
+- Double-click on the .dmg file once it has downloaded and follow the instructions.
+
+------------------------------------------------------------------------
+
+Linux:\
+- Go to <https://posit.co/download/rstudio-desktop/>\
+- Click on the installer that describes your Linux distribution, e.g. 'RSTUDIO-2025.05.1-513.-AMD64.DEB' (or a newer version)\
+- Double-click on the .deb file once it has downloaded and follow the instructions.\
+- If double-clicking on your .deb file did not open the software manager, open the terminal (Ctrl + alt + t) and type:
+
+-   `sudo dpkg -i /path/to/installer/`RSTUDIO-2025.05.1-513.-AMD64.DEB
+
+    *Note: You have 3 things that could change in this last command.*
+
+    1.  This assumes you have just opened the terminal and are in your home directory. (If not, you have to modify your path. You can get to your home directory by typing cd \~.)\
+    2.  This assumes you have downloaded the .deb file to Downloads. (If you downloaded the file somewhere else, you have to change the path to the file, or download the .deb file to Downloads).\
+    3.  This assumes your file name for .deb is the same as above. (Put the name matching the .deb file you downloaded).
+
+If you have a problem with installing R or RStudio, you can also try to solve the problem yourself by Googling any error messages you get. You can also try to get in touch with me or the course TAs.
+
+------------------------------------------------------------------------
+
+### 7.2.3 Getting to know the RStudio environment
+
+RStudio is an IDE (Integrated Development Environment) for R that provides a more user-friendly experience than using R in a terminal setting. It has 4 main areas or panes, which you can customize to some extent under `Tools > Global Options > Pane Layout`:
+
+1.  **Source** - The code you are annotating and keeping in your script.
+2.  **Console** - Where your code is executed.
+3.  **Environment** - What global objects you have created and functions you have written/sourced.\
+    History - A record of all the code you have executed in the console.\
+    Connections - Which data sources you are connecting to. (Not being used in this course.)
+4.  **Files, Plots, Packages, Help, Viewer** - self-explanatoryish if you click on their tabs.
+
+All of the panes can be minimized or maximized using the large and small box outlines in the top right of each pane.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/R_studio_default_layout.jpg?raw=true" width="900"/>
+:::
+
+### 7.2.3.1 Source
+
+The **Source** is where you are keeping the code and annotation that you want to be saved as your script. The tab at the top left of the pane has your script name (i.e. 'Untitled.R'), and you can switch between scripts by toggling the tabs. You can save, search or publish your source code using the buttons along the pane header. Code in the Source pane is *run* or *executed* automatically.
+
+To run your current line of code or a highlighted segment of code from the Source pane you can:\
+a) click the button `'Run' -> 'Run Selected Line(s)'`,\
+b) click `'Code' -> 'Run Selected Line(s)'` from the menu bar,\
+c) use the keyboard shortcut `CTRL + ENTER` (Windows & Linux) `Command + ENTER` (Mac) (recommended),\
+d) copy and paste your code into the Console and hit `Enter` (not recommended).
+
+There are always many ways to do things in R, but the fastest way will always be the option that keeps your hands on the keyboard.
+
+### 7.2.3.2 Console
+
+You can also type and execute your code (by hitting `ENTER`) in the **Console** when the `>` prompt is visible. If you enter code and you see a `+` instead of a prompt, R doesn't think you are finished entering code (i.e. you might be missing a bracket). If this isn't immediately fixable, you can hit `Esc` twice to get back to your prompt. Using the up and down arrow keys, you can find previous commands in the Console if you want to rerun code or fix an error resulting from a typo.
+
+On the Console tab in the top left of that pane is your current working directory. Pressing the arrow next to your working directory will open your current folder in the Files pane. If you find your Console is getting too cluttered, selecting the broom icon in that pane will clear it for you. The Console also shows information: upon start up about R (such as version number), during the installation of packages, when there are warnings, and when there are errors.
+
+### 7.2.3.3 Environment
+
+In the **Global Environment** you can see all of the stored objects you have created or sourced (imported from another script). The Global Environment can become cluttered, so it also has a broom button to clear its workspace. This will also erase any objects you've imported into memory.
+
+**Objects** are made by using the assignment operator `<-`. On the left side of the arrow, you have the name of your object. On the right side you have what you are assigning to that object. In this sense, you can think of an object as a container. The container holds the values given as well as information about 'class' and 'methods' (which we will come back to).
+
+Type `x <- c(2,4)` in the Console followed by `Enter`. 1D objects' data types can be seen immediately as well as their first few values. Now type `y <- data.frame(numbers = c(1,2,3), letters = c("a","b","c"))` in the Console followed by `Enter`. You can immediately see the dimension of 2D objects, and you can check the structure of data frames and lists (more later) by clicking on the object's arrow. Clicking on the object name will open the object to view in a new tab. Custom functions created in session or sourced will also appear in this pane.
+
+The Environment pane dropdown displays all of the currently loaded packages in addition to the Global Environment. *Loaded* means that all of the tools/functions in the package are available for use. R comes with a number of packages pre-loaded (i.e. base, grDevices).
+
+In the History tab are all of the commands you have executed in the Console during your session. You can select a line of code and send it to the Source or Console.
+
+The Connections tab is to connect to data sources such as Spark and will not be used in this lesson.
+
+### 7.2.3.4 Files, Plots, Packages, Help, Viewer
+
+The Files tab allows you to search through directories; you can go to or set your working directory by making the appropriate selection under the `More` (blue gear) drop-down menu. The `...` to the top left of the pane allows you to search for a folder in a more traditional manner.
+
+The Plots tab is where plots you make in a .R script will appear (notebooks and markdown plots will be shown in the Source pane). There is the option to Export and save these plots manually.
+
+The Packages tab has all of the packages that are installed and their versions, and buttons to Install or Update packages. A check mark in the box next to the package means that the package is loaded. You can load a package by adding a check mark next to a package, however it is good practice to instead load the package in your script to aid in reproducibility.
+
+The Help menu has the documentation for all packages and functions. For each function you will find a description of what the function does, the arguments it takes, what the function does to the inputs (details), what it outputs, and an example. Some of the help documentation is difficult to read or less than comprehensive, in which case goggling the function is a good idea.
+
+The Viewer will display vignettes, or local web content such as a Shiny app, interactive graphs, or a rendered html document.
+
+### 7.2.3.5 Global Options
+
+I suggest you take a look at `Tools -> Global Options` to customize your experience.
+
+For example, under `Code -> Editing` I have selected `Soft-wrap R source files` followed by `Apply` so that my text will wrap by itself when I am typing and not create a long line of text.
+
+You may also want to change the `Appearance` of your code. I like the `RStudio theme: Modern` and `Editor font: Ubuntu Mono`, but pick whatever you like! Again, you need to hit `Apply` to make changes.
+
+That whirlwind tour isn't everything the IDE can do, but it is enough to get started.
+
+------------------------------------------------------------------------
+
+## 8.0.0 Appendix II: A quick note on GNU-Linux directory structure and navigation
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/unix_boys.jpeg?raw=true" width="700"/>
+:::
+
+In this hierarchy we will pretend to be *benedict*, and we are hanging out in our *Tables* folder. R looks to read in your files from your **working directory**, which in this case would be *Tables*. At this moment, R would have access to *proof.tsv* and *genes.csv*. If I tried to open *paper.txt* under *benedict*, R would tell me there is no such file in my current working directory.
+
+To get your working directory in R you would type in your code cell:
+
+`getwd()`
+
+You would then press `Ctrl`+`Enter` (`Ctrl`+`Enter` in Linux, `command`+`Enter` in Mac) to execute the code in the cell. The output below your Console would be:
+
+'/home/benedict/Tables'
+
+R will always tell you your **absolute directory**. An absolute directory is a *path* starting from your root `"/"`. The absolute directory can vary from computer to computer. My home directory and your home directory are not the same; our names differ in the path.
+
+To move directories, it is good to know a couple shortcuts. `'.'` is your current directory. `'..'` is up one directory level. `'~'` is your home directory (a shortcut for `"/home/benedict"`). Therefore, our current location could also be denoted as `"~/Tables"`.
+
+To move to the directory *ewan* we use a function that will set the working directory:
+
+`setwd("/home/ewan")`
+
+or
+
+`setwd("~/ewan")`
+
+A **relative directory** is a path starting from wherever you currently are (AKA your working directory). This path could be the same on your computer and my computer if and only if we have the same directory structure.
+
+If I wanted to move back to *Tables* using the absolute *path*, I would set a new working directory:
+
+`setwd("/home/benedict/Tables")`
+
+or
+
+`setwd("~/benedict/Tables")`
+
+And the *relative path* would be:
+
+`setwd("../benedict/Tables")`
+
+There is some talk over setting working directories within scripts. Obviously, not everyone has the same absolute path, so if must set a directory in your script, *it is best to have a relative path starting from the folder your script is in*. Keep in mind that others you share your script with might not have the same directory structure if you refer to sub-directories.
+
+You can set your working directory by:
+
+1.  `setwd()`
+
+In **RStudio** you may also...
+
+2.  `Session -> Set Working Directory` (3 Options)\
+3.  `Files Window -> More (Gear Symbol) -> Set As Working Directory` \*\*\*
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_new.png?raw=true" width="700"/>
+:::

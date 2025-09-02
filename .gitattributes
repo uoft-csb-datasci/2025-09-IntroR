@@ -1,2 +1,4 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Declare files that will always have CRLF line endings on checkout.
+# This is specifically to handle .fasta files because we want them to end with the standard CRLF (\r\n)
+# Right now they are being standard converted to just LF but we want them untouched for lecture 05 (regex)
+*.fasta text eol=crlf
