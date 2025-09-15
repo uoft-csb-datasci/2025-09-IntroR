@@ -1,0 +1,24 @@
+sporeStrain,plateSize,sporeDose,doseLevel
+LUAm1,6,0,Mock
+LUAm1,6,5,Low
+LUAm1,6,10,Medium
+LUAm1,6,20,High
+ERTm1,6,0,Mock
+ERTm1,6,0.75,Medium
+ERTm1,6,1.5,High
+ERTm2,6,0,Mock
+ERTm2,6,0.5,Low
+ERTm2,6,1.5,High
+ERTm5,6,0,Mock
+ERTm5,6,1.75,Medium
+ERTm5,6,3.5,High
+ERTm5,6,0.875,Low
+ERTm5,6,0.35,Very Low
+ERTm5,6,0.2,Extra Low
+LUAm3,6,0,Mock
+LUAm3,6,10,Medium
+MAM1,6,0,Mock
+MAM1,6,8,High
+MAM1,6,4,Medium
+AWRm78,6,3.5,High
+AWRm78,6,0,Mock

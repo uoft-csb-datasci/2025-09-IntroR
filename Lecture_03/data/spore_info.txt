@@ -1,0 +1,8 @@
+spore.strain	spore.species	infection.location	original.nematode.species	original.location
+ERTm1	N. parisii	intestine	C. elegans	France
+ERTm2	N. ausubeli	intestine	C. briggsae	India
+ERTm5	N. ironsii	intestine	C. briggsae	"Hawaii, USA"
+LUAm1	N. ferruginous	epidermis	C. elegans	France
+AWRm78	N. ironsii	intestine	C. elegans	"Ontario, Canada"
+Cider	N. cider	epidermis	C. elegans	"Ontario, Canada"
+LUAm3	N. ferruginous	epidermis	C. elegans	France
