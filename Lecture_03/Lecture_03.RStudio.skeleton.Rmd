@@ -1,0 +1,1864 @@
+---
+title: 'Lecture 03'
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+# This allows the file to be LIVE and run without errors stopping it.
+knitr::opts_chunk$set(error = TRUE)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_services_slide.png?raw=true" width="700"/>
+:::
+
+# Introduction to R
+
+# Lecture 03: Tidying your data
+
+# Student Name:
+
+# Student ID:
+
+------------------------------------------------------------------------
+
+## 0.1.0 About Introduction to R
+
+Introduction to R is brought to you by the **Centre for the Analysis of Genome Evolution & Function (CAGEF)** bioinformatics training initiative. This course was developed based on feedback on the needs and interests of the Department of Cell & Systems Biology and the Department of Ecology and Evolutionary Biology.
+
+The structure of this course is a code-along style; It is 100% hands on! A few hours prior to each lecture, links to the materials will be available for download at [QUERCUS](https://q.utoronto.ca/). The teaching materials will consist of an R Markdown Notebook with concepts, comments, instructions, and blank coding spaces that you will fill out with R by coding along with the instructor. Other teaching materials include a live-updating HTML version of the notebook, and datasets to import into R - when required. This learning approach will allow you to spend the time coding and not taking notes!
+
+As we go along, there will be some in-class challenge questions for you to solve either individually or in cooperation with your peers. Post lecture assessments will also be available (see syllabus for grading scheme and percentages of the final mark) through [DataCamp](https://Datacamp.com) to help cement and/or extend what you learn each week.
+
+### 0.1.1 Where is this course headed?
+
+We'll take a blank slate approach here to R and assume that you pretty much know *nothing* about programming. From the beginning of this course to the end, we want to take you from some potential scenarios such as...
+
+-   A pile of data (like an excel file or tab-separated file) full of experimental observations that you don't know what to do with it.
+
+-   Maybe you're manipulating large tables all in excel, making custom formulas and pivot tables with graphs. Now you have to repeat similar experiments and do the analysis again.
+
+-   You're generating high-throughput data and there aren't any bioinformaticians around to help you sort it out.
+
+-   You heard about R and what it *could* do for your data analysis but don't know what that means or where to start.
+
+and get you to a point where you can...
+
+-   Format your data correctly for analysis.
+
+-   Produce basic plots and perform exploratory analysis.
+
+-   Make functions and scripts for re-analysing existing or new data sets.
+
+-   Track your experiments in a digital notebook like R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data-science-explore.png?raw=true" width="500"/>
+:::
+
+### 0.1.2 How do we get there? Step-by-step.
+
+In the first lesson, we will talk about the basic data structures and objects in R, get cozy with the R Markdown Notebook environment, and learn how to get help when you are stuck because everyone gets stuck - a lot! Then you will learn how to get your data in and out of R, how to tidy our data (data wrangling), and then subset and merge data. After that, we will dig into the data and learn how to make basic plots for both exploratory data analysis and publication. We'll follow that up with data cleaning and string manipulation; this is really the battleground of coding - getting your data into just the right format where you can analyse it more easily. We'll then spend a lecture digging into the functions available for the statistical analysis of your data. Lastly, we will learn about control flow and how to write customized functions, which can really save you time and help scale up your analyses.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Draw_an_Owl.jpg?raw=true" width="700"/>
+:::
+
+Don't forget, the structure of the class is a **code-along** style: it is fully hands on. At the end of each lecture, the complete notes will be made available in a PDF format through the corresponding Quercus module so you don't have to spend your attention on taking notes.
+
+------------------------------------------------------------------------
+
+### 0.1.3 What kind of coding style will we learn?
+
+There is no single path correct from A to B - although some paths may be more elegant, or more efficient than others. With that in mind, the emphasis in this lecture series will be on:
+
+1.  **Code simplicity** - learn helpful functions that allow you to focus on understanding the basic tenets of good data wrangling (reformatting) to facilitate quick exploratory data analysis and visualization.
+2.  **Code readability** - format and comment your code for yourself and others so that even those with minimal experience in R will be able to quickly grasp the overall steps in your code.
+3.  **Code stability** - while the core R code is relatively stable, behaviours of functions can still change with updates. There are well-developed packages we'll focus on for our analyses. Namely, we'll become more familiar with the `tidyverse` series of packages. This resource is well-maintained by a large community of developers. While not always the "fastest" approach, this additional layer can help ensure your code still runs (somewhat) smoothly later down the road.
+
+------------------------------------------------------------------------
+
+## 0.2.0 Class Objectives
+
+This is the third in a series of seven lectures. Last lecture we focused in on manipulating data frames with the help of the `dplyr` package. This week we'll dig deeper into the `tidyverse` and how we can clean up our data. At the end of this session you will be familiar with the principles of tidy data; subsetting and transforming your data to perform simple calculations; and converting your data between wide and long formats. Our topics are broken into:
+
+1.  Learn tidy data principles and how to convert from wide-format to long-format data.
+2.  Learn how to cut and query our dataset for different information.
+3.  Learn how to revert data back from long-format to wide-format.
+4.  Combine datasets by joining.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Data-Wrangling-Is-The.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.3.0 A legend for text format in R Markdown
+
+-   `Grey background`: Command-line code, R library and function names. Backticks are also use for in-line code.
+-   *Italics* or ***Bold italics***: Emphasis for important ideas and concepts
+-   **Bold**: Headers and subheaders
+-   [Blue text](): Named or unnamed hyperlinks
+-   `...` fill in the code here if you are coding along
+
+::: {.alert .alert-block .alert-info}
+**Blue box:** A key concept that is being introduced
+:::
+
+::: {.alert .alert-block .alert-warning}
+**Yellow box:** Risk or caution
+:::
+
+::: {.alert .alert-block .alert-success}
+**Green boxes:** Recommended reads and resources to learn R
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Red boxes:** A comprehension question which may or may not involve a coding cell. You usually find these at the end of a section.
+:::
+
+------------------------------------------------------------------------
+
+## 0.4.0 Lecture and data files used in this course
+
+### 0.4.1 Weekly Lecture and skeleton files
+
+Each week, new lesson files will appear within your RStudio folders. We are pulling from a GitHub repository using this [Repository git-pull link](https://r.datatools.utoronto.ca/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fuoft-csb-datasci%2F2025-09-IntroR&urlpath=rstudio%2F&branch=main). Simply click on the link and it will take you to the [University of Toronto datatools Hub](https://datatools.utoronto.ca). You will need to use your UTORid credentials to complete the login process. From there you will find each week's lecture files in the directory `/2025-09-IntroR/Lecture_XX`. You will find a partially coded `skeleton.Rmd` file as well as all of the data files necessary to run the week's lecture.
+
+Alternatively, you can download the R-Markdown Notebook (`.Rmd`) and data files from the RStudio server to your personal computer if you would like to run independently of the Toronto tools.
+
+### 0.4.2 Live-coding HTML page
+
+A live lecture version will be available at [camok.github.io](https://uoft-csb-datasci.github.io/2025-09.IntroToR/index.html) that will update as the lecture progresses. Be sure to refresh to take a look if you get lost!
+
+### 0.4.3 Post-lecture PDFs and Recordings
+
+As mentioned above, at the end of each lecture there will be a completed version of the lecture code released as an HTML file under the Modules section of Quercus.
+
+------------------------------------------------------------------------
+
+### 0.4.4 Microsporidia infection data set description
+
+The following datasets used in this week's class come from a published manuscript on PLoS Pathogens entitled "High-throughput phenotyping of infection by diverse microsporidia species reveals a wild *C. elegans* strain with opposing resistance and susceptibility traits" by [Mok et al., 2023](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1011225). These datasets focus on the an analysis of infection in wild isolate strains of the nematode *C. elegans* by environmental pathogens known as microsporidia. The authors collected embryo counts from individual animals in the population after population-wide infection by microsporidia and we'll spend our next few classes working with the dataset to learn how to format and manipulate it.
+
+### 0.4.4.1 Dataset 1: /data/embryo_data_wide.csv
+
+This is a comma-separated version of measurements from a series of experiments where *C. elegans* strains are infected under different conditions with one of many possible *Nematocida* microsporidia species. Each column name carries unique identifiers for each experiment while the values represent the presence of mature **`spores`** appearing after spore infection/replication (1 = yes, 0 = no), **`meronts`** or immature spores (1 = yes, 0 = no), and the number of **`embryos`** present in each animal observed. These values are separated by an `_` symbol.
+
+### 0.4.4.2 Dataset 2: /data/infection_meta.csv
+
+This is a comma-separated version of the metadata data from our measurements. This dataset tracks information for each experimental condition measured including experimental dates, reagent versions, and sample locations. We'll use this file to ease our way into importing, manipulating, and exporting in today's class.
+
+### 0.4.4.3 Dataset 3: /data/spore_dose_info.csv
+
+This is a comma-separated set of metadata with label information regarding spore doses for specific microsporidia strains. This is empirically determined data describing how total spore amounts relate to physiological response in N2 (lab reference) nematodes in terms of "Mock", "Low", "Medium" and "High" doses.
+
+### 0.4.4.4 Dataset 4: /data/spore_info.txt
+
+This is a tab-separated version of microsporidia metadata. This small table holds information specific to each microsporidia strain such as species names, where it was first identified, where it is observed to infect. You'll use this in one of our comprehension question sections.
+
+------------------------------------------------------------------------
+
+### 0.4.5 Gapminder dataset description
+
+This data comes from the `gapminder` package which has an excerpt of data from gapminder.org circa 2010. It is a dataset we will use for exploring data and formatting it.
+
+### 0.4.5.1 Dataset 5: data/gapminder_wide.csv
+
+This file covers variables related to country statistics tracking life expectancy, population size, and GDP per capita over years spanning from 1952 to 2007. We'll explore this dataset a little at the end of lecture.
+
+------------------------------------------------------------------------
+
+## 0.5.0 Packages Used in This Lesson
+
+The following packages are used in this lesson:
+
+-   `tidyverse` (tidyverse installs several packages for you, like `dplyr`, `readr`, `readxl`, `tibble`, and `ggplot2`)
+
+### 0.5.1 Quick review for how to install R packages in Anaconda
+
+Open up the **Anaconda prompt** and use install your packages of interest.
+
+`conda install` - starting command to call the installer for anaconda. `-c conda-forge` - look for the package in the 'conda-forge' channel. `r-packagename` - the name of the package you're interested in installing.
+
+Combine the parts into a single command like:
+
+`conda install conda-forge r-gapminder`
+
+```{r}
+#--------- Install packages to for today's session ----------#
+# install.packages("tidyverse", dependencies = TRUE) # This package should already be installed on Jupyter Hub
+
+#--------- Load packages to for today's session ----------#
+library(tidyverse)
+```
+
+Note that 8 different packages are loaded with the tidyverse, and that 2 functions from the `stats` package have been replaced (superceded) by functions of the same name by `dplyr`. Note that you can still access the `stats` version of the function by calling it directly as `stats::filter()`.
+
+------------------------------------------------------------------------
+
+## 0.6.0 Data basics: The wide and long formats
+
+### 0.6.1 Definitions:
+
+-   **Variable**: A part of an experiment that can be controlled, changed, or measured.
+-   **Observation**: The results of measuring the variables of interest in an experiment.
+
+### 0.6.2 Wide versus long format
+
+Wide and long (sometimes referred to as un-stacked and stacked, wide and tall, or wide and narrow), are terms used to describe how a dataset is formatted.
+
+In a long formatted dataset, each column is a **variable** and the results of each measured variable are stored in rows also known as **observations**. In contrast, not every column in wide formatted data is necessarily a unique measurement variable so you can have several observations of the same type of variable in the same row. The names long and wide come from the general shape that the two data formats have.
+
+For data science applications, long format is preferred over wide format because it allows for easier and more efficient computations, data subsetting and manipulation. Wide format is more friendly to the human eye and easier to work with when data needs to be manually recorded/input. Therefore, having the ability to interconvert between these two data formats is a valuable and required skill. The following is a general scheme of wide- (left) and long-format (right) datasets:
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/wide_and_long_formats.png?raw=true" width="700"/>
+
+While more readable and technically more compact, the wide data format is not easily parsed for data analysis compared to the long data format.
+:::
+
+::: {.alert .alert-block .alert-success}
+**Why can't computers think like we do?** To read more about wide and long formats, visit [this blog post](https://eagereyes.org/basics/spreadsheet-thinking-vs-database-thinking) on spreadsheet thinking versus database thinking.
+:::
+
+------------------------------------------------------------------------
+
+## 0.7.0 Some data preparation
+
+In this lesson we want to answer 3 simple questions from our data:
+
+1.  How much variation in **mean embryo production** exists between **uninfected samples** of *C. elegans* strains?
+
+2.  Which **microsporidia** does **N2** interact most poorly with?
+
+3.  Which **worm strain** has the worst looking interactions **across all microsporidia strains**?
+
+Last lesson, we learned how to filter and select data subsets we were interested in. However, we can make data manipulation more efficient by controlling the overall structure or format of our data.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/tell-me-more-about-your-data-wrangling-course.jpg?raw=true" width="500"/>
+:::
+
+This week we will begin by importing a wide-format version of our infection data. Let's read in our measurements, store it in a variable, and remind ourselves about the original structure.
+
+```{r}
+# Always check where you are first!
+getwd()
+
+list.files("...")
+```
+
+```{r}
+# Read in our file. 
+# Remember we're using the tidyverse to import our data!
+embryos.df <- read_csv("data/embryo_data_wide.csv")
+
+# Take a look at the head and structure of your data
+head(embryos.df)
+
+str(embryos.df, give.attr = FALSE, list.len = 20) # Use the give.attr parameter to make it a little less verbose
+                             # this is nearly equivalent now to glimpse(data)
+```
+
+To summarize, we see 154 rows of data, each with 301 columns. Our goal is, with a little information from `infection_meta.csv` file, to do the following:
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/EmbryoWideToLong.png?raw=true" width="900"/>
+
+We'll spend a good portion of today's lecture getting here!
+:::
+
+------------------------------------------------------------------------
+
+# 1.0.0 Introduction to tidy data
+
+*Why tidy data?*
+
+Data cleaning (or dealing with 'messy' data, aka ***data wrangling***) accounts for a huge chunk of a data scientist's time. Ultimately, we want to get our data into a 'tidy' format (long format) where it is easy to manipulate, model and visualize. Having a consistent data structure and tools that work with that data structure can help this process along.
+
+In Tidy data:
+
+1.  Each variable forms a column.
+2.  Each observation forms a row.
+3.  Each type of observational unit forms a table.
+
+This seems pretty straight forward, and it is. The datasets you get, however, will not be straightforward. Having a map of where to take your data is helpful in unraveling its structure and getting it into a usable format.
+
+::: {.alert .alert-block .alert-info}
+**Observational units:** Of the three rules, the idea of observational units might be the hardest to grasp. As an example, you may be tracking a puppy population across 4 variables: age, height, weight, and fur colour. Each observation unit is a puppy. However, you might be tracking these puppies across multiple measurement periods - so a time factor applies. In that case, the observation unit now becomes puppy-time. In that case, each puppy-time measurement belongs in a different table (at least by tidy data standards). This, however, is a simple example and things can get more complex when taking into consideration what defines an observational unit. Check out this blog post by [Claus O. Wilke](https://clauswilke.com/blog/2014/07/21/keep-your-data-tidy-part-ii/) for a little more explanation.
+:::
+
+The 5 most common issues with messy datasets are:
+
+-   common headers are values, not variable names.
+-   multiple variables are stored in one column.
+-   variables are stored in both rows and columns.
+-   a single variable stored across multiple tables.
+-   multiple types of observational units stored in the same table.
+
+Fortunately there are some tools available to solve these problems.
+
+------------------------------------------------------------------------
+
+## 1.1.0 Visualizing the `tidyverse`
+
+The tidyverse is the universe of packages created by Hadley Wickham for data analysis. There are packages to help import, tidy, transform, model and visualize data. His packages are pretty popular, so he made a package to load all of his packages at once. This wrapper package is `tidyverse`. In this lecture series we have already used `dplyr`, `readr` and `readxl`, and we will be using `dplyr` and `tidyr` today.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/tidyverse1.png?raw=true" width="600"/><img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/HadleyObama2.png?raw=true" width="250"/>
+
+Hadley has a large fan-base. Someone even made a plot of Hadley, using his own package, `ggplot2`.
+:::
+
+Before we dig into things, let's perform some exploratory observations on this unfamiliar data.
+
+```{r}
+# Let's review our data again
+# From the top
+head(...)
+
+# And from the bottom
+tail(...)
+```
+
+------------------------------------------------------------------------
+
+## 1.2.0 Assessing our data frame
+
+We see a single column denoted as `worm.number` which we can use to identify each observation (worm measured) from each group. This will be some common information across each column.
+
+Which tidy data rules might our data frame break?
+
+At first glance we can see that the column names are actually 5 different variables: `dateInfected`, `wormStrain`, `sporeStrain`, `sporeDose`, and `expTimepoint`. Taken together these basic experimental parameters uniquely identify each dataset (ie columns) within our measurements.
+
+We could keep the column names as the sample names (as they are meaningful to the researcher) which combine with `worm.number` to make an observational unit. We also have the option of breaking the `experiment` information into multiple new columns (more on that later!) but their data will become redundant in each observational unit. For now we'll keep this information together to use as a "key" to represent each `experiment`.
+
+We see another instance where multiple variables are encapsulated in a single column. Within each column we see 3 values representing the presence (1 = yes, 0 = none) of `spores` (ie fully mature microsporidia proliferation), presence of `meronts` (ie early-stage microsporidia proliferation) and the number of *C. elegans* `embryos` (ie maturing progeny of the host). From our call to `tail()`, however, we see that many rows near the end might have NA values. For now we'll have to leave those alone but they are the result of importing **"ragged data"** where the number of observations (worms measured) in each column (experiment) may be different.
+
+Overall we see a lot of combined information being stored in single variables (columns) for each experiment so there's a lot to clean up here. Overall our information is spread across 154x301 (46,354) entries!
+
+## 1.3.0 Introduction to helpful functions in `tidyr`
+
+`tidyr` is a package with functions that help us turn our 'messy' data into 'tidy' data. It has 2 major workhorse functions and 2 other tidying functions:
+
+1.  `pivot_longer` - convert a data frame from wide to long format
+2.  `pivot_wider` - convert a data frame from long to wide format
+3.  `separate()` - split a column into 2 or more columns based on a string separator
+4.  `unite()` - merge 2 or more columns into 1 column using a string separator
+
+Note that `pivot_longer()` and `pivot_wider()` rely on unique key-value pairs to collapse or expand columns.
+
+We've already loaded `tidyverse` which includes the `tidyr` package that the `pivot_longer()` function is from.
+
+------------------------------------------------------------------------
+
+### 1.3.1 Gather your data from across columns using `pivot_longer()`
+
+Previously called the `gather()` function, the updated `pivot_longer()` function is used to collect our columns in a straightforward way. As the name implies, this will pivot our dataset from a wide to a long format. Our function looks a little bit like this:
+
+```         
+pivot_longer(
+  data,
+  cols,
+  names_to = "name",
+  names_prefix = NULL,
+  names_sep = NULL,
+  names_pattern = NULL,
+  names_ptypes = list(),
+  names_transform = list(),
+  names_repair = "check_unique",
+  values_to = "value",
+  values_drop_na = FALSE,
+  values_ptypes = list(),
+  values_transform = list(),
+  ...
+)
+```
+
+However, we won't be using all of these arguments from `pivot_longer()` but there are a few we'll highlight here:
+
+1.  `data` - our data frame although it is actually a tibble as we mentioned last class.
+2.  `cols` - this is set of columns we wish to pivot. For the selected columns, each column name will be combined and stored into a single column whose name we will specify in the `names_to` parameter. The values of those columns will be stored in a second column named by the `values_to` parameter. As we'll see, this will greatly increase the number of observations (rows) in our data. There are ***many*** ways to define the parameter for this argument as it conforms to the [`<tidy-select>` format](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
+3.  `names_to` - a string or character vector used to name the column or columns where we'll store the column names retrieved from the `cols` set.
+4.  `names_sep` - ***if*** `names_to` is a character vector, this controls how the column names are split apart. We'll see an example of this later.
+5.  `values_to` - this is the name of the column where we'll store the values retrieved from the `cols` set.
+
+------------------------------------------------------------------------
+
+We've already imported `embryo_data_wide.csv` and stored it as the variable `embryos.df`. Recall it is 154 rows (worms) and 301 columns for which there are 300 experimental columns coded as `dateInfected_wormStrain_sporeStrain_sporeDose_expTimepoint`.
+
+We'll use `pivot_longer()` to collect the 300 "observation" columns and convert them into ***observation rows***. The column names will be stored in a new variable called `experiment` and the values from these columns will be in a variable called `spores_meronts_embryos`. Any untransformed columns (ie `worm.number`) become additional identifying data for each observation.
+
+For now, we'll just step through the formatting process using our `%>%` piping method from last lecture, ***without*** saving the result into a variable.
+
+```{r}
+# Remember we are piping "data" in as the first argument of pivot_longer
+embryos.df %>%
+
+  # Use the pivot_longer command 
+  pivot_longer(data = .,                                      # Recall what the "." represents?
+               cols = ...,                                  # The first column is worm.number and we don't need to pivot that
+               names_to = "...",                       # The variable where we'll store columns names
+               values_to = "...") %>%      # The variable where we'll store column values
+  
+  # Take a peek at the result
+  head()
+```
+
+------------------------------------------------------------------------
+
+### 1.3.1.1 `<tidy-select>` provides many ways to specify `cols` in `pivot_longer()`
+
+If we look at the documentation for the `pivot_longer()` function we see that the argument `cols` uses something we've previously referred to as `<tidy-select>`. This is an argument modifier that indicates an additional layer of syntax/functions can be used to select variables (columns) based on their names or position. Last lecture we used some helper functions like `starts_with()`, `ends_with()` and `contains()`.
+
+The additional selection helpers we could use include:
+
+-   `everything()`: matches all variables.
+
+-   `last_col()`: select last variable (or an offset from it).
+
+-   Pattern selection (as we saw in **Lecture 02**) using `starts_with()`, `ends_with()`, `contains()`, `matches()`.
+
+-   `all_of()`: matches variable names in a character vector.
+
+You may also recognize more common `<tidy-select>` formats we've used like:
+
+-   `:`: select on a range.
+
+-   `!`: take the complement for a set of variables.
+
+-   `&` and `|`: take the intersection or union for two sets of variables.
+
+-   `c()`: provide a combination of variable as a vector.
+
+::: {.alert .alert-block .alert-success}
+**\<tidy-select\>:** can be used in other tidyverse functions too (i.e. select) and learning the syntax can help simplify more complex data wrangling steps. Learn more over at the [tidyverse page!](https://tidyr.tidyverse.org/reference/tidyr_tidy_select.html)
+:::
+
+For now we'll use some simpler examples to replicate what we did above.
+
+```{r}
+# equivalent to "2:301"
+embryos.df %>% 
+  pivot_longer(data = ., cols = ..., 
+               names_to = "experiment", 
+               values_to = "spores_meronts_embryos") %>% 
+  head()
+```
+
+```{r}
+# Syntax that excludes the first column
+embryos.df %>% 
+  pivot_longer(data = ., cols = ..., 
+               names_to = "experiment", 
+               values_to = "spores_meronts_embryos") %>% 
+  head()
+```
+
+```{r}
+# Syntax to exclude the first column by name
+embryos.df %>% 
+  pivot_longer(data = ., cols = ..., 
+               names_to = "experiment", 
+               values_to = "spores_meronts_embryos") %>% 
+  head()
+```
+
+------------------------------------------------------------------------
+
+In the above examples `-1` means pivot every column except the 1st, or pivot every column except `worm.number`. `worm.number` is still retained as a column but its values are not grouped in with 'experiment' as an observation (i.e. we do not want '200707_N2_LUAm1_0M_72hpi', '200707_N2_LUAm1_10M_72hpi', and 'worm.number' pivoted into the same column).
+
+Let's save the last variation into a data frame (actually a `tibble`) called `embryo_long.df`.
+
+```{r}
+# Assign a variable the result from
+... <-
+  # passing the data
+  embryos.df %>% 
+  # to pivot_longer
+  pivot_longer(data = ., 
+               cols = -worm.number, 
+               names_to = "experiment", 
+               values_to = "spores_meronts_embryos")
+    
+# Take a look at the result
+head(embryo_long.df)
+str(embryo_long.df)
+```
+
+------------------------------------------------------------------------
+
+### 1.3.1.2 What have we done using `pivot_longer()`?
+
+Note how the dimensions of your dataframe have changed relative to `data`. Instead of 154 rows and 301 columns, we now have a data frame with 46,200 rows and 3 columns (which is the 300 columns we pivoted x 154 rows). `embryo_long.df` is now in a ***long format*** instead of wide because each row is an observation for a specific worm in a specific experimental condition.
+
+It is not, however, quite yet a ***tidy*** dataset. Let's work on remedying that.
+
+------------------------------------------------------------------------
+
+### 1.3.2 `separate()` can split variables into multiple columns by specifying a text delimiter
+
+Recall the information contained in our `experiment` data? It is a combination of 5 values: **date infected, worm strain, spore strain, infection dose,** measurement **timepoint** all separated with "\_" between each. Likewise, our actual measurements for each worm such as the presence of spores, meronts, and total embryos per animal is combined into a single column with values also separated by "\_"
+
+We can use the `separate()` function to identify and retrieve these individual parts of metadata and measurements from our two variables `experiment` and `spores_meronts_embryos`. The `separate()` function takes in your dataframe, the name of the column to be split, the names of your new columns, and the character that you want to split the columns by (aka the *delimiter* and in this case an underscore `_`). Note that the default behaviour of this function is to remove your original column - you can keep it by adding the argument `remove = FALSE`, keeping in mind that you now have redundant data.
+
+```         
+separate(
+  data,
+  col,
+  into,
+  sep = "[^[:alnum:]]+",
+  remove = TRUE,
+  convert = FALSE,
+  extra = "warn",
+  fill = "warn",
+  ...
+)
+```
+
+We need to provide `separate()` with information to help split our variable.
+
+1.  `data` - our data frame or tibble
+2.  `col` - the name or position of the column we want to split.
+3.  `into` - a character vector of the column names we want as the result of splitting the parameter `col`.
+4.  `sep` - the character sequence used by `separate()` to break up the information in each row entry of `col`.
+5.  `remove` - logical parameter to keep our the original column after splitting (TRUE = remove)
+6.  `convert` - attempt to coerce variable data types based on the content of each.
+
+Let's start with the `experiment` variable and then move on to `spores_meronts_embryos`.
+
+```{r}
+# Pass the long-format data
+embryo_long.df %>% 
+
+  ### 1.3.2-1 Break up the experiment information
+  separate(data = ., 
+           col = ..., 
+           into = c("fixingDate", "wormStrain", "sporeStrain", "sporeDose", "..."),
+           sep = ...,
+           remove = FALSE # Keep the original column!
+          ) %>% 
+  
+  # Take a peek at the result
+  head()
+```
+
+```{r}
+# Pass the long-format data
+embryo_long.df %>% 
+
+  # 1.3.2-1 Break up the experiment information
+  separate(data = ., 
+           col = experiment, 
+           into = c("fixingDate", "wormStrain", "sporeStrain", "sporeDose", "expTimepoint"),
+           sep = "_",
+           remove = FALSE # Keep the original column!
+          ) %>% 
+  
+  ### 1.3.2-2 Break up the measurement data
+  separate(data = .,
+           col = ...,
+           into = c("spores", "meronts", "embryos"),
+           sep = "_",
+          ) %>% 
+  
+  # Take a peek at the result
+  head()
+```
+
+------------------------------------------------------------------------
+
+### 1.3.2.1 Remember to convert your variable types with the `convert` parameter
+
+Looking at our output from above there's one little thing we missed - our `spores`, `meronts`, and `embryos` columns are of the `character` type! You'll have to consider when using functions like `separate()` for yourself - do you want to automatically convert your split columns to the correct data type?
+
+The default behaviour of `separate()` is to convert your columns to the `character` data type. You may, however, want it to try and convert in a less agnostic fashion, but this could also introduce NA values, so beware! If you are splitting many variables, however, it may be easier to automatically convert and fix any inadvertent variable types afterwards.
+
+In this instance we are interested in converting our `spores`, `meronts` and `embryos` columns into numeric values during the process. We could also convert these in another part of our pipeline but let's see what the `convert` logical parameter can do for us.
+
+```{r}
+# Pass the long-format data
+embryo_long.df %>% 
+
+  # 1.3.2-1 Break up the experiment information
+  separate(data = ., 
+           col = experiment, 
+           into = c("fixingDate", "wormStrain", "sporeStrain", "sporeDose", "expTimepoint"),
+           sep = "_",
+           remove = FALSE # Keep the original column!
+          ) %>% 
+  
+  ### 1.3.2-2 Break up the measurement data
+  separate(data = .,
+           col = spores_meronts_embryos,
+           into = c("spores", "meronts", "embryos"),
+           ...,
+           sep = "_",
+          ) %>% 
+  
+  # Take a peek at the result
+  str()
+```
+
+------------------------------------------------------------------------
+
+### 1.3.2.2 Use the `mutate` function to change your variable data types
+
+Last lecture we discussed using `mutate()` to generate *new* columns within our tibbles but only mentioned in passing that this function can also be used to *modify* columns too. Let's use this dataset as an example on how to update/change columns with mutate rather than make new ones.
+
+Looking at the above structure for `embryo_long.df`, let's convert the `spores` and `meronts` variables to logical values, and at the same time make `wormStrain` and `sporeStrain` into factors and make `fixingDate` into an integer value. Remember that we can use the `as.<type>()` series of functions to cast our data types to the desired type.
+
+We'll save the final result into a new variable `split_embryo_long.df`.
+
+```{r}
+# Save the result as a variable
+split_embryo_long.df <-
+
+  # Pass the long-format data
+  embryo_long.df %>% 
+  
+  # 1.3.2-1 Break up the experiment information
+  separate(data = ., 
+           col = experiment, 
+           into = c("fixingDate", "wormStrain", "sporeStrain", "sporeDose", "expTimepoint"),
+           sep = "_",
+           remove = FALSE # Keep the original column!
+          ) %>% 
+  
+  # 1.3.2-2 Break up the measurement data
+  separate(data = .,
+           col = spores_meronts_embryos,
+           into = c("spores", "meronts", "embryos"),
+           convert = TRUE,
+           sep = "_",
+          ) %>% 
+  
+  ### 1.3.2.2 Change the data types for some of our columns
+  mutate(fixingDate = ...,
+         wormStrain = ...,
+         sporeStrain = ...,
+         spores = as.logical(spores),
+         meronts = as.logical(meronts)
+        )
+    
+# Take a peek at the result
+str(split_embryo_long.df)
+```
+
+------------------------------------------------------------------------
+
+### 1.3.2.3 Many paths can lead to one destination: `separate()` versus `pivot_longer()`
+
+We just worked through an excellent example of how to use the `separate()` function but in the case of splitting the `experiment` variable into 5 new variables, we could have taken a different approach. Remember back in section **1.3.1** we mentioned the `pivot_longer()` argument `names_sep`. In this situation, the `experiment` variable is derived from the column titles we used in `pivot_longer()`.
+
+With careful consideration, we could combine our above step into the `pivot_longer()` step which can do an ***internal*** `separate()` call under the hood. This is obviously a common enough occurrence in the data science community that this feature was added to `pivot_longer()`.
+
+To use this feature, we just need to specify the new column information correctly in the `names_to` parameter along with our `names_sep` parameter.
+
+At the same time we'll try out the `names_transform` parameter which will allow us to convert our variable data types to the type that we want. You'll note that for each column we wish to change (similar to a `mutate()` call, we use the `<var_name> = <function_name>` syntax which will apply `function_name` to each element in the `var_name` variable. Unfortunately there is no such option for splitting our measured values in the `spores_meronts_embryos` variable.
+
+```{r}
+# passing the data
+embryos.df %>% 
+  # to pivot_longer
+  pivot_longer(data = ., 
+               cols = -worm.number, 
+               ... = c("fixingDate", "wormStrain", "sporeStrain", "sporeDose", "expTimepoint"),
+               names_sep = "_",
+               ... = list(fixingDate = as.integer, wormStrain = as.factor, sporeStrain = as.factor),
+               values_to = "spores_meronts_embryos",
+              ) %>% 
+  str()
+```
+
+------------------------------------------------------------------------
+
+See? Two sets of code, but we get nearly the exact same result! The only major difference being we aren't able to retain the original experiment column.
+
+Your choice of when/where you want to convert your variables is up to you. In our particular case, since we want to retain the original `experiment` variable it makes more sense to convert variables in a *post-pivot* step. Also we have other variables to convert after separating the `experiment` variable.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/two_code_spiderman.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+### 1.3.2.4 Using `separate()` to quickly remove suffixes or prefixes from columns
+
+Now, getting back to the current form of our data in `split_embryo_long.df`, there are a few things we'd still like to do such as remove the units from `sporeDose` and `expTimepoint`. One way we can accomplish this is with some additional uses of the `separate()` function. In **Lecture 05** we'll learn other ways to replace this information with string replacement!
+
+While we are here, we'll add one more step: filter your embryo data by removing `NA` observations! This will reduce our overall observations to \~15K.
+
+```{r}
+split_embryo_long.df <-
+
+  # Practice removing extraneous information like units from a variable
+  split_embryo_long.df %>% 
+  
+  # Separate the sporeDose column and drop the "M" units
+  separate(col = sporeDose, into = c("sporeDose"), sep=..., convert=TRUE) %>% 
+  
+  # Separate the expTimepoint column and drop the "hpi" units
+  separate(col = expTimepoint, into = c("expTimepoint"), sep=..., convert=TRUE) %>% 
+  
+  # Why do you think we choose to filter NAs at this later step?
+  filter(!is.na(embryos))
+
+# Take a peek at the new result
+str(split_embryo_long.df)
+```
+
+------------------------------------------------------------------------
+
+Notice that we've triggered a warning from the interpreter. This is because we asked it to split a column, which should result in at least ***two*** sets of data, but it found nowhere to put the second set. This applies to the separation of more complex variables as well. If, for example, your data splits into 4 pieces but you only have 3 columns supplied, the remaining data will be dropped. Data that splits into 4 pieces when you expect 5 will produce an `NA` value in the 5th column.
+
+How these cases of over- and under-splitting behave, can be controlled by the `extra` and `fill` arguments of the `separate()` function.
+
+::: {.alert .alert-block .alert-warning}
+**When do I remove NA values?** Last week we worked on replacing or removing NA values as soon as we imported our data. This served a general purpose of cleaning our data before analysis, but this isn't necessarily our first step in every data wrangling situation! In today's dataset we began with wide data and waited until ***after it was in a long-format*** before removing NA observations.
+
+Since our initial rows were representing multiple experiments, removing any incomplete cases would remove data for **many observations**. Instead, we waited until observations were separated into a per-experiment basis so their removal did not affect the entire set of observations.
+:::
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 1.0.0:** Use the **glimpse()** function to look at the type of each variable in our new data frame, **split_embryo_long.df**. Are those the types you expected? How is this output different from what you see in the **str()** function?
+:::
+
+```{r}
+# Comprehension Question 1.0.0 run this code cell!
+print ("glimpse of our split data")
+glimpse(split_embryo_long.df)
+
+# Compare our 
+
+print ("structure of our split data")
+str(split_embryo_long.df)
+```
+
+------------------------------------------------------------------------
+
+## Section 1.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+### 1.3.3 Recall that we can `group_by()` to organize our dataset
+
+Last lecture we learned a useful function `group_by()` that groups data based on one or more variables. This is useful for calculations and plotting on subsets of your data without necessarily having to turn your variables into factors.
+
+Suppose we wanted to look at a combination of fixing date, worm strain, and spore strain. Recall that visually, you wouldn't notice any changes to your data frame, but if you look at the structure it will now be a `grouped_df`.
+
+```{r}
+# Group the data by 3 variables and look at the structure
+split_embryo_long.df %>% 
+  group_by(fixingDate, wormStrain, ...) %>% 
+  str(list.len = 10)
+```
+
+------------------------------------------------------------------------
+
+### 1.3.4 Use the `ungroup()` function to revert your data
+
+Looking at the attributes of the tibble, we can see that all of the grouped data is listed by group under the `attr` section of the output and there are 140 combinations found for `fixingDate`, `wormStrain` and `sporeStrain`. This additional metadata will be stored and may, inadvertently, interfere with your results when working with other functions like `mutate()` or `transmute()`.
+
+Therefore, after you have performed your desired operation, you can return your data frame to its original structure by calling the `ungroup()` function.
+
+```{r}
+split_embryo_long.df %>% 
+  # Group the data by 3 variables and look at the structure
+  group_by(fixingDate, wormStrain, sporeStrain) %>% 
+  # Ungroup the data
+  ... %>% 
+  str()
+```
+
+------------------------------------------------------------------------
+
+### 1.3.5 Don't forget! Use `group_by()` and `summarise()` functions to produce sensible statistical summary data
+
+Recall last lecture we briefly used the `group_by()` and `summarise()` functions in combination to produce some preliminary statistics on our data. With this much larger set of data, this is a perfect time to revisit that combination of functions.
+
+Whereas in last lecture we examined some of the quick stats on our metadata, we have some measurements we can now use for some quick exploratory analysis. However, there are quite a few groups so we'll filter/subset our data a little bit before summarising it. Let's get the **group size**, **mean**, **median**, **standard deviation** and **maximum value** for the number of embryos collected in various worm strains infected with different spore strains at varying dose levels.
+
+```{r}
+split_embryo_long.df %>% 
+
+  # Group the data by 3 variables and look at the structure
+  group_by(wormStrain, sporeStrain, sporeDose) %>% 
+  # Summarise the data
+  summarise(...,
+            meanEmb = mean(embryos),
+            medianEmb = median(embryos),
+            sdEmb = sd(embryos),
+            maxEmb = max(embryos)          
+           ) %>% 
+  # What does our data look like?
+  head()
+  
+```
+
+Notice how the first 3 columns of our summary, are the same we used for grouping?
+
+In dealing with grouped data, we wouldn't even need to filter our data at this point or subset it using various base methods. All of the information is gathered for us, so we can quickly summarize and identify trends in our measurements. It might be helpful to arrange the data in some way, either by sporeStrain or worm strain or both. Looking carefully at the data, perhaps even visualizing it, we might conclude that "increased infection dose in nematode hosts is associated with decreases in mean embryo production".
+
+------------------------------------------------------------------------
+
+# 2.0.0 Answering questions about our data
+
+Now that we have tidy data, let's proceed to answering our questions:
+
+1.  How much variation in **mean embryo production** exists between **uninfected samples** of *C. elegans* strains?
+
+2.  Which **microsporidia** does **N2** interact with most poorly?
+
+3.  Which **worm strain** has the worst looking interactions **across all microsporidia strains**?
+
+## 2.1.0 Question: How much variation in mean embryo production exists between uninfected samples of *C. elegans* strains?
+
+Our above question is basically asking what the baseline mean embryo production is for each *C. elegans* strain. What steps do we need to take to answer this question? Before we dive in, let's consider what is needed to answer this question.
+
+1.  We are only interested in uninfected sample data. How do we subset for this? Are there other factors to consider for comparison?
+
+2.  We wish to examine values based on *C. elegans* strain. How will we sort our observations?
+
+3.  We can sort our data to quickly identify the range of the mean variation between strains. Which metric will we sort on?
+
+```{r}
+split_embryo_long.df %>% 
+
+  # Filter the data to focus on sporeDose of 0 (ie uninfected conditions)
+  filter(...,
+         expTimepoint == 72,    # Recall there are some 72-hour and 96-hour timepoints. We should stick with one.
+         embryos >= 0           # There's a quirk of the data in here so we need an extra filter as male animals have -1 embryos
+        ) %>% 
+  
+  # Group the data since we are looking at worm strains
+  group_by(...) %>% 
+  
+  # Summarise the data
+  summarise(nWorms = n(),
+            meanEmb = mean(embryos),
+            medianEmb = median(embryos),
+            sdEmb = sd(embryos),
+            maxEmb = max(embryos)          
+           ) %>% 
+  
+  # Sort the data so we can quickly see the upper and lower ranges
+  arrange(desc(meanEmb))
+```
+
+So it looks like our mean number of embryos can vary across the *C. elegans* strains; getting close to 22 on the upper end and 4 on the lower end. These differences can be due to environmental factors not replicated in the lab or perhaps differences in developmental timing. Now, however, we have a baseline for comparison.
+
+------------------------------------------------------------------------
+
+## 2.2.0 Question: Which microsporidia does N2 interact with most poorly?
+
+The **N2** strain is known as the lab reference strain and can be used as a control when investigating how other host strains interact with microsporidia infection. Let's take a closer look at its infection dynamics to see which microsporidia strains appear to have the strongest effect on this control strain.
+
+This is a bit of a variation and extension to the first question. Let's figure out what we need.
+
+1.  We are only interested in N2 animals and their infection dynamics across multiple spore strains. How do we subset for this?
+
+2.  We know there are multiple doses and fixing dates per spore strain. How will we compare this?
+
+3.  How will we combine replicate data to maintain equal weighting?
+
+Let's save the results as an object named `wormSporeDose_summary.df`
+
+```{r}
+# Save the results of the wrangling
+wormSporeDose_summary.df <-
+
+  split_embryo_long.df %>% 
+  
+  # Filter the data to focus on sporeDose of 0 (ie uninfected conditions)
+  filter(...,
+         expTimepoint == 72,    # Recall there are some 72-hour and 96-hour timepoints. We should stick with one.
+         embryos >= 0           # Theres a quirk of the data in here so we need an extra filter
+        ) %>% 
+  
+  # Group the data so that each rep/fixing Date is grouped together 
+  # group_by(sporeStrain, sporeDose) %>% 
+  group_by(fixingDate, sporeStrain, sporeDose) %>% 
+  
+  # Get the mean embryos for each replicate
+  summarise(meanEmb = mean(embryos),
+           ) %>% 
+  
+  # Group the data again but aggregate the fixing dates for each condition
+  group_by(...) %>% 
+  
+  # Calculate the mean of the means so that each replicate has the same weight
+  summarise(groupMean = mean(...))
+    
+# Sort the data to group by groupMean to see which combo has the lowest value
+arrange(wormSporeDose_summary.df, groupMean)
+```
+
+If we look through the data carefully, we can see that ERTm2 appears to have the most severe effect on our animals, reducing the mean embryo counts to as low as 1.25 with a dose of only 1.25M spores. It sure would be nice if we could quickly visualize this right? More on that later!
+
+------------------------------------------------------------------------
+
+## 2.3.0 Question: Which worm strain has the worst looking interactions across *all* microsporidia strains?
+
+Are we seeing the pattern to these kinds of analyses yet? We want to identify which worm/spore combinations result in the lowest overall mean embryo counts between replicates.
+
+1.  Filter/subset your data from what you want. In this case, we want to additionally only look at infected experimental conditions.
+
+2.  Group the data by experimental conditions - worm strain, fixing date, spore strain, spore dose.
+
+3.  Summarise the embryo counts to generate a mean for that condition/replicate.
+
+4.  Regroup your data to combine replicates.
+
+5.  Summarise the relevant value(s).
+
+6.  Sort the data to find the lowest mean embryo counts.
+
+Let's save the result into an object called `embryo_summary.df`.
+
+```{r}
+# Save the result of this wrangling to an object
+embryo_summary.df <-
+
+  split_embryo_long.df %>% 
+  
+  # Filter the data to focus on sporeDose of 0 (ie uninfected conditions)
+  filter(expTimepoint == 72,    # Recall there are some 72-hour and 96-hour timepoints. We should stick with one.
+         embryos >= 0,          # Theres a quirk of the data in here so we need an extra filter
+         ...
+        ) %>% 
+  
+  # Group the data so that each rep/fixing Date is grouped together 
+  group_by(...) %>% 
+  
+  # Get the mean embryos for each replicate
+  summarise(meanEmb = mean(embryos)) %>% 
+  
+  # Group the data again but aggregate by wormStrain/sporeStrain
+  group_by(...) %>% 
+  
+  # Calculate the mean of the means across dates and spore doses
+  summarise(groupMean = mean(meanEmb)) %>% 
+  
+  # Sort the data to find the smallest groupMean
+  arrange(groupMean)
+
+# Just look at the top 10 scores
+head(embryo_summary.df, 10)
+```
+
+------------------------------------------------------------------------
+
+Looking at the top 10 results from our quick analysis, it looks like we see a lot of JU1400 and MY1 occurrences but most of the top worm/spore interactions appear to involve the LUAm1 spore strain, suggesting that many of the interactions we queried were for more susceptible interactions in the LUAm1 infection.
+
+More importantly, we can now see the power of the `group_by()` and `summarise()` paradigm. Used properly, we can short-cut much of the basic code needed to generate quick reports or analyses of our data. This is only made possibly by the conversion of our wide-format data to the long-format. It is therefore, well worth your time to make the conversion of your data tables into a proper long-format data set. The same sentiment carries forward for working with your data to visualize it.
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension question 2.0.0:** Looking at the top 20 worm/spore interactions from **embryo_summary.df** in terms of highest embryo production, which worm strain shows up most often and how many times does it appear in the top 20 results?
+:::
+
+```{r, eval = FALSE}
+# comprehension answer code 2.0.0
+
+embryo_summary.df %>% 
+
+  # Flip the order of the data
+  ... %>% 
+  # Grab the first 20 results
+  ...  %>% 
+  # Regroup the data by wormStrain
+  ... %>% 
+  # Count the size of each group
+  ... %>% 
+  # Sort again
+  ...
+```
+
+------------------------------------------------------------------------
+
+## Section 2.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 3.0.0 Getting back to the way we were
+
+To get data back into its original format, there are reciprocal functions in the `tidyr` package, making it possible to switch between wide and long formats.
+
+**Fair question:** But you've just been telling me how great the 'long' format is?!?! Why would I want the wide format again???
+
+**Honest answer:** Note that our original data frame was 154 rows and expanded to 42,000 rows in the long format. When you have, say, a genomics dataset you might end up with 6,000 rows expanding to 600,000 rows. You probably want to do your calculations and switch back to the more "human writeable/readable" format. Sure, I can save a data frame with 600,000 rows, but I can't really send it to anyone because spreadsheet software such as Excel might crash while trying to open the file.
+
+## 3.1.0 `unite()` your columns back again
+
+```         
+unite(
+  data, 
+  col, 
+  ..., 
+  sep = "_", 
+  remove = TRUE, 
+  na.rm = FALSE
+)
+```
+
+The opposite of `separate()`, we need to provide `unite()` with specific arguments to help consolidate our information.
+
+1.  `data` - our data frame (aka tibble)
+2.  `col` - the name of the column where we want to keep our combined data.
+3.  `...` - a list of the column names we want to join into argument `col`.
+4.  `sep` - tells `unite()` what kind of character to put *between* recombined data values going into **col**.
+
+Let's turn back time and collapse `spores`, `meronts`, and `embryos` back into one variable using the `unite()` function.
+
+```{r}
+# Reunite our measurement variables of spores, meronts, and embryos back together
+split_embryo_long.df %>% 
+
+  # convert our logical columns back to binary, and put the units back on some other columns
+  mutate(spores = as.integer(spores), meronts = as.integer(meronts)) %>% 
+  
+  ### 3.1.0 Unite the measurement data again
+  unite("...", spores, meronts, embryos, sep = "_") %>% 
+  
+  # Remove the previously separate metadata columns. We kept "experiment" so no need to reunite!
+  select(...) %>% 
+  
+  # Take a peek at the result
+  head(10)
+```
+
+------------------------------------------------------------------------
+
+## 3.2.0 Use `pivot_wider()` to convert your data from long to wide format
+
+```         
+pivot_wider(
+  data,
+  id_cols = NULL,
+  names_from = name,
+  names_prefix = "",
+  names_sep = "_",
+  names_glue = NULL,
+  names_sort = FALSE,
+  names_repair = "check_unique",
+  values_from = value,
+  values_fill = NULL,
+  values_fn = NULL,
+  ...
+)
+```
+
+The opposite of `pivot_longer()`, we need to provide `pivot_wider()` with some parameters to help consolidate our information. This can be tricky to conceptualize BUT the goal is to consolidate row entries based on specific columns that we do NOT name.
+
+1.  `data` - our data frame (aka tibble) that we wish to convert.
+2.  `id_cols` - the column(s) that will form the basis of identifying each unique observation. By default the identifiers are *any unselected columns* from the `names_from` and `values_from` arguments.
+3.  `names_from` - a column name or multiple column names from which to pivot back to a wider format. These will become variable names whose values will come from...
+4.  `values_from` - pairs with the `names_from` parameter to fill the new variable columns formed by `names_from`.
+
+Let's turn the hands of time back further and add the `pivot_wider()` function to our piped code to turn `split_embryo_wide.df` into the wide shape of our original dataset. Save the output into a data frame called `embryo_wide.df`.
+
+```{r}
+# Save the result into a temporary variable
+embryo_wide.df <-
+  # Reunite our measurement variables of spores, meronts, and embryos back together
+  split_embryo_long.df %>% 
+  
+  # convert our logical columns back to binary
+  mutate(spores = as.integer(spores), meronts = as.integer(meronts)) %>% 
+  
+  # 3.1.0 Unite the measurement data again
+  unite("spores_meronts_embryos", spores, meronts, embryos, sep = "_") %>% 
+  
+  # Remove the previously separate metadata columns. We kept "experiment" so no need to reunite!
+  select(-c(3:7)) %>% 
+  
+  ### 3.1.2.0 Pivot back to a wide-format
+  pivot_wider(names_from = ...,
+              values_from = ...)
+
+# What are the dimensions of our transformed data?
+dim(embryo_wide.df)
+
+# Take a peek at the SAVED result
+head(embryo_wide.df)
+```
+
+------------------------------------------------------------------------
+
+## 3.3.0 Save our data frame to a text file
+
+We'll use the standard `write_csv` command to save our results to our data folder.
+
+```{r}
+getwd()
+
+# Write our data out to a file
+write_csv(x = embryo_wide.df,
+          file = "...",
+          col_names = TRUE)
+```
+
+------------------------------------------------------------------------
+
+# 4.0.0 Combining measurements and metadata
+
+You might recall from last lecture that we worked with a metadata set bearing some similar experimental names to the measurements in our `embryo_wide.csv` dataset. Our metadata sets contain additional data ***about*** the experimental conditions themselves including spore species names, lot information on the reagents used and timepoints of various steps during sample procurement.
+
+How do we combine these two sets of data together? What are the necessary requirements?
+
+::: {.alert .alert-block .alert-info}
+**Joining or merging data** allows us to combine metadata with actual measurements. In an experiment where each experimental group may have multiple observations (such as in our case), you will want to avoid carrying redundant data when possible. Why would we need to recombine the data? As we proceed with analyses, you have seen the power of grouping our data for summary statistics BUT this is also useful when creating visualizations. By ***joining*** our metadata to the measurement data, we can more easily facilitate these kinds of analyses.
+:::
+
+### 4.0.1 Import the accompanying metadata
+
+Before we go further, let's quickly import the `infection_meta.csv` dataset and get a sense of what is in there and what might be useful for us to keep versus drop. We'll store the data in the object `infection_meta.df`.
+
+```{r}
+# Import infection_meta.csv and take a peek at it
+infection_meta.df <- read_csv("data/infection_meta.csv")
+
+# Take a quick look at what we have again
+head(infection_meta.df)
+
+str(infection_meta.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 4.0.2 `select()` your variables of interest from the metadata
+
+We are not interested in all of the variables from our metadata so we'll select just a subset of these to keep things a little more brief. You may recall from last week, we made good use of the `<tidy-select>` verbs to help us quickly choose columns. We'll do that again here and save the result into `trimmed_infection_meta.df`.
+
+```{r}
+trimmed_infection_meta.df <-
+
+# Pass the metadata for reshaping
+infection_meta.df %>% 
+
+  # Use tidy-select verbs to subset our data columns
+  select(experiment, Worm_strain, `Total Worms`, `Plate Size`, timepoint, infection.type, 
+         contains("...", ignore.case = TRUE),
+         ends_with("...", ignore.case = TRUE),
+        )
+
+# Check the resulting trimmed dataset
+head(trimmed_infection_meta.df)
+```
+
+------------------------------------------------------------------------
+
+## 4.1.0 Review your data structures
+
+Before we proceed, it's best to review our data structures so we can be sure of what the column names are and what they might represent. This is an important step when deciding to join two data sets. Which variables, either by name or idea, are *shared* between the two datasets and how can we use them to help redistribute our data?
+
+```{r}
+# Review the measurement data
+str(split_embryo_long.df, give.attr = FALSE)
+
+# Review the metadata
+str(trimmed_infection_meta.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 4.1.1 Compare your datasets for common variables
+
+Before joining our data together, we should take note of some of it's characteristics such as size and shared variable names.
+
+`split_embryo_long.df`
+
+-   our experimental results data which we've already converted to a long format.
+
+-   15,128 rows x 10 columns
+
+`trimmed_infection_meta.df`
+
+-   our experimental *metadata*
+
+-   276 rows x 15 columns
+
+| `split_embryo_long.df` | `trimmed_infection_meta.df` | Description                                                                       |
+|:-------------------------:|:-------------------------:|:-----------------|
+|       experiment       |         experiment          | An underscore-separated description of the experimental metadata                  |
+|       fixingDate       |         Fixing Date         | The date the infection population was terminated and fixed in Acetone for storage |
+|       wormStrain       |         Worm_strain         | The relevant worm strain that was infected                                        |
+|      sporeStrain       |        Spore Strain         | The relevant microsporidia strain that was used to infect the nematodes           |
+|       sporeDose        |      Total Spores (M)       | The total number of spores used to infect (in Millions)                           |
+|      expTimepoint      |          timepoint          | Hours post-infection before the experiment was terminated                         |
+
+Note that we've listed shared variables here but they do not necessarily share the same name! Depending on how you've set up your experiments, overlapping columns may appear identical or merely similar in name.
+
+------------------------------------------------------------------------
+
+## 4.2.0 Joining and merging data tables with `*_join()`
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/join_tables.jpg?raw=true" width="700"/>
+:::
+
+Now that we have a grasp of our tables, we can discuss how to join them together. You might note from above that the dimensions of our tables are very different. There are far more observations in our embryo data than in our metadata. The process of bringing this information into a single table is known as joining or merging. There is a generic function in R called `merge()` that can be used to bring these tables together but we'll stick with the `tidyverse` and use one of their four functions as described below:
+
+| join Type    | Description                                                                                                                             |
+|:-----------------------------------|:-----------------------------------|
+| inner_join() | return all rows from x where there are matching values in y, and all columns from x and y.                                              |
+| left_join()  | return all rows from x, and all columns from x and y. Rows in x with no match in y will have `NA` values in the new columns.            |
+| right_join() | return all rows from y, and all columns from x and y. Rows in y with no match in x will have `NA` values in the new columns.            |
+| full_join()  | return all rows and all columns from both x and y. Where there are no matching values between x and y, populate missing data with `NA`. |
+
+There are some other details involving duplicate keys BUT we will assume all of our tables have unique key entries ie no repeated combinations of our shared variables.
+
+Each `*_join()` verb requires the following parameters:
+
+-   `x`: your first (left-side table)
+
+-   `y`: your second (right-side table)
+
+-   `by`: by default all variables with a common name will be used otherwise provide a named vector to connect equivalent variables/columns between tables eg `by = c("a" = "b", "c" = "d")`. **Note that columns must be of the same type for comparison!**
+
+-   `multiple`: What happens if multiple entries in `y` match one in `x`? Set to `all` by default so each matching x/y combination will be created in the new table. Alternative values include `first` and `last` which return only the first or last match in `y` respectively.
+
+We know from **section 4.1.1** that there are a number of variables that are shared that we can use for the joining process. Recall that the `experiment` column is actually an underscore-separated combination of the other variables `fixingDate`, `wormStrain`, `sporeStrain`, `sporeDose`, and `expTimepoint`. We'll play with both sets of columns to see how the `*_join()` function works.
+
+Which join will we use? For our purposes, we are only interested in embryo measurement data that also has metadata to match. Some of the metadata might refer to other kinds of experiments where different measurements were captured. Therefore we'll go with the `inner_join()` function.
+
+For now we'll just generate some piped output without saving the results and we'll start with using just the `experiment` column.
+
+```{r}
+# inner_join() on our datasets
+split_embryo_long.df %>% 
+
+  # Use the inner join on the experiment columns
+  # This data is quite redundant with many of the columns we have in our datasets
+  inner_join(x = ..., y = ..., by = c(...)) %>% 
+  
+  # Look at the resulting data structure
+  str(give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+Looking at the output from above, it looks like we lose about 4,000 entries from our measurement dataset and now have 25 columns of variables instead of 10. In fact, the 14 columns of our metadata have been added on, and the only missing one is the `experiment` column since this is redundant with the embryo `experiment` information.
+
+We also received a warning message! **'Detected an unexpected many-to-many relationship between 'x' and 'y'.`** but what does this mean?
+
+### 4.2.0.1 Beware of redundant merging variables! Use `duplicated()` to identify potential problems
+
+In our above code, the resulting error suggests that we have **duplicated** entries in our `experiment` column within the `trimmed_infection_meta.df` set.
+
+We can investigate this error further with the `duplicated()` function which takes in a vector or dataframe and returns a logical vector stating which elements (or rows) represent duplicates within the table. There are two relevant parameters for us:
+
+-   `x`: the dataset we wish to search for duplicated values
+-   `fromLast`: a logical value which indicates if the search for duplicates should start at the end of the vector instead (default value is `FALSE`).
+
+Note that this DOES NOT return the "original" element that may have been duplicated in the set - only the duplicated one(s). Let's see a quick example.
+
+```{r}
+# Which elements are duplicates?
+duplicated(c(1,2,3,4,
+             1,2,3,4,
+             1,2,3,4,5))
+
+# Which elements are duplicates when we search from the end?
+duplicated(c(1,2,3,4,
+             1,2,3,4,
+             1,2,3,4,5), ...)
+```
+
+------------------------------------------------------------------------
+
+As you can see from above if we search ***forward*** our original occurrences of 1, 2, 3, 4, and (eventually) 5 are not counted as duplicates but later versions of those are counted as duplicated in our resulting logical vector. If we search ***in reverse*** we get a completely different logical vector returned with the last 5 values returning as `FALSE` instead.
+
+How can we use this on `trimmed_infection_meta.df` to investigate our error? We can quickly check for duplicated sets of experimental names using the `duplicated()` function along with a `filter()` step.
+
+In this case, we'll actually return to our original metadata table, `infection_meta.df` to see all of the information about these experiments.
+
+```{r}
+infection_meta.df %>%
+  # Filter for duplicates in both directions to get all non-unique "experiment" entries
+  filter(duplicated(experiment) | duplicated(experiment, fromLast = TRUE))
+```
+
+------------------------------------------------------------------------
+
+Looking at the results, we can see that we have two types of experiments that have the same entry. The main difference here is the plate size and infection times of the experiment. From the description of these experiments, we see that they also represent two kinds of experiments. Although they are created on the same date, one set of samples was destined for measurement of embryos, while the other was destined for RNAseq library generation.
+
+When our `join` step occurs all the rows in `split_embryo_long.df` that match multiple entries in `trimmed_infection_meta.df` will have those combinations created. In our case, that means we'll get double the data for some of our experiments!
+
+Let's revisit our code to see what that means for one of our duplicated experimental values.
+
+```{r}
+split_embryo_long.df %>% 
+
+  # Use the inner join on the experiment columns
+  # This data is quite redundant with many of the columns we have in our datasets
+  inner_join(x = ., y = trimmed_infection_meta.df, by = c("experiment" = "experiment")) %>% 
+
+  # filter for one set of duplicated experiments
+  filter(experiment ... "200821_N2_LUAm1_0M_72hpi") %>%
+
+  str()
+```
+
+------------------------------------------------------------------------
+
+Looking at the above data, we can see that each entry is in pairs, with the only difference being in some of the variables like `Plate size` and `Total Worms`. Looking at the values in the `embryos` variable we can see pretty clearly that the original observations in `split_embryo_long.df` have been duplicated to accommodate the 2 kinds of metadata entries! There are a number of way to approach this problem:
+
+1.  Remove the offending metadata rows from `trimmed_infection_meta.df`
+2.  See if we can join on multiple rows to avoid this collision - unfortunately there are not more distinguishing variables in `split_embryo_long.df`.
+3.  Use the `multiple` parameter in `join` to indicate we only want the `first` occurrence of matches in our metadata!
+
+### 4.2.0.2 Joining with multiple variables removes more redundant information
+
+Going back to the start of this section, the additional metadata columns we identified in **section 4.1.1** are also technically redundant. Let's see what happens if we use them for the `join` step instead. We'll also incorporate the `multiple` parameter to help address our above problem.
+
+```{r}
+# inner_join() on our datasets
+split_embryo_long.df %>% 
+
+  # Remove the experiment column from one of the tables (embryo)
+  select(-experiment) %>% 
+  
+  # Convert the timempoint data to a character type to match the metadata
+  mutate(expTimepoint = ...) %>% 
+  
+  ### 4.2.0.2 Use the inner join
+  inner_join(x = ., y = trimmed_infection_meta.df, 
+             by = c("fixingDate" = "Fixing Date", "wormStrain" = "Worm_strain", 
+                    "sporeStrain" = "Spore Strain", "sporeDose" = "Total Spores (M)",
+                    "expTimepoint" = "..."),
+             multiple = "first"
+            ) %>% 
+
+  # Look at the resulting data structure
+  str(give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+Looking at the above result, we can see our joined data is *slightly* smaller. In fact, it's 100 observations smaller which represents duplicated data from 2 experiments (50 observations per experiment!).
+
+### 4.2.0.3 Join multiple tables in succession with piping
+
+We've successfully joined two tables together but can we join the result to more meta data? Yes! We'll continue our data pipe by adding in the data from `spore_dose_info.csv`. The labels that relate spore amounts to their expected severity of infection will be useful in our exploratory data analysis next lecture!
+
+```{r}
+# Import the spore_dose_info
+spore_dose.df <- read_csv("data/spore_dose_info.csv")
+
+# What does it look like?
+str(spore_dose.df)
+```
+
+------------------------------------------------------------------------
+
+Before we join our 3rd dataset in our pipe, we'll execute a `select()` step that will help to reorder our data variables a bit so that they make more sense for us. Afterwards we'll join our data on 3 common variables:
+
+| `split_embryo_long.df` | `spore_dose.df` | Description                                                                                                                    |
+|:-------------------------:|:-------------------------:|:-----------------|
+|      sporeStrain       |   sporeStrain   | The microsporidia strain used for the infection experiment                                                                     |
+|       Plate size       |    plateSize    | The plate size used (usually 6cm vs. 10cm). Bigger plates require higher doses, but that changes the corresponding dose level! |
+|       sporeDose        |    sporeDose    | The total number of spores used                                                                                                |
+
+After joining our data, we'll want to convert our "doseLevel" variable to a factor since it represents a categorical data.
+
+```{r}
+# joined_embryo_long.df <-
+# inner_join() on our datasets
+split_embryo_long.df %>% 
+
+  # Remove the experiment column from one of the tables (embryo)
+  select(-experiment) %>% 
+  
+  # Convert the timempoint data to a character type to match the metadata
+  mutate(expTimepoint = as.character(expTimepoint)) %>% 
+  
+  ### 4.2.0.2 Use the inner join
+  inner_join(x = ., y = trimmed_infection_meta.df, 
+             by = c("fixingDate" = "Fixing Date", "wormStrain" = "Worm_strain", 
+                    "sporeStrain" = "Spore Strain", "sporeDose" = "Total Spores (M)",
+                    "expTimepoint" = "timepoint"), 
+             multiple = "first"
+            ) %>% 
+
+  # Reformat our columns
+  select(10, 1, 17, 3:5, 16, 7:9, 6, 13, 11:12, 2, 18:20) %>% 
+
+  ### 4.2.0.3 Perform our join to the spore metadata
+  inner_join(., y = ..., by = c("sporeStrain" = "...", 
+                                          "Plate Size" = "...", 
+                                          "sporeDose" = "...")) %>% 
+
+  # Convert our doseLevel to a factor but define the level order ourselves!
+  mutate(doseLevel = factor(doseLevel, levels = c("Mock", "Extra Low", "Very Low", "Low", "Medium", "High"))) %>% 
+
+  # Reorder the data a bit
+  select(1:7, 19, 8:18) %>% 
+  
+  # write this out to a final version
+  write_csv(., file="data/embryo_data_long_merged.csv", col_names = TRUE) %>%
+
+  # What does the final dataset look like?
+  str()
+```
+
+------------------------------------------------------------------------
+
+Note that through our joining process we've gone from **15,128** observations to **9,902**. While we won't investigate specifically *why*, we know that our choice of `inner_join()` forces values in `x` to be dropped if there are no corresponding entries in `y`. There are other `join` types and parameters we could use if we wanted to retain all of our original data entries.
+
+### 4.2.1 Joining data can increase redundancy
+
+Note that we can successfully join our data but there is a caveat: the long-format data represents individual observations. We've now added **9 additional columns** of data to **each** observation. Each unique experimental condition set has 50 or more observations! For various statistics (**Lecture 06**) and analyses, however, this information can be used to look for batch effects or other variables that might influence the populations in our dataset.
+
+::: {.alert .alert-block .alert-info}
+**Joining and merging** datasets is a helpful paradigm in data science. Often working with certain datasets you might find that you want to add information from other sources. Another good example would be RNAseq analysis. After identifying the top hits in your dataset, you are usually left with just a list of transcript names. Meanwhile, expression datasets looking at tissue type, level, timing, function etc., can be found across various databases.
+
+As you expand your search for this information, you may wish to ***combine*** it with your analysis rather than just filtering the information through a vector or list of transcript names. Joining your data may be the preferable route to combining these data sets.
+:::
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 4.0.0:** Time to perform one more join! Recall our summary information generated in **section 2.3.0** which results in the object **embryo_summary.df**. Import and investigate the data file **spore_info.txt** and join it to the embryo summary data so we can see more information about the microsporidia interactions we're investigating. View the first 10 observations of the merged data.
+:::
+
+```{r}
+# comprehension answer code 4.0.0 part 1
+# Import the spore metadata an
+spore_metadata.df <- read_tsv("data/spore_info.txt", col_names = TRUE)
+
+# Check out the structure of your tables you want to join
+str(spore_metadata.df, give.attr = FALSE)
+
+str(embryo_summary.df, give.attr = FALSE)
+```
+
+```{r, eval = FALSE}
+# comprehension answer code 4.0.0 part 2
+embryo_summary.df %>% 
+
+  # Join the data together
+  inner_join(x = ., ...) %>% 
+  
+  # View the top 10 results
+  head(10)
+```
+
+------------------------------------------------------------------------
+
+# 5.0.0 Example challenges for working with tidy data
+
+We've gone full circle from pivoting a wide format dataset to long format, splitting multivariable columns and summarizing on the observations, and reverting the whole thing back to its original form. We've also figured out how to combine data tables by joining them! Now it's time to practice a bit more.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Brace_for_examples.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 5.1.0 Filter and subset `wormSporeDose_summary.df`
+
+1.  Filter `wormSporeDose_summary.df` from section **2.2.0** to remove all zero `sporeDose` values.
+2.  Join this with the spore metadata in `spore_metadata.df`
+3.  Sort the result alphabetically by spore species name and also increasing dose.
+
+Save the results of these steps in `wormSporeDose_updated.df`.
+
+```{r}
+# Open and save the spore metadata to an object. You probably did this already but let's redo it just in case...
+spore_metadata.df <- 
+
+  read_tsv("data/spore_info.txt", col_names = TRUE) %>% 
+  
+  # Convert the spore strain information to a factor. Can you do this on import?
+  mutate(spore.strain = ...(spore.strain))
+
+# Check on the structure of spore_metadata.df
+str(spore_metadata.df)
+
+str(wormSporeDose_summary.df, give.attr = FALSE)
+```
+
+```{r}
+# Save the results of our filtering and joining
+wormSporeDose_updated.df <-
+
+  # Start by passing the summary data
+  wormSporeDose_summary.df %>% 
+  
+  # Filter the spore dose values
+  filter(...) %>% 
+  
+  # Join this with the spore metadata
+  inner_join(., y = ..., by = c("sporeStrain" = "spore.strain")) %>% 
+  
+  # Sort the data by spore species and then by spore dose
+  arrange(spore.species, sporeStrain, sporeDose)
+
+head(wormSporeDose_updated.df, 12)
+```
+
+------------------------------------------------------------------------
+
+### 5.1.1 How many rows in `wormSporeDose_summary.df` had a spore dose of zero?
+
+Let's step back in our process and ask the question of how many rows of data are actually removed in the process from `wormSporeDose_summary.df`.
+
+```{r}
+wormSporeDose_summary.df %>% 
+
+# Use filter to pull out the rows we want to view
+filter(...)          
+```
+
+------------------------------------------------------------------------
+
+## 5.2.0 Convert `gapminder_wide` to a long format
+
+Read in the `gapminder_wide.csv`. What rules of tidy data does it break? Transform the dataset to the format below.
+
+| continent | country     | year | lifeExp |      pop | gdpPercap |
+|:----------|:------------|-----:|--------:|---------:|----------:|
+| Asia      | Afghanistan | 1952 |  28.801 |  8425333 |  779.4453 |
+| Asia      | Afghanistan | 1957 |  30.332 |  9240934 |  820.8530 |
+| Asia      | Afghanistan | 1962 |  31.997 | 10267083 |  853.1007 |
+| Asia      | Afghanistan | 1967 |  34.020 | 11537966 |  836.1971 |
+| Asia      | Afghanistan | 1972 |  36.088 | 13079460 |  739.9811 |
+| Asia      | Afghanistan | 1977 |  38.438 | 14880372 |  786.1134 |
+
+1.  How many rows do you have?
+2.  Save the newly reshaped document as `gapminder_long`
+
+Reshape `gapminder_wide` into a long, cleansed format. **BEFORE** you start writing any code, **IDENTIFY** the formatting deficiencies and then **PLAN** ahead what you want to achieve.
+
+```{r}
+# read gapminder_wide.csv
+gapminder_wide <- read_csv("...")
+
+# Take a peek at the data
+head(gapminder_wide)
+
+# Look at the structure of our data
+glimpse(gapminder_wide)
+```
+
+------------------------------------------------------------------------
+
+### 5.2.1 Issues with gapminder_wide
+
+Observations appear to be split into visible categories based on continent and country (variables 1 and 2) the remaining columns are a combination of:
+
+1.  `gdpPercap_year` - the GDP per capita for a specific year in that continent/country combination
+2.  `lifeExp_year` - the life expectancy for a specfific year in that continent/country combination
+3.  `pop_year` - the population for a specific year in that continent/country combination
+
+So we are seeing multiple observations per column AND multiple observation types in the table (GDP, life expectancy and population)! What a mess!!
+
+Our first step here should be to pivot the data. We know that the `continent` and `country` variables represent unique identifier information. The other columns are our observations to some degree representing 3 categories of data. We'll save the other column names into `obs_type` and their values into `obs_value`.
+
+```{r}
+# Let's do a bulk conversion into long format
+gapminder_wide %>% 
+
+  # Pivot the wide data into long format
+  # Note that this time we've removed some columns as a parameter
+  pivot_longer(., cols = ..., 
+               names_to = "...", 
+               values_to = "...") %>% 
+  
+  # Take a peek at the long-format result
+  head()
+```
+
+------------------------------------------------------------------------
+
+### 5.2.2 Break up a dual-information variable
+
+We've generated a long format table but we still have `obs_type` as a variable which holds ***two kinds*** of information:
+
+1.  The observation type (gdpPercap, lifeExp, and pop).
+2.  The year of that observation.
+
+We need to break that up into separate variables. Remember the `separate()` function? Let's use that here!
+
+```{r}
+# Let's do a bulk conversion into long format
+gapminder_wide %>% 
+
+  # Pivot the wide data into long format
+  # Note that this time we've removed some columns as a parameter
+  pivot_longer(., cols = -c("country", "continent"), 
+               names_to = "obs_type", 
+               values_to = "obs_value") %>% 
+  
+  ### 5.2.2 Separate the data into a category and a year
+  separate(..., c("obs_type", "year"), sep = "_", convert = TRUE) %>% 
+  
+  # Take a peek at the long-format result
+  head()
+```
+
+------------------------------------------------------------------------
+
+### 5.2.3 Use `pivot_wider()` to widen your table based on a *mixed* category observation
+
+We've successfully separated our dual-variable in `obs_type` and `year`. However the three observation types are still trapped in the same variable (aka column)! Recall this is what we want to have at the end:
+
+| continent | country     | year | lifeExp |      pop | gdpPercap |
+|:----------|:------------|-----:|--------:|---------:|----------:|
+| Asia      | Afghanistan | 1952 |  28.801 |  8425333 |  779.4453 |
+| Asia      | Afghanistan | 1957 |  30.332 |  9240934 |  820.8530 |
+| Asia      | Afghanistan | 1962 |  31.997 | 10267083 |  853.1007 |
+| Asia      | Afghanistan | 1967 |  34.020 | 11537966 |  836.1971 |
+| Asia      | Afghanistan | 1972 |  36.088 | 13079460 |  739.9811 |
+| Asia      | Afghanistan | 1977 |  38.438 | 14880372 |  786.1134 |
+
+How do we separate our `obs_type` variable into 3 new variables with their associated values? To accomplish this, we'll have to take a small step back before we can take a step forward. Send it back into a slightly wider format!
+
+Note that for this to work, we expect that each observation type shares the same set of `year` values as the other observation types.
+
+```{r}
+# Spread data from obs_type as its contents should be their own variables
+gapminder_wide %>% 
+
+  # Pivot the wide data into long format
+  # Note that this time we've removed some columns as a parameter
+  pivot_longer(., cols = -c("country", "continent"), 
+               names_to = "obs_type", 
+               values_to = "obs_value") %>% 
+  
+  # 5.2.2 Separate the data
+  separate(obs_type, c("obs_type", "year"), sep = "_", convert = TRUE) %>% 
+  
+  ### 5.2.3 pivot the table partially wider
+  pivot_wider(., names_from = ..., values_from = ...) %>% 
+  
+  # Take a peek at the long-format result
+  head()
+```
+
+------------------------------------------------------------------------
+
+### 5.2.4 Use `select()` to rearrange your columns!
+
+We now have 1/3 as many observations (rows) in our data frame because that data has been pivoted into 3 new columns! Just what we wanted. Nearly there! Let's review what we want as a final data table.
+
+| continent | country     | year | lifeExp |      pop | gdpPercap |
+|:----------|:------------|-----:|--------:|---------:|----------:|
+| Asia      | Afghanistan | 1952 |  28.801 |  8425333 |  779.4453 |
+| Asia      | Afghanistan | 1957 |  30.332 |  9240934 |  820.8530 |
+| Asia      | Afghanistan | 1962 |  31.997 | 10267083 |  853.1007 |
+| Asia      | Afghanistan | 1967 |  34.020 | 11537966 |  836.1971 |
+| Asia      | Afghanistan | 1972 |  36.088 | 13079460 |  739.9811 |
+| Asia      | Afghanistan | 1977 |  38.438 | 14880372 |  786.1134 |
+
+It looks like we just need to correc the order of our variables and sort our data by `country` to match the requested format. Recall that `select()` can reorder our variables and `arrange()` can help use to sort our data. After those steps we'll save it to file.
+
+```{r}
+# Save the result as 
+gapminder_long <-
+
+  # Spread data from obs_type as its contents should be their own variables
+  gapminder_wide %>% 
+  
+  # Pivot the wide data into long format
+  # Note that this time we've removed some columns as a parameter
+    pivot_longer(., cols = -c("country", "continent"), 
+                 names_to = "obs_type", 
+                 values_to = "obs_value") %>% 
+    
+  # 5.2.2 Separate the data
+  separate(obs_type, c("obs_type", "year"), sep = "_", convert = TRUE) %>% 
+  
+  # 5.2.3 pivot the table partially wider
+  pivot_wider(., names_from = obs_type, values_from = obs_value) %>% 
+  
+  ### 5.2.4 re-arrange the column order with select()
+  select(...) %>% 
+
+  ### 5.2.4 sort the data by country
+  arrange(., country)
+
+# Take a peek at the long-format result
+head(gapminder_long)
+
+# How many rows do we have
+str(gapminder_long)
+```
+
+```{r}
+# Check the directory
+getwd()
+
+# Write our final data file
+write_csv(x = gapminder_long,
+          file = "data/gapminder_long.csv",
+          col_names = TRUE)
+```
+
+------------------------------------------------------------------------
+
+Pretty easy right?
+
+# 6.0.0 Making a basic exploratory plot with `ggplot`
+
+Exploratory plots allow us to quickly answer questions about our data or to get an idea of trends and data distribution. This week the DataCamp assignment will have you making a few basic plots with the data that you format. We'll be discussing plots using the `ggplot` package in ***much more detail*** next lecture. For now, here is an overview for producing a basic line or scatterplot using `ggplot`.
+
+### 6.0.1 Every plot needs data, aesthetics, and a `geom_*()`
+
+To produce a `ggplot` object, you need to assign a minimum of 3 aspects:
+
+1.  `ggplot()`: this initializes a ggplot object, and requires a dataset of some kind. You set it with the argument `data`.
+
+2.  `aes()`: this sets the details of ***how*** your data will be used. For example the `x` and `y` axes are set here, if applicable. You can also define how data are grouped with arguments like `colour`, `fill`, and `size`, setting these using variable names from `data`.
+
+3.  `geom_*()`: or geometric object defines the ***type*** of plot you want to visualize. The simplest versions are `geom_line()` (line graph), `geom_bar()` (bar chart), and `geom_point()` (scatterplots, dotplots, and bubble charts).
+
+## 6.1.0 Generate a line graph of `split_embryo_long.df`
+
+Let's filter some of our `split_embryo_long.df` data to plot as a line graph. To make our plot we'll:
+
+1.  Focus on the spore strain LUAm1 at the 72-hour timepoint of infection
+
+2.  Group/summarise the embryo data for each condition.
+
+3.  Plot the data to look at mean embryos per dose
+
+We may be able to glean some insights from our visualization!
+
+```{r, fig.width=12, fig.height=7}
+# Pass the data on
+split_embryo_long.df %>% 
+
+  # filter the data by spore type and timepoint
+  filter(sporeStrain == "LUAm1", expTimepoint == 72) %>% 
+  
+  # Group the data before summarising it
+  group_by(wormStrain, sporeStrain, sporeDose) %>% 
+  
+  # Summarise the data to get overall mean embryo counts
+  summarize(meanEmb = mean(embryos)) %>%
+  
+  # Plot the data
+  ggplot(data = .) +
+    # Set the x and y axis variables, and how you want to colour the lines
+    aes(...) +
+    # Set the type of visualization to a line graph
+    geom_line(...)
+```
+
+------------------------------------------------------------------------
+
+## 6.2.0 Generate a scatterplot from `gapminder_long` data
+
+Recall that our gapminder data carries some basic information such as GDP and life expectancy across multiple countries at multiple points in time. Let's take a more wholesale look at this data and ask if there appears to be a relationship between life expectancy and GDP. We'll focus just on one year of data to filter out other effects that might be dependent upon the year the data was collected.
+
+```{r}
+# First filter gapminder_long
+gapminder_long %>% 
+  filter(year == ...) %>% # Take a look at just data from our last snapshot year: 2007
+
+  # Pass the data to ggplot
+  ggplot(data = .) +
+    # Tell ggplot which columns to draw data from
+    aes(...) +
+    # Define how you want the plot to be visualized
+    geom_point()
+```
+
+------------------------------------------------------------------------
+
+With just a few lines of code, we can see that the overall trend suggests that life expectancy is positively correlated with GDP. It's not always the case, from the look of some African countries, but that's the general trend we see from a 2007 snapshot of data. Keep in mind that this data is now nearly 2 decades old! Next week we'll learn even more about using `ggplot` to visualize our data and customize its presentation.
+
+------------------------------------------------------------------------
+
+# 7.0.0 Class summary
+
+That's the end for our third class on R! You've made it through and we've learned about the following:
+
+1.  The tidy data format and philosophy.
+2.  Converting wide format data to long format.
+3.  Splitting multivariable columns
+4.  Grouping and summarising data.
+5.  Pivoting a multiple observation column to single observation variables
+6.  Returning data to a wide format
+7.  Joining/merging data across data sets
+8.  A small taste of visualizing data with `ggplot`
+
+## 7.1.0 Submit your completed skeleton notebook (2% of final grade)
+
+At the end of this lecture a Quercus assignment portal will be available to submit a **RMD** version of your completed skeletons from today (including the comprehension question answers!). These will be due one week later, before the next lecture. Each lecture skeleton is worth 2% of your final grade but a **bonus 0.5%** will also be awarded for submissions made within 24 hours from the end of lecture (ie 1600 hours the following day). To save your notebook:
+
+1.  From the RStudio Notebook in the lower right pane (**Files** tab), select the skeleton file checkbox (left-hand side of the file name)
+2.  Under the **More** button drop down, select the **Export** button and save to your hard drive.
+3.  Upload your RMD file to the Quercus skeleton portal.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RStudioServerExportFile.png?raw=true" width="700"/>
+:::
+
+## 7.2.0 Post-lecture assessment (6% of final grade)
+
+Soon after the end of this lecture, a homework assignment will be available for you in [DataCamp](https://www.datacamp.com/). Your assignment is to complete two chapters from the **Reshaping Data with tidyr** course: Tidy data (950 points) and From wide to long and back (1300 points). This is a pass-fail assignment, and in order to pass you need to achieve a least 1,687 points (75%) of the total possible points. Note that when you take hints from the DataCamp chapter, it will reduce your total earned points for that chapter.
+
+In order to properly assess your progress on DataCamp, at the end of each chapter, please print a PDF of the summary. You can do so by following these steps:
+
+1.  Navigate to the **`Learn`** section along the top menu bar of DataCamp. This will bring you to the various courses you have been assigned under **`My Assignments`**.
+2.  Click on your completed assignment and expand each **chapter** of the course by clicking on the **`VIEW CHAPTER DETAILS`** link. ***Do this for all sections on the page***!
+3.  Carefully highlight/select the page starting with the course title (ie Introduction to R) and going to the end of the last section. **Avoid** using `ctrl + A` to highlight all of the visible text.
+4.  Print the page from your browser menu and save as a single PDF. In the options, be sure to print "***selection***" or you may not be able to print the full page. It should print out something like what follows, except with more chapter info.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampIntroR.jpg?raw=true" width="700"/>
+:::
+
+You may need to take several screenshots if you cannot print it all in a single try. Submit the file(s) or a combined PDF for the homework to the assignment section of Quercus. By submitting your scores for each section, and chapter, we can keep track of your progress, identify knowledge gaps, and produce a standardized way for you to check on your assignment "grades" throughout the course.
+
+You will have until 1259 hours on Tuesday, September 23rd to submit your assignment (right before the next lecture).
+
+------------------------------------------------------------------------
+
+## 7.3.0 Acknowledgements
+
+**Revision 1.0.0**: materials prepared in R Markdown by Oscar Montoya, M.Sc. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2021 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2022 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.2**: edited and prepared for **CSB1020H F LEC0142**, 09-2023 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2024 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2025 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+------------------------------------------------------------------------
+
+## 7.4.0 Your DataCamp academic subscription
+
+This class is supported by DataCamp, the most intuitive learning platform for data science and analytics. Learn any time, anywhere and become an expert in R, Python, SQL, and more. DataCamp's learn-by-doing methodology combines short expert videos and hands-on-the-keyboard exercises to help learners retain knowledge. DataCamp offers 350+ courses by expert instructors on topics such as importing data, data visualization, and machine learning. They?re constantly expanding their curriculum to keep up with the latest technology trends and to provide the best learning experience for all skill levels. Join over 6 million learners around the world and close your skills gap.
+
+Your DataCamp academic subscription grants you free access to the DataCamp's catalog for 6 months from the beginning of this course. You are free to look for additional tutorials and courses to help grow your skills for your data science journey. Learn more (literally!) at [DataCamp.com](https://learn.datacamp.com/).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampLogo.png?raw=true" width="500"/>
+:::
+
+------------------------------------------------------------------------
+
+## 7.5.0 Resources
+
+<https://github.com/wmhall/tidyr_lesson/blob/master/tidyr_lesson.md>\
+<http://vita.had.co.nz/papers/tidy-data.pdf>\
+<https://thinkr.fr/tidyverse-hadleyverse/>\
+<http://stat545.com/bit001_dplyr-cheatsheet.html>\
+<http://dplyr.tidyverse.org/articles/two-table.html>
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_new.png?raw=true" width="700"/>
+:::
