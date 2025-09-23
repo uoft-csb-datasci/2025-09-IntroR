@@ -1,0 +1,2942 @@
+---
+title: 'Lecture 04'
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+# This allows the file to be LIVE and run without errors stopping it.
+knitr::opts_chunk$set(error = TRUE)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_services_slide.png?raw=true" width="700"/>
+:::
+
+# Introduction to R
+
+# Lecture 04: Data Visualization with the `ggplot2` library
+
+# Student Name: 
+
+# Student ID: 
+
+------------------------------------------------------------------------
+
+## 0.1.0 About Introduction to R
+
+Introduction to R is brought to you by the **Centre for the Analysis of Genome Evolution & Function (CAGEF)** bioinformatics training initiative. This course was developed based on feedback on the needs and interests of the Department of Cell & Systems Biology and the Department of Ecology and Evolutionary Biology.
+
+The structure of this course is a code-along style; It is 100% hands on! A few hours prior to each lecture, links to the materials will be available for download at [QUERCUS](https://q.utoronto.ca/). The teaching materials will consist of an R Markdown Notebook with concepts, comments, instructions, and blank coding spaces that you will fill out with R by coding along with the instructor. Other teaching materials include a live-updating HTML version of the notebook, and datasets to import into R - when required. This learning approach will allow you to spend the time coding and not taking notes!
+
+As we go along, there will be some in-class challenge questions for you to solve either individually or in cooperation with your peers. Post lecture assessments will also be available (see syllabus for grading scheme and percentages of the final mark) through [DataCamp](https://Datacamp.com) to help cement and/or extend what you learn each week.
+
+### 0.1.1 Where is this course headed?
+
+We'll take a blank slate approach here to R and assume that you pretty much know *nothing* about programming. From the beginning of this course to the end, we want to take you from some potential scenarios such as...
+
+-   A pile of data (like an excel file or tab-separated file) full of experimental observations that you don't know what to do with it.
+
+-   Maybe you're manipulating large tables all in excel, making custom formulas and pivot tables with graphs. Now you have to repeat similar experiments and do the analysis again.
+
+-   You're generating high-throughput data and there aren't any bioinformaticians around to help you sort it out.
+
+-   You heard about R and what it *could* do for your data analysis but don't know what that means or where to start.
+
+and get you to a point where you can...
+
+-   Format your data correctly for analysis.
+
+-   Produce basic plots and perform exploratory analysis.
+
+-   Make functions and scripts for re-analysing existing or new data sets.
+
+-   Track your experiments in a digital notebook like R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data-science-explore.png?raw=true" width="500"/>
+:::
+
+### 0.1.2 How do we get there? Step-by-step.
+
+In the first lesson, we will talk about the basic data structures and objects in R, get cozy with the R Markdown Notebook environment, and learn how to get help when you are stuck because everyone gets stuck - a lot! Then you will learn how to get your data in and out of R, how to tidy our data (data wrangling), and then subset and merge data. After that, we will dig into the data and learn how to make basic plots for both exploratory data analysis and publication. We'll follow that up with data cleaning and string manipulation; this is really the battleground of coding - getting your data into just the right format where you can analyse it more easily. We'll then spend a lecture digging into the functions available for the statistical analysis of your data. Lastly, we will learn about control flow and how to write customized functions, which can really save you time and help scale up your analyses.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Draw_an_Owl.jpg?raw=true" width="700"/>
+:::
+
+Don't forget, the structure of the class is a **code-along** style: it is fully hands on. At the end of each lecture, the complete notes will be made available in a PDF format through the corresponding Quercus module so you don't have to spend your attention on taking notes.
+
+------------------------------------------------------------------------
+
+### 0.1.3 What kind of coding style will we learn?
+
+There is no single path correct from A to B - although some paths may be more elegant, or more efficient than others. With that in mind, the emphasis in this lecture series will be on:
+
+1.  **Code simplicity** - learn helpful functions that allow you to focus on understanding the basic tenets of good data wrangling (reformatting) to facilitate quick exploratory data analysis and visualization.
+2.  **Code readability** - format and comment your code for yourself and others so that even those with minimal experience in R will be able to quickly grasp the overall steps in your code.
+3.  **Code stability** - while the core R code is relatively stable, behaviours of functions can still change with updates. There are well-developed packages we'll focus on for our analyses. Namely, we'll become more familiar with the `tidyverse` series of packages. This resource is well-maintained by a large community of developers. While not always the "fastest" approach, this additional layer can help ensure your code still runs (somewhat) smoothly later down the road.
+
+------------------------------------------------------------------------
+
+## 0.2.0 Class Objectives
+
+This is the fourth in a series of seven lectures. Last lecture we finished up with basic manipulation of data frames with the help of the `tidyr` package. This week we are taking a break to enjoy the fruits of our labours. Now that we can make properly formatted data frames, we can use these objects as input to produce beautiful, publication-quality data visualizations with the help of the `ggplot2` package. This week our topics are broken into:
+
+1.  Introduction to `ggplot` and the grammar of graphics using scatterplots
+2.  Exploring other types of plots
+3.  Customizing your plots
+4.  Saving your plots
+5.  Taking your plots up a notch by combining them and using additional packages.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Data-Wrangling-Is-The.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.3.0 A legend for text format in R Markdown
+
+-   `Grey background`: Command-line code, R library and function names. Backticks are also use for in-line code.
+-   *Italics* or ***Bold italics***: Emphasis for important ideas and concepts
+-   **Bold**: Headers and subheaders
+-   [Blue text](): Named or unnamed hyperlinks
+-   `...` fill in the code here if you are coding along
+
+::: {.alert .alert-block .alert-info}
+**Blue box:** A key concept that is being introduced
+:::
+
+::: {.alert .alert-block .alert-warning}
+**Yellow box:** Risk or caution
+:::
+
+::: {.alert .alert-block .alert-success}
+**Green boxes:** Recommended reads and resources to learn R
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Red boxes:** A comprehension question which may or may not involve a coding cell. You usually find these at the end of a section.
+:::
+
+------------------------------------------------------------------------
+
+## 0.4.0 Lecture and data files used in this course
+
+### 0.4.1 Weekly Lecture and skeleton files
+
+Each week, new lesson files will appear within your RStudio folders. We are pulling from a GitHub repository using this [Repository git-pull link](https://r.datatools.utoronto.ca/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fuoft-csb-datasci%2F2025-09-IntroR&urlpath=rstudio%2F&branch=main). Simply click on the link and it will take you to the [University of Toronto datatools Hub](https://datatools.utoronto.ca). You will need to use your UTORid credentials to complete the login process. From there you will find each week's lecture files in the directory `/2025-09-IntroR/Lecture_XX`. You will find a partially coded `skeleton.Rmd` file as well as all of the data files necessary to run the week's lecture.
+
+Alternatively, you can download the R-Markdown Notebook (`.Rmd`) and data files from the RStudio server to your personal computer if you would like to run independently of the Toronto tools.
+
+### 0.4.2 Live-coding HTML page
+
+A live lecture version will be available at [camok.github.io](https://uoft-csb-datasci.github.io/2025-09.IntroToR/index.html) that will update as the lecture progresses. Be sure to refresh to take a look if you get lost!
+
+### 0.4.3 Post-lecture PDFs and Recordings
+
+As mentioned above, at the end of each lecture there will be a completed version of the lecture code released as an HTML file under the Modules section of Quercus.
+
+------------------------------------------------------------------------
+
+### 0.4.4 Microsporidia infection data set description
+
+The following datasets used in this week's class come from a published manuscript on PLoS Pathogens entitled "High-throughput phenotyping of infection by diverse microsporidia species reveals a wild *C. elegans* strain with opposing resistance and susceptibility traits" by [Mok et al., 2023](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1011225). These datasets focus on the an analysis of infection in wild isolate strains of the nematode *C. elegans* by environmental pathogens known as microsporidia. The authors collected embryo counts from individual animals in the population after population-wide infection by microsporidia and we'll spend our next few classes working with the dataset to learn how to format and manipulate it.
+
+### 0.4.4.1 Dataset 1: data/infection_signal.tsv
+
+This is an imaging analysis of infected *C. elegans* strains N2 and JU1400 measuring the overall number of pixels for each animals and the number of fluorescent (infected) pixels within the same area.
+
+### 0.4.4.2 Dataset 2: data/embryo_data_long_merged.csv
+
+This is a result of our efforts (mostly) from last lecture. After transforming a wide-format version of our measurement data, we merged it with some metadata regarding our experiments and now it is ready to be visualized!
+
+### 0.4.4.3 Dataset 3: data/infection_meta.csv
+
+We'll return to this metadata towards the end of lecture but it holds all of the experimental condition information that has been integrated into the `embryo_data_long_merged.csv` file.
+
+------------------------------------------------------------------------
+
+## 0.5.0 Packages used in this lesson
+
+The following packages are used in this lesson:
+
+-   `tidyverse` (tidyverse installs several packages for you, like `dplyr`, `readr`, `readxl`, `tibble`, and `ggplot2`)
+
+-   `RColorBrewer` contains a series of different colour palettes
+
+-   `viridis` contains alternative colour-blind friendly colour palettes
+
+-   `ggbeeswarm` a package to help visualized grouped datapoints in a sensible way
+
+-   `ggthemes` a source for alternative plot themes
+
+-   `ggpubr` used to generate multi-plot figures for publication\
+
+-   `gridExtra` works with ggpubr to produce multi-plot figures
+
+-   `ComplexUpset` an alternative visualization package to classic Venn diagrams
+
+-   `ggrepel` used to avoid text overlap (See Appendix)
+
+This week we'll have a few steps to accomplish installing/working with one of our packages so please follow the instructions carefully.
+
+```{r, eval = FALSE}
+# Step 1: remove ggplot and reinstall it IF your first attempt to install has failed
+remove.packages("ggplot2")
+remove.packages("ComplexUpset")
+
+# This last line will restart the kernel for you.
+.rs.restartR()
+```
+
+If your kernel did not already do so, **restart your kernel** via the menu at **`Session > Restart R`** or using `Ctrl + Shift + F10`.
+
+```{r}
+# Step 2: after restarting the kernel...
+library(remotes)
+# Say no to updating any additional packages while installing ggplot2 and ComplexUpset
+install_version("ggplot2", version = "3.5.2", repos = 'http://cran.us.r-project.org')
+install.packages("ComplexUpset", type = "source")
+```
+
+Proceed with installing the remainder of the packages.
+
+```{r, eval = FALSE}
+#--------- Step 3: Install remaining packages to for today's session ----------#
+# None of these packages are already available on JupyterHub
+install.packages("ggbeeswarm", dependencies = TRUE)
+install.packages("ggthemes", dependencies = TRUE)
+install.packages("ggpubr", dependencies = TRUE)
+```
+
+### 0.5.1 You must restart the kernel after initially installing the above packages
+
+```{r}
+#--------- RESTART THE KERNEL BEFORE LOADING PACKAGES! ----------#
+#--------- Load packages to for today's session ----------#
+library(tidyverse)
+library(ggbeeswarm)
+library(RColorBrewer)
+library(viridis)
+library(ggthemes)
+library(ggpubr)
+library(ComplexUpset)
+```
+
+------------------------------------------------------------------------
+
+# 1.0.0 Introduction to the Grammar of Graphics
+
+One approach to effective data visualization relies on the Grammar of Graphics framework originally proposed by Leland Wilkinson (2005).The idea of grammar can be summarized as follows:
+
+-   Grammar is the foundational set of rules that define the components of a language.
+-   A language is built on a structure that consists of syntax and semantics.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/ggplot2.png?raw=true" width="700"/>
+:::
+
+The **grammar of graphics** is a language to define plotting in a programmatic fashion.
+
+-   It begins with a **tidy** data frame. It will have a series of **observations** (rows) each of which will be described across multiple **variables** (columns). Variables can actually represent qualitative or quantitative measurements or they could be descriptive data about the experiments or experimental groups.
+
+-   The data units may undergo conversion through a process called **scaling** (transformation) before being used for plotting.
+
+-   A subset of data columns are then passed on to be presented in various data plots (scatterplots, boxplots, kernel density estimates, etc.) by using the data to describe visual properties of the plot. We call these visual properties, the **aesthetics** of the plot. For example, the data being plotted or represented can be visually altered in shape or colour based on accompanying column data.
+
+-   A plot can have multiple layers (for example, a scatter plot with a regression line) and each of these plot types is referred to as a **geom** (short for *geometric object*).
+
+------------------------------------------------------------------------
+
+## 1.1.0 The grammar of graphics with `ggplot2`
+
+The grammar of graphics facilitates the concise description of any components of any graphics. Hadley Wickham of `tidyverse` fame has proposed a variant on this concept - the layered grammar of graphics framework. By following a layered approach of defined components, it can be easy to build a visualization. `ggplot2` was made to interact well with tidy (long) datasets. If, however, you are spending lots of time figuring out how to make a scatterplot, your data may not be in the correct format.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/MajorComponentsGrammarGraphics.png?raw=true" width="700"/>
+:::
+
+The Major Components of the Grammar of Graphics by [Dipanjan Sarkar](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)
+
+We can break down the above pyramid by the base components, building from the base upwards.
+
+1.  `Data`: your visualization always starts here. What are the dimensions you want to visualize. What aspect of your data are you trying to convey?
+
+2.  `Aesthetics`: assign your axes based on the data dimensions you have chosen. Where will the majority of the data fall on your plot? Are there other dimensions (such as categorically encoded groupings) that can be conveyed by aspects like size, shape, colour, fill, etc. This is also known as the ***mapping layer*** as we define how variables are *mapped* to various kinds of output.
+
+3.  `Scale`: do you need to scale/transform any values to fit your data within a range? This includes layers that map between the data and the aesthetics.
+
+4.  `Geometric objects`: how will you display your data within your visualization. Which `geom_*` will you use?
+
+5.  `Statistics`: are there additional summary statistics that should be included in the visualization? Some examples include central tendency, spread, confidence intervals, standard error, etc.
+
+6.  `Facets`: will generating subplot of the data add a dimension to our visualization that would otherwise be lost?
+
+7.  `Coordinate system`: will your visualization follow a classic cartesian, semi-log, polar, etc. coordinate system?
+
+Let's jump into our first dataset and start building some plots with it shall we?
+
+------------------------------------------------------------------------
+
+## 1.2.0 Build a `ggplot` layer by layer
+
+Let's build our first plot step by step to learn more about how `ggplot2` works. We will begin by loading datasets from some fluorescence microscopy analysis of *C. elegans* animals infected by the microsporidia *N. ferruginous*. This long-format data was measured for total area per animal as well as infected area (ie fluorescent signal) per animal.
+
+Let's read our first data table. We already loaded the `tidyverse` package in **section 0.5.0** along with a handful of additional packages. You may recall from the startup message that `ggplot2` was one of the attached packages.
+
+```{r}
+# Open up the microscopy analysis data
+infection_sig.df <- read_tsv(...)
+
+# Take a look at the data structure
+str(infection_sig.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 1.2.1 Every `ggplot` object needs data
+
+We're going to build this first plot layer by layer and that begins with specifying the data source. In this case, let's use `infection_sig.df` to start off our plot. When we see it print, you'll find that there's nothing much displayed as output.
+
+```{r}
+# Initialize our ggplot object with some data
+# 1. Data
+ggplot(data = ...)
+```
+
+------------------------------------------------------------------------
+
+### 1.2.2 Every `ggplot` object consists of many parameters
+
+While our above output appears to be just a blank background, we have created a **`ggplot` object**. If we were to investigate the structure of this object, we would see it is a list of 9 named elements:
+
+1.  data
+
+2.  layers
+
+3.  scales
+
+4.  guides
+
+5.  mapping
+
+6.  theme
+
+7.  coordinates
+
+8.  facet
+
+9.  plot environment
+
+10. labels.
+
+Luckily there are some defaults, so we don't have to specify everything, but you can start to see how ggplot objects are highly customizable. So far, we have only specified the data aspect of this object.
+
+Let's review the structure of our object first.
+
+```{r}
+# Let's take a quick look at structure of a ggplot object
+str..., give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 1.2.3 `aes()` determines attributes of the mapping list and how data is displayed
+
+The next step is to choose the data we are plotting **(aesthetics)** and how it influences the visualization. At this point the data can be **scaled** directly and the axes appear. We have not yet specified *how* we want the data plotted, only *which* data should be plotted. In practice, people usually omit 'mapping = ', but it is a good reminder that mapping is, in fact, what we are doing.
+
+When we start customizing our plot, our code starts to get a bit harder to read on one line. We can create each specification on a new line by ending each line with a `+`.
+
+For our plot, we'll specify the x and y axis using data from the `area` (total area of the worm imaged in pixels^2^) and `area.infected` variables. Note that both of these variables are also numerical in nature, representing a wide range of values. These kinds of values could be considered **continuous** variables.
+
+```{r}
+# Add the aes() parameter to our plot
+ggplot(data = infection_sig.df, mapping = ...)
+```
+
+```{r}
+# We can make it equivalent by adding aes() like a layer
+# 1. Data
+ggplot(infection_sig.df) + 
+
+    # 2. Aesthetics to map the x and y-axis to variables in our data
+    ...
+```
+
+------------------------------------------------------------------------
+
+### 1.2.4 Visualize our data as points on the graph with `geom_point()`
+
+We now have to choose the **geometric object** (`geom`) with which to plot our data, in this case a point. A `geom` could be a line, a bar, a boxplot - you can type `geom_` and then `Tab` to see all of the available options. *Autocomplete* can also be helpful for remembering syntax.
+
+Some helpful geom commands:
+
+| Command          | Geom description                                                               | Used for                              |
+|:-----------------|:-------------------------------------------------------------------------------|:--------------------------------------|
+| `geom_point()`   | Single points of data plotted on an x and y axis                               | scatterplots, dotplots, bubble charts |
+| `geom_bar()`     | Barchart summarizing data based with heights proportional to size of its group | barplots and stacked barplots         |
+| `geom_col()`     | Barchart summarizing data where with heights representing values in the data   | barplots of data values?              |
+| `geom_boxplot()` | Produce a rough visualization of data distribution                             | boxplots                              |
+| `geom_line()`    | Track values of multiple groups along an x-axis such as time                   | line graphs                           |
+| `geom_jitter()`  | When datapoint overlap too much, you can spread them out using jitter          | Helpful for boxplots                  |
+| `geom_violin()`  | Combines a kernel distribution estimate in a boxplot-style format              | Known as the violin plot              |
+
+For our particular plot, we are making a scatterplot so we'll want to go with the `geom_point()` function. Let's add that layer to the plot with the `+` syntax.
+
+```{r}
+# Add our data points to the ggplot object
+# 1. Data
+ggplot(infection_sig.df) + 
+    # 2. Aesthetics to map the x and y-axis to variables in our data
+    aes(x = area, y = area.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    ... 
+```
+
+------------------------------------------------------------------------
+
+### 1.2.5 Specify colouring of groups through `aes()` based on Factors
+
+The data looks like there perhaps may be two groupings with a larger central distribution. My guess would be that there may be different distributions of our points based on worm strain. We can easily test this by colouring our points by the `strain` variable.
+
+First let's look at the structure of `infection_sig.df` in either the Global Environment or using `str()`. To do this in R, we want to base our colouring on levels from a `factor`. Afterwards a legend will be automatically created for you.
+
+To accomplish this, we first need to make sure that `strain` is a column of type `Factor`. We'll convert some additional variables to `Factor` at the same time.
+
+```{r}
+print("Our original infection file")
+str(infection_sig.df, give.attr = FALSE)
+```
+
+```{r}
+# Update our dataframe to convert some variables to factors
+infection_sig.df <-
+  infection_sig.df %>% 
+  # Use the mutate function to replace variables with factor versions of themselves
+  ...(strain = ..., 
+         spore.strain = factor(spore.strain), 
+         spore.species = factor(spore.species),
+         fixing.date = factor(fixing.date), 
+         dose = factor(dose))
+
+# Take a look at the resulting changes
+str(infection_sig.df)
+```
+
+------------------------------------------------------------------------
+
+**How could we have saved ourselves a little trouble by avoiding the mutate command?**
+
+Now that we've set up some factors within our dataframe, we can begin to use these to help manage some of the information in our visualizations. Note also here that we've converted variables of a nature that break our data into distinct groups. These kinds of variables are also known as **categorical** variables.
+
+### 1.2.5.1 Set aesthetics parameters within the `aes()` layer
+
+The `aes()` layers can be used to set various aspects about our visualization using either **continuous** or **categorical** variables. *Some* of the aesthetics that can be adjusted include:
+
+-   `colour`: Set the colour of your `geom_*()` components if applicable like points and lines.
+-   `fill`: Set the fill colour of certain 2-D `geom_*()` components like points and bars.
+-   `shape`: Set the shape of your `geom_*()` components like points. This is only suggested for categorical variables.
+-   `size`: Set the size of some `geom_*()` layers like points - compatible with continuous and categorical variables.
+
+By now you may have noticed that we have been setting specific attributes in an order that matches our diagram of the grammar of graphics pyramid. Keeping this kind of format simplifies the process of tweaking your plots as you first create them.
+
+For our current efforts, let's map the parameter of `colour` to our categorical variable `strain` when we first specify 'x' and 'y'. Before we do that, however, we'll add a `filter()` step to our data so that we are only looking at two specific strains - N2 and JU1400.
+
+```{r}
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, ...) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point() 
+```
+From our data, it looks like we have some overlapping data points but a whole set of JU1400 datapoints that is separate from the population of N2 data!
+
+------------------------------------------------------------------------
+
+### 1.2.6 Most layers will, by default, inherit from `aes()` unless explicitly specified
+
+When setting the mapping parameter with `aes()` there are generally three ways to do this in order of inheritance or precedence
+
+1.  `ggplot(data = ... , mapping = (aes(x = ..., y = ..., colour = ...)))`
+
+2.  `(aes(x = ..., y = ..., colour = ...))`
+
+3.  `geom_*(aes(x = ..., y = ..., colour = ...))`
+
+This means that colour can be specified using `geom_point(aes())` since it is a description of the points being plotted. When building a plot, using this command will supersede the plot's default mappings (if any were created and inherited). By placing version **(2)** into our code, at the beginning of our plot, we are essentially overriding the default mappings, which are nothing. I prefer to write the code this way for easier reading but method **(1)** is the more formal way of setting a default mapping to your plot.
+
+It is less common that you might use option **(3)** but not impossible. Especially when layering multiple `geom_*()` objects, you may find that you want them coloured in one way, but shaped or sized based on a different factor. Setting the default mappings at the start reduces the effort of adding this information into each new layer of your ggplot object. That's right, you can have *multiple geoms* in the same visualization.
+
+```{r}
+#is equivalent in final output to but subsequent layers won't inherit this! compare the consequences
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    ### 1.2.6 set colour by the geom layer
+    geom_point(...) 
+```
+
+------------------------------------------------------------------------
+
+### 1.2.7 Altering the scale layer of our axes with `scale_y_*()`
+
+Some of our data points seem to be compressed along the x-axis. We can see our y-axis ranges from 0 to \~15000. That's a large range so what might those lower values represent?
+
+Sometimes when we encounter this kind of issue, we can **scale** the y-axis to get a better look. There are a number of ways to specify how *either* of the axes of our graph can be scaled. This is usually accomplished through the commands
+
+`scale_y_*()` and `scale_x_*()` where **`*`** denotes a number of options in R including:
+
+-   `discrete`
+-   `continuous`
+-   `log10`
+
+Within these commands we can further specify parameters like the the axis `name`, `limits` (start and end), `breaks` (tick mark locations), `labels` for each break, and `transform` to alter how the axis is displayed without altering the data. In this case, let's keep it simple and log-transform our y-axis with `scale_y_log10`. This will result in stretching out our smaller values a little bit more and compressing our larger values together.
+
+```{r}
+# Convert the y-axis to a log10 scale
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    ### 1.2.7 set colour by the aes layer
+    aes(x = area, y = area.infected, colour = strain) +
+    # 3. Scaling
+    ... +
+    # 4. Geoms
+    geom_point() 
+```
+
+------------------------------------------------------------------------
+
+Based on the separation of our points, it looks more now like perhaps our data is also a mixture of measurements from infected animals, some of which may have have been unaffected by the presence of microsporidia. These "unaffected" animals result in `area.infected` values across the y-axis that are classified as "infinite". In fact, according to R, these are `-inf` values.
+
+***While these kind of values are still plotted***, the warning suggests that we have done something improper.
+
+------------------------------------------------------------------------
+
+### 1.2.8 Alter the scale of axes directly in `aes()`
+
+Keep in mind that ***scaling does not change the data***, but rather the representation of the data. The y-axis has been scaled. This is different than taking the log~10~ of the y-axis data.
+
+Can we transform our data directly? Yes, by manipulating the data in our specification of the y-axis data itself in our `aes()` call but we also need to make a small tweak because, of course, we will run into the same problem because
+
+$$log_{10}(0) = undefined$$ 
+but... 
+
+$$log_{10}(0 + 1) = 0$$
+
+So we can update any 0 values in our data during the time of the log~10~ transformation. Afterwards take a close look at the resulting y-axis as well!
+
+```{r}
+# Update the y-axis aesthetic to scale the data directly.
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = ..., colour = strain) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point() 
+```
+
+------------------------------------------------------------------------
+
+The placement of the points looks similar, but the first graph is scaling the axis while the second graph has transformed the data values on a log~10~ scale. Can you see the difference? Take a good look at the name of our y-axis as well!
+
+::: {.alert .alert-block .alert-warning}
+**Don't be careless with your transformations!** While our solution above seemed quite simple, you should proceed with caution when encountering issues like these. Depending on the scale of your values, you may wish pause before deciding to add 1 to your values. You could choose to add smaller values or simply filter your 0 values out. Your choices will depend on your needs.
+:::
+
+### 1.2.8.1 You can assign complex data transformations in `aes()`
+
+As you can see from above, we performed multiple calculations in our transformation of the `area.infected` variable. You might have noticed there is also a `percent.infected` variable in our data as well. However, we can also calculate these values directly in the `aes()` assignment of the y-axis.
+
+Let's see how to access those values.
+
+```{r}
+# Calculate percent area infected and compare to just using the supplied variable
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = ..., colour = strain) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point()
+
+# equivalent to using a pre-calulcated variable
+# Use the provided variables of percent.infected
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = ..., colour = strain) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point()
+```
+
+------------------------------------------------------------------------
+
+### 1.2.9 Take advantage of `facet_*()` to display multiple conditions in separate panels
+
+What if, instead of colouring our values by strain, we could simply separate them into two different panels?
+
+**Faceting** allows us to split our data into groups to display in a more separated fashion. This can be helpful when working with multiple overlapping sets of data. By separating data into distinct panels, it can be easier to identify patterns or abnormalities. Note that we have removed the colour specification in our groups as splitting the data into separate graphs accomplishes the same distinction.
+
+There are two facet options to work with:
+
+1.  `facet_grid()` - this will allow you to facet data by distinct groupings (**i.e. factor levels**) as columns and/or rows that form grids. This will create plots even where data does not exist for a specified group.
+
+2.  `facet_wrap()` - this will facet your data based on a specified grouping (also potentially factor levels or distinct values) but will not produce facets (panels) where data does not exist.
+
+::: {.alert .alert-block .alert-info}
+**Keep things simple:** It is good data visualization practice to only have one attribute (colour, shading, faceting, symbols) per grouping. Basically, by choosing carefully, you can represent each attribute of your data across a single visual dimension rather than across multiple ones. This saves on having overly-complicated visualizations and legends.
+:::
+
+Let's facet our data by worm strain using `facet_grid()` and make use the following parameters throughout the following sections:
+
+-   `rows` and `cols` - the set of variables used to group your data across rows and columns. These can also accepts a `rowVars ~ colVars` formula syntax where `rowVars` and `colVars` are grouping variables from your data.
+
+-   `scales` - used to determine whether x and y axis scales are shared or distinct along individual panels.
+
+-   `labeller` - takes in a data frame of labels and returns a list or data frame of character vectors. This is helpful for renaming each of your panel titles (aka facet labels).
+
+```{r}
+# Update our aesthetics and add a facet
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point() +
+    # 6. Facets
+    ... # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+### 1.2.10 Updating the image size in R Markdown through the code cell definition `{r}`
+
+You may have noticed that when your legends or axes text are quite large, you lose some real estate on your actual graph. This is due to how we output the graphs both when saving and in displaying. In R markdown, the standard output dimension is a 7-inch wide and 5-inch high graph.
+
+When displaying your graphs in R markdown you can update `options` through the definition of the code cell `{r}` using the `fig.width` and `fig.height` options to widen or lengthen graphs as you create them with big legends or multiple facets. You'll need to set this manually for each figure we produce in the notebook. We'll talk about the process of saving them soon as well. First, let's fix our previous graph.
+
+```{r, fig.width=12, fig.height=7}
+# Update our aesthetics and add a facet
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point() +
+    # 6. Facets
+    facet_grid(. ~ strain) # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+### 1.2.11 Plots can be coloured using continuous variables
+
+We could now add information from another variable as a colour in this plot. Note that if a variable is continuous instead of discrete, the colour will be a gradient. Let's switch back to using `area.infected` for our y-axis and proceed to colour our points by `percent.infected`. We'll go back to looking at just the N2 and JU1400 strains from our dataset.
+
+```{r, fig.width=12, fig.height=7}
+# Update our aesthetics to colour by area.infected
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = ...) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point() +
+    # 6. Facets
+    facet_grid(. ~ strain) # use facet_grid to split panels by worm strain
+```
+Notice how our points are coloured from dark blue (nearly black) to a lighter blue? This is the default colour gradient but there are ways to specify this as well! We'll explore colours a little more in section **3.2.0**.
+
+------------------------------------------------------------------------
+
+### 1.2.12 Discriminate your variables by shape in the `aes()` parameters
+
+From our data, there are multiple replicates represented as "repX" within the `fixing.date` variable. We can explore the consistency of our biological replicates as another dimension in our data by using it to adjust the shape of our points. Let's associate shape with `fixing.date` and see if that clarifies anything for us in the visualization. We'll update the size of our points as well to make things clearer.
+
+Recall that shape can only be used for discrete values.
+
+A quick reference key for shapes can be found in the 'Cookbook for R' (<http://www.cookbook-r.com/Graphs/Shapes_and_line_types/>).
+
+```{r}
+# Revisit the structure of our infection signal dataset
+str(infection_sig.df)
+```
+
+```{r, fig.width=12, fig.height=7}
+# Change our point shape by fixing date and facet by Depth
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+  # Filter the strains we'll investigate
+  filter(strain %in% c("N2", "JU1400")) %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected, shape = ...) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 6. Facets
+    facet_grid(. ~ strain) # use facet_grid to split panels by worm strain
+```
+
+It looks like our shapes are pretty evenly distributed across the x-axis within each grouping, suggesting that (for the most part) our replicates are relatively consistent in overall animal size (area)! That's perhaps a good sign that we aren't likely to run into any replicate-based errors when doing statistical analyses of these populations but our y-axis distributions don't appear as clear cut at the moment.
+
+------------------------------------------------------------------------
+
+### 1.2.13 There are numerous ways to specify `facet_*()`
+
+Note that up until now we've been using `facet_grid(~variable)` to split our data by variable. This annotation causes the grids to be distributed horizontally. Other ways to facet by a *single* variable are:
+
+-   `facet_grid(variable~.)` will distribute your grids vertically
+
+-   `facet_wrap(~variable)` will return a symmetrical matrix of plots based on levels in your variable.
+
+We can now see that perhaps across both N2 and JU1400, the "rep2" dataset resulted in higher infected area values. This could be a function of specific temperature or doubling time of the spores, or perhaps the total amount of spores used to infect these samples. This is definitely a rep to keep a closer eye on as we may wish to replace this with a more consistent replicate.
+
+One thing that is not necessary in this case - but good to know about - is the ability to allow each grid to have its own independent axis scale. For instance, if the range of our animals varied much more between strains, it might make more sense to allow for separate x and y-axis values between the two data sets. This can be changed, but keep in mind most people will assume all grids have the same scale, so take extra care to point out that the scales are different when presenting or publishing.
+
+```{r, fig.width=12, fig.height=7}
+# Use facet_wrap to rescale our y-axis individually
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected, shape = fixing.date) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = ...) # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+### 1.2.14 `facet_grid()` and `vars()` to subgroup by multiple variables from your data
+
+Looking at our above data, there are a few additional ways we could change it. For instance we could alter the colour of our data points to match their `fixing.date` values. Then we could see the 3 distinct replicate populations on each facet. The other option would be to further dissect out subgroups and organize strains by row and replicates by column.
+
+To accomplish this, we turn to the `facet_grid()` function and two parameters:
+
+-   `cols`: the variable you wish to distribute across columns
+
+-   `rows`: the variable you wish to distribute across rows
+
+To work with these parameters we'll use the `vars()` helper function which will evaluate variables or expressions in the context of the accompanying dataset. We can provide `vars()` with one or more data variable names. In this way, `vars()` can be used to create subgroups in a manner similar to `group_by()`.
+
+We'll show two similar examples using `facet_wrap()` and `facet_grid()` layers. Note that `facet_grid()` gives clearer control over how the data is partitioned.
+
+```{r, fig.width=12, fig.height=7}
+# Use facet_wrap() and vars() to subgroup our data
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected, shape = fixing.date) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 6. Facets
+    facet_wrap(facets = ..., scales = "free_y",
+               ncol = 3                    
+              ) # use facet_grid to split panels by worm strain
+```
+
+```{r, fig.width=12, fig.height=7}
+# Use facet_grid() and vars() to subgroup our data
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected, shape = fixing.date) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 6. Facets
+    ...(cols = ..., 
+               rows = ..., 
+               scales = "free_y") # use facet_grid to split panels by worm strain
+```
+So our initial observations were correct in deducing that `rep2` data appeared to have a higher range for area of infection versus `rep1` and `rep3` datasets. We can also see that JU1400 animals have a wider distribution of size ranges than the other 3 strains from our experiment.
+
+------------------------------------------------------------------------
+
+Notice how `facet_grid()` produces a much cleaner set of titles and organization for its panels.
+
+## 1.3.0 Add regression lines using statistical transformations
+
+You can also add **statistical transformations** to your plots. Again, take a look at `stat_` then use `Tab` to see the list of options. In this case let's separately fit a linear regression line to `area` vs `area.infected` for each facet. The grey area around the line is the confidence interval (default=0.95) and can be removed with the additional call to stat_smooth of `se = FALSE`.
+
+In our first example, we'll return the plot to show all data points as the same size.
+
+```{r, fig.width=12, fig.height=7}
+# Add our regression line with stat_smooth
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+    
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 5. statistics
+    ... + ### 1.3.0 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+```
+
+```{r, fig.width=12, fig.height=7}
+# Add our regression line with stat_smooth but also group by fixing.date
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    # 1.3.0-2 use the shape attribute to distinguish reps
+    aes(x = area, y = area.infected, colour = percent.infected, shape = ...) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5) +
+    # 5. statistics
+    stat_smooth(method = lm) + ### 1.3.0 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+Notice in our second faceted plot that we have *multiple* regression lines per panel. This is because by setting the `aes(shape = fixing.date)` parameter, we have regrouped the data based on `fixing.date` of which there are 3 factor levels.
+
+### 1.3.1 Play around with regression models and use the `alpha` parameter to *de-emphasize* data
+
+A linear model is not always the best fit. The method of calculating the smoothing function can be changed to other provided functions (such as loess - short for local regression, used below) or can be a custom formula. We'll talk more about making our own models in **Lecture 06**! Note that I changed the confidence interval by modifying `level=0.8`.
+
+`geoms_*` can also be made more transparent with the `alpha` parameter, which is set to 0.3 in the following code so that the emphasis is on the regression line rather than the points.
+
+```{r, fig.width=12, fig.height=7}
+# Set the alpha on geom_point and change our regression method
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5, alpha = 0.3) +
+    # 5. statistics
+    stat_smooth(...) + ### 1.3.1 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 1.0.0:** Now that we've built a few basic scatterplots, you may have noticed that our last plot faceted the strains in order of AWR144, AWR145, JU1400, and N2. In fact, we'd like to see a different order of N2 (our lab reference control), JU1400 (a wild isolate), AWR144, and AWR145 (derivatives of JU1400). How would you go about fixing the order? Use the coding cell provided to update the visualization.
+:::
+
+```{r, fig.width=12, fig.height=7, eval = FALSE}
+# comprehension answer code 1.0.0
+# Change the order of how our faceted graph is displayed
+
+# Add our data points to the ggplot object
+infection_sig.df %>% 
+... %>% 
+
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5, alpha = 0.3) +
+    # 5. statistics
+    stat_smooth(method = loess, level = 0.8) + ### 1.3.1 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+```
+
+------------------------------------------------------------------------
+
+# 2.0.0 Exploring different types of distribution plots
+
+Now that we have some of the basics, it's time to take a closer look at using other types of plots. In this section we'll focus on distribution plots which can help us visualize the spread or *distribution* of data in various ways such as with:
+
+-   Kernel Density Estimate (think smooth histograms)
+-   Histograms
+-   Barplots
+-   Boxplots
+
+We'll begin by reviewing the `embryo_data_long_merged.csv` dataset after loading it into memory as the variable `embryo_long.df`.
+
+We'll use the `col_types` parameter to let us define the variable types of the data as we import it.
+
+```{r}
+# Load the tidyverse package
+# library(tidyverse)
+
+embryo_long.df <- read_csv("...",
+                           # Here we are explicitly specifying our column types
+                           ... = 'cnfffnnfllnnfnnffff')     
+
+# Take a look at the  metadata structure
+str(embryo_long.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-info}
+**Specifying column types with read_csv():** In lecture 02 we allowed read_csv() to directly import our files and make an educated guess on what kind of data was held within. Above we have used the **col_types** argument and set it using a string of characters that denote shorthand representation for the data type each column. We can use **c** (character), **i** (integer), **d** (double), **l** (logical), **f** (factor), and [much more!](https://readr.tidyverse.org/reference/read_delim.html) Just be sure you know the column types for all columns in your input! Importing our data this way saves us an extra set of **mutate()** calls later down the road.
+:::
+
+### 2.0.1 Apply complex functions to grouped data with `group_modify()`
+
+A quick side note before we continue! Last lecture we spent some time playing with the `group_by()` and `summarize()` functions to help generate quick data summaries. There are, however, limitations to `summarize()` and sometimes you might wish to perform more complex analyses.
+
+The `group_modify()` function allows you to *apply* a function to each group. This should sound very familiar to the idea behind the `apply()` family of functions. In the case of `group_modify()`, the parameters we are concerned with are:
+
+-   `.data`: the grouped tibble that we are providing for analysis.
+-   `.f`: a function that we wish to apply to the group.
+-   `...`: additional arguments passed on to `.f`.
+
+::: {.alert .alert-block .alert-info}
+**Shortcut functions with the purr package:** Note that in the following code we'll use the **"\~"** in a special way as a shortcut syntax to denote that we are making a new function. This is similar to how functions are defined in the **apply()** family of functions except it allows us to assign the incoming input to the variable **".x"** which we can then manipulate as needed. We'll learn more about making our own functions in **Lecture 07**.
+:::
+
+For our newly-imported dataset, we are interested in retrieving the mean embryo number for each worm strain replicate (ie `Infection Date`) under the uninfected (ie Mock) treatment condition.
+
+```{r}
+embryo_long.df %>% 
+  # Group by experiment
+  group_by(experiment) %>% 
+  # Just grab mock infection experiments
+  filter(doseLevel == "Mock") %>%
+  # Grab the mean embryo count for each exp and make that a new column
+  mutate(meanEmb = mean(embryos)) %>% 
+  # Grab the first entry of each group
+  group_modify(...) %>% 
+  # Take a peek at the resulting tables
+  head(10)
+```
+
+------------------------------------------------------------------------
+
+Each row in our above output now holds an additional variable, `meanEmb`, which represent the mean number of embryos present in each *experimental* grouping. If we were to look at the whole grouped_df object, we would see the same `meanEmb` value in each row sharing the same `experiment` grouping. In our final output we used our `group_modify()` step to retrieve just a *single row* from each experimental subgroup.
+
+### 2.0.2 Populate values across groups with `*_join()`
+
+In the world of *C. elegans* embryo experiments, there are many factors that can influence reproductive outcomes. While we can reduce intra-experimental variation by using the same source of animals, we may experience inter-experimental variation that can change how well populations of nematodes reproduce.
+
+In order to compare our replicate experiments in a meaningful way, we can *normalize* our data against these baseline values. You might find the need for similar methods when analysing fluorescent microscopy images.
+
+With our Mock-infection (untreated) condition in a tidy little table, we can now normalize our original datasets with the uninfected baseline for each strain in each specific replicate. All it takes is a little `select()` and `*_join()` power!
+
+Using the `inner_join()` we can pass along our `meanEmb` variable as a new variable for each observation and the value will be based on matching the `Infection Date`, `wormStrain`, and `expTimepoint` variables. We'll let `inner_join()` automatically identify these overlapping variables during the merging process.
+
+We'll save our normalized data into `embryo_norm.df`.
+
+```{r}
+embryo_norm.df <-
+  embryo_long.df %>% 
+  # Group by a few specific variables
+  group_by(`Infection Date`, wormStrain, expTimepoint) %>% 
+  # Just grab mock infection experiments
+  filter(doseLevel == "Mock") %>%
+  # Grab the mean embryo count for each exp and make that a new column
+  mutate(meanEmb = mean(embryos)) %>% 
+  # Grab the first entry of each group
+  group_modify(~ head(.x, 1L)) %>%
+
+  ### Now we have equivalently a summary table of the group means    ###
+  ### BUT we also have experimental conditions that they represent!  ###
+
+  # Ungroup the data and treat like a normal table
+  ungroup() %>% 
+  # We only need to select a few columns from our data - enough to properly join to the original data.
+  select(`Infection Date`, wormStrain, expTimepoint, meanEmb) %>%
+
+  # Join the data with the original with the normalization information
+  inner_join(x = embryo_long.df, y = .) %>% 
+
+  # Create a normalized embryo variable by calculating embryos/meanEmb for each observation!
+  mutate(normEmb = ...) %>% 
+  
+  # Sort data based on experiment name
+  arrange(experiment)
+
+# Take a look at the resulting dataframe
+head(embryo_norm.df)
+```
+
+
+However, if you look closely at the code, we could have simply skipped the `inner_join()` step by working with our original grouped and mutated dataset. Since we had already broadcast each group's meanEmb value to a new column, we could simply continue from there to calculate the normalized embryo values.
+
+```{r}
+  embryo_long.df %>% 
+  # Group by a few specific variables
+  group_by(`Infection Date`, wormStrain, expTimepoint) %>% 
+  # Just grab mock infection experiments
+  filter(doseLevel == "Mock") %>%
+  # Grab the mean embryo count for each exp and make that a new column
+  mutate(meanEmb = mean(embryos)) %>% 
+
+  # Ungroup the data and treat like a normal table. This is crucial to broadcast in an element-wise manner
+  ... %>% 
+  
+  # Create a normalized embryo variable by calculating embryos/meanEmb for each observation!
+  mutate(normEmb = embryos/meanEmb) %>% 
+  arrange(experiment) %>% 
+  head
+
+```
+
+------------------------------------------------------------------------
+
+## 2.1.0 View the theoretical distribution of your data with KDE plots
+
+Now that we have our data normalized, we can better compare or combine our replicates for analysis. There are so many observations for each replicate in our data, that it would be nice to see the overall spread of our data. This can be accomplished by simply plotting the data points but with a dense dataset, you might see too much overlap or run into issue with more discrete values. Instead, you might want to know the theoretical distribution of your data - ie the frequency of datapoints you are working with. This kind of plot is known as a kernel density estimate (KDE).
+
+Let's take a closer look at only the **uninfected N2 worm strain** and compare the distribution of embryos ***across different infection dates***. We'll set the `alpha` parameter to 0.3 so we can see various replicates in our plot.
+
+```{r, fig.width=12, fig.height=7}
+# Build a density plot of your data
+
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(...) + 
+    # 4. Geoms
+    ... 
+```
+
+------------------------------------------------------------------------
+
+As we can see from above, even using a lab reference strain, there can be quite a bit of variation in the distribution of embryo production with our distribution peaks ranging from 15-22. It's a good thing we normalized the data. Let's take a quick look at that version for comparison.
+
+```{r, fig.width=12, fig.height=7}
+# Build a density plot of your data
+
+embryo_norm.df %>% 
+    # Filter for uninfected N2 observations
+    filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+    
+    # 1. Data
+    ggplot(.) +
+        # 2. Aesthetics
+        aes(x=..., fill=`Infection Date`) + 
+        # 4. Geoms
+        geom_density(alpha=0.2) 
+```
+
+------------------------------------------------------------------------
+
+You can see that the normalized values center closer around 1.0! So despite the absolute mean values that might occur between experiments, the overall distribution of embryos is mostly consistent to within 0.5-1.5x of the population mean. This suggests that there are likely some environmental variables that are slightly affecting the overall number of embryos between replicates.
+
+### 2.1.1 Set the limits of your axes with `*lim()`
+
+From both versions of our distributions, we can see that one of the replicates dates (200718) produced a portion of N2 animals with 0 embryos suggesting there may have been some problems with the preparation of these animals. In some cases, you might wish to change your x or y-limits on your axes. This can sometimes be helpful if you have a very long left or right tail, or a partially bimodal distribution where you want to focus in on a single distribution.
+
+You can quickly alter the x and y-axis limits with the `xlim()` and `ylim()` layers respectively. You simply need to provide 2 parameters - a lower and upper range.
+
+Let's do the following:
+
+1.  Set upper and lower x-axis boundaries with `xlim()`.
+
+2.  Add a `geom_rug()` layer so that we can see where each value falls along the distribution.
+
+```{r, fig.width=12, fig.height=7}
+# Change our x-axis limits and add a geom_rug()
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=normEmb, fill=`Infection Date`) + 
+    # 3. Scaling
+    ... +             ### 2.1.1 add x-axis limits
+    # 4. Geoms
+    geom_density(alpha=0.2) +
+    geom_rug()
+
+  # geom_rug adds lines on the desired axis to indicate data points. 
+  # Rug plots display individual cases so are best used with smaller datasets. 
+```
+
+------------------------------------------------------------------------
+
+## 2.2.0 Histograms can similarly visualize our distribution
+
+Unlike density plots, histograms count the number of observations you have in each 'bin' that you specify. So with proper parameters you can recreate a similar shape to your density plots using only the observed data.
+
+::: {.alert .alert-block .alert-warning}
+**Of bins and binwidths:** The `geom_histogram()` function uses a default `bin` value of 30 units, which means your data will be ***subdivided*** into 30 bins along your x-axis. The geom itself is agnostic to your data, its values, or the meaning (units) of those values. This is simply a ***default behaviour*** and you should change it yourself. **R** will even warn you to change your binwidth using the either the `bins` or `binwidth` parameters. The former will set the number of bins, the latter the actual width of the bins.
+:::
+
+```{r, fig.width=12, fig.height=7}
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=normEmb, fill=`Infection Date`) + 
+    # 3. Scaling
+    xlim(0.1, 2) +             
+    # 4. Geoms
+    ...   ### 2.2.0 change it up to a histogram geom
+```
+
+------------------------------------------------------------------------
+
+### 2.2.1 Use the `position` parameter to alter how data is stacked
+
+Instead of having the `normEmb` information stacked, we may want to see the data side by side. This can be done with the parameter `position` set to `dodge`. It's not extremely helpful to dodge your data this way when you have many groups, but if you have just a 2 or 3, then the dodge will not look too strange. Let's try the following:
+
+1.  Filter the data to focus on just 3 replicates
+2.  Alter the bin width of the histogram.
+3.  Dodge our data
+4.  Add a y-axis limit with `ylim()`
+5.  Add a `geom_rug()`
+
+```{r, fig.width=12, fig.height=7}
+# Update with dodging the data, ylim and geom_rug
+
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock", `Infection Date` %in% c("200704", "200711", "200718")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=normEmb, fill=`Infection Date`) + 
+  
+    # 3. Scaling
+    xlim(0.1, 2) + 
+    ylim(0, 15) +
+  
+    # 4. Geoms
+    ### 2.2.1 change up the histogram parameters
+    geom_histogram(binwidth = ..., position = ..., alpha = 0.5) +   
+    geom_rug()
+```
+
+------------------------------------------------------------------------
+
+So for a small number of groups, we can use this kind of approach to look at our data if a histogram is your desired visualization. Of the 3 options, however, a KDE certainly seems the clearest right? Be wary, however, of small population sample sizes since larger variations in these can bias your results. There are also a number of [additional `geom_density()` parameters](https://ggplot2.tidyverse.org/reference/geom_density.html) that can affect your final visualization.
+
+## 2.3.0 Barplots stack our categorical data by proportion
+
+Can we create a bar plot of embryos per infection dose? With `geom_bar()` and the proper `aes()` we can fill in colour along the bar to represent specific infection dates.
+
+The default use of `geom_bar()` is to create a barchart where the height of each bar is the ***sum*** of the total number of observations (ie rows in embryos) for a particular group (ie infection dose level). The default argument for this calculation in `geom_bar()` is `stat="count"`.
+
+Let's go ahead and make a bar chart to count how many animals **N2** we have used in our experiments, categorizing those counts based on the **doseLevel** variable. We'll `fill` the bar colours based on infection dates.
+
+```{r, fig.width=12, fig.height=7}
+# What happens if we don't specify an "identity" and y-axis value?
+
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2") %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, fill=`Infection Date`) + 
+    # 4. Geoms
+    ...   ### 2.3.0 change it up to a barplot geom
+```
+
+### 2.3.1 Show normalized proportion of subgroups with `position_fill()`
+
+As you can see above, the bar graphs show the total ***observations*** for each `Infection Date` across each `doseLevel`. If, however, you want to give a sense of overall proportion, you can bring all of the bars up to the same height by setting the `position` parameter to `position_fill()`.
+
+This is helpful when trying to convey the percentage a subset of data represents within a grouping.
+
+```{r, fig.width=12, fig.height=7}
+# What happens if we don't specify an "identity" and y-axis value?
+
+embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2") %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, fill=`Infection Date`) + 
+  
+    # 4. Geoms
+    ### 2.3.1 set the position parameter to position_fill()
+    geom_bar(...)   
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-warning}
+**Normalized proportion vs absolute count:** Depending on the nature of your data, you may wish to display your stacked data by absolute count or by proportion. While our stacked barplot in section **2.3.0** clearly relays the size of our groups **AND** how subgroups such as replicates are distributed, it is a little harder to gauge the overall proportion of each replicate in each bar. On the other hand, by producing a normalized stacked barchart, we can now more accurately gauge the ***proportions*** of our subgroups **BUT** we sacrifice any knowledge of ***group size*** as a result.
+:::
+
+### 2.3.2 Stack values of a variable *within* your `geom_bar()` using the `stat` parameter
+
+Suppose we wanted to look at how the sum total of embryos was presented across our barcharts - ie how much do the actual observations contribute to total embryo values? In this case we are no longer looking at the number of observations but the ***actual measurements from those observations***.
+
+There are two ways to accomplish this. The first is to use `geom_bar()` to visualize the ***sum of values*** of a variable by using the `stat=identity` parameter instead but a `y` variable must be identified. Let's show how that can be done.
+
+```{r, fig.width=12, fig.height=7}
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = ..., fill=`Infection Date`) + 
+  
+    # 4. Geoms
+    geom_bar(...)   ### 2.3.2 Sum the actual values from the y-axis
+```
+
+------------------------------------------------------------------------
+
+## 2.4.0 Use `geom_col()` to produce stacked bar charts of values
+
+Both `geom_bar()` and `geom_col()` produce similar results but rather than changing the default behaviour of `geom_bar()`, if you want to produce a stacked barchart based on values, you should use the appropriate tool: `geom_col()`. The code is the same except we can use the default parameters to get the same behaviour as above.
+
+```{r, fig.width=12, fig.height=7}
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = embryos, fill=`Infection Date`) + 
+  
+    # 4. Geoms
+    ...   ### 2.4.0 Use geom_col() instead to produce the stacked bar chart
+```
+
+------------------------------------------------------------------------
+
+So you can see we've generated the exact same output but with slightly less code.
+
+### 2.4.1 Dodge your barplots with the `position` parameter
+
+As with our histograms from section **2.2.0** we can choose to unstack our bars and display the categories individually. To do so, you can use the `position` parameter and set it with `position_dodge()` or `position_dodge2()`. Using this option will allow us to see each individual group but each will display a little differently.
+
+Let's start with `position_dodge()`.
+
+```{r, fig.width=12, fig.height=7}
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = embryos, fill=`Infection Date`) + 
+  
+    # 4. Geoms
+    geom_col(position = ...)   ### 2.4.1 Use position_dodge()
+```
+
+------------------------------------------------------------------------
+
+Looking at the **Mock** category, we can see that the values don't appear to sum up to anywhere near 10,000! So where did all of our data go? Looking closely at the bar graph now, it looks like we are only displaying the maximum value for each bar/category. While this appears to be the case, each observation within each group is actually being layered upon one another. Unfortunately, you cannot obtain a subgrouped stack of the values in this way.
+
+Using the `position_dodge2()` option may help to show our data more distinctly. Let's see if that works.
+
+```{r, fig.width=12, fig.height=7}
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = embryos, fill=`Infection Date`) + 
+  
+    # 4. Geoms
+    geom_col(position = ...)   ### 2.4.1 Use position_dodge2() to properly view our data
+```
+
+------------------------------------------------------------------------
+
+We can see from our bar graph now that each observation is graphed as it's own bar! If we wanted to dodge with stacked bars (ie using `position_dodge()`), we would need to use an aggregated set of data to combines observations within replicates.
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 2.4.1:** How would we re-use our code from above to generate a dodged barplot where each each **Infection Date** is the stacked value of embryos across each **doseLevel**?
+:::
+
+```{r, fig.width=12, fig.height=7, eval = FALSE}
+# comprehension answer code 2.4.1
+# Make a dodged bar graph based on total embryo counts and fill by Infection Date across doseLevels
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  # Group and summarize your data
+  ... %>% 
+  ... %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = totalEmb, fill=`Infection Date`) + 
+    # 4. Geoms
+    geom_col(position = position_dodge2())
+```
+
+------------------------------------------------------------------------
+
+### 2.4.2 Flip your data to display horizontally with `coord_flip()`
+
+Our data looks quite squished when displaying the bars vertically. You can have your bars run horizontally instead of vertically by using the `coord_flip()` layer. For this simplicity in this example, we'll return to using `position_dodge()` even though we know it's not quite a correct visualization of our data.
+
+```{r, fig.width=14, fig.height=7}
+
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=doseLevel, y = embryos, fill=`Infection Date`) + 
+    theme(legend.title = element_blank()) + # Update the legend by removing the title
+  
+    # 4. Geoms
+    geom_col(position = position_dodge()) + # Use position_dodge()
+  
+    # 7. Coordinates
+    ...                            ### 2.4.2 Add a coord_flip() layer to our plot
+```
+
+------------------------------------------------------------------------
+
+### 2.4.3 Reorder your categorical x-axis with `fct_rev()`
+
+Looks like our results aren't quite what we wanted on that coordinate flip. If you would rather the vertical order of our categories start with "Mock" instead, you can use the `fct_rev()` function from the `forcats` package.
+
+This is a simple function that does exactly what we think! It will alter the levels in a factor so that they are in reverse order. Recall that our `doseLevel` variable is also a factor. Reordering these our categorical axis would not be as easy if we had not already converted this variable into a factor!
+
+::: {.alert .alert-block .alert-success}
+**More ways to order your factors:** The **forcats** package of the tidyverse actually offers a number of functions that can help to reorder your data based on certain expectations. This can be extremely helpful when, for instance, trying to match your legend to coincide with the vertical order of lines on a linegraph. Check out more functions like **fct_reorder2()** over on the [tidyverse website.](https://forcats.tidyverse.org/index.html)
+:::
+
+Let's see how `fct_rev()` can affect our visualization.
+
+```{r, fig.width=14, fig.height=7}
+# Make a bar graph based on embryo counts and fill by Infection Date
+
+embryo_norm.df %>% 
+  # Filter for N2 observations regardless of infection status
+  filter(wormStrain == "N2", (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    
+    ### 2.4.3 Reorder your x-axis factor. This will become the y-axis!
+    aes(x=...,                
+        y = embryos, fill=`Infection Date`) + 
+    theme(legend.title = element_blank()) +   # Update the legend by removing the title
+  
+    # 4. Geoms
+    geom_col(position = position_dodge()) +   # Use position_dodge()
+
+    # 7. Coordinates
+    coord_flip()                              # Add a coord_flip() layer to our plot
+```
+
+------------------------------------------------------------------------
+
+## 2.5.0 Boxplots provide visual summary statistics of your data
+
+Boxplots are a great way to visualize summary statistics for your data. As a reminder, the thick line in the center of the box is the **median**. The upper and lower ends of the box are the first and third **quartiles** (or 25th and 75th percentiles) of your data. The whiskers extend to the largest value no further than 1.5\*IQR (inter-quartile range - the distance between the first and third quartiles).
+
+Data beyond these whiskers are considered **outliers** and plotted as individual points. This is a quick way to see how comparable your samples or variables are.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/boxplot_dissection.png?raw=true" width="800"/>
+
+The dissection of a boxplot's components shows us how it summarizes data distribution.
+:::
+
+We are going to use boxplots to see the distribution of normalized embryos for N2 across different infections. For this analysis, we'll actually filter our data *twice* in order to make sure we capture the values we want to show.
+
+```{r, fig.width=14, fig.height=7}
+# Let's make a basic boxplot with our embryo data
+embryo_norm.df %>% 
+  # Filter for N2 observations for infection by ERTm5
+  filter(wormStrain %in% c("N2"), 
+          # This will filter for N2/ERTm5 experiments or N2/untreated
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+
+  # Filter again to just get 3 levels of infection
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>%      
+
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=..., y = ...) + # Break data up by experiment along the x-axis
+    # 4. Geoms
+    ...        ### 2.5.0 Switch over to a boxplot geom
+```
+
+------------------------------------------------------------------------
+
+### 2.5.1 Rotate axis text by updating `theme()` and `angle`
+
+Oh no! We can immediately see there are some issues with the plot. Text along the x-axis is overlapping and illegible. Let's fix the text on the x-axis by rotating it 90 degrees. To accomplish this we will use the `theme()` layer.
+
+```{r, fig.width=14, fig.height=7}
+# Access the theme of the plot and update the text angle
+
+embryo_norm.df %>% 
+  # Filter for N2 observations for infection by ERTm5
+  filter(wormStrain %in% c("N2"), 
+          # This will filter for N2/ERTm5 experiments or N2/untreated
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+
+  # Filter again to just get 3 levels of infection
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>%      
+
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=experiment, y = normEmb) + # Break data up by experiment along the x-axis
+    theme(...) +  ### 2.5.1 Rotate the x-axis text
+  
+    # 4. Geoms
+    geom_boxplot()        # 2.5.0 Switch over to a boxplot geom
+```
+
+------------------------------------------------------------------------
+
+### 2.5.2 Justify the axis text through `theme()` and `hjust` or `vjust`
+
+We've updated the angle of our text but they're positioned on somewhat of a "centred" alignment. We can justify the labels such that they align with the x-axis. We will set two parameters in our figure:
+
+-   `hjust` - horizontal justification which ranges from 0 to 1 (0 = left, 1 = right)
+
+-   `vjust` - vertical justification which also ranges from 0 to 1 (0 = top, 1 = bottom)
+
+In the case of our text, we are using the `hjust` to move the labels vertically towards the x-axis while the `vjust` parameter will help to center our text (horizontall) with the x-axis tick marks. If you look in the help menu at `element_text()` you will see that the justification is carried out ***before*** the rotation. While we can specify the parameters of `element_text()` in any order, this does not change the order of when they are executed in the function.
+
+```{r, fig.width=14, fig.height=7}
+# Update our plot to push our text to align with the x-axis
+
+embryo_norm.df %>% 
+  # Filter for N2 observations for infection by ERTm5
+  filter(wormStrain %in% c("N2"), 
+          # This will filter for N2/ERTm5 experiments or N2/untreated
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+
+  # Filter again to just get 3 levels of infection
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>%      
+
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=experiment, y = normEmb) + # Break data up by experiment along the x-axis
+    ### 2.5.2 Adjust the horizontal and vertical justification
+    theme(axis.text.x = element_text(angle = 90, ...)) +  
+  
+    # 4. Geoms
+    geom_boxplot()        # 2.5.0 Switch over to a boxplot geom
+```
+
+------------------------------------------------------------------------
+
+### 2.5.3 Slice your data to display what you'd like
+
+Up until now, we've been doing some simple filtering on our data but you can really slice and subset your data for exactly what you'd like to display. In this case we'll perform multiple filters to choose 2 specific worm strains, at the 72-hour timepoint and drop a number of infection dates that have incomplete data.
+
+As long as you have a tibble at the end of your wrangling, you can try to plot it!
+
+We'll also play around with the aesthetic mapping to produce a ***grouped box plot*** by designating colour based on `doseLevel` and we will facet the plots between our 2 selected worms strains.
+
+```{r, fig.width=14, fig.height=7}
+# Update our plot to push our text to align with the x-axis
+
+embryo_norm.df %>% 
+  ### 2.5.3 Filter for infections by LUAm1 over specific dates
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         expTimepoint == 72,
+         # Drop these 3 replicate dates
+         ... %in% c("200912", "200915", "190423"),
+         (sporeStrain == "LUAm1" | doseLevel == "Mock")) %>% 
+  
+  # Filter just for Mock or Medium infection
+  filter(doseLevel %in% c("Mock", "Medium")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    ### 2.5.3 Plot by infection date and colour by doseLevel
+    aes(x=`Infection Date`, y = normEmb, fill=...) + 
+    # Adjust the horizontal and vertical justification
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +  
+
+    # 4. Geoms
+    geom_boxplot() +        # 2.5.0 Switch over to a boxplot geom
+
+    # 6. Facets
+    facet_wrap(~wormStrain) # Facet output by worm strain
+```
+
+We will be using this graph as a base for customization later in the lesson.
+
+------------------------------------------------------------------------
+
+## 2.6.0 Beeswarm Plots show all of your data points
+
+Even though boxplots give us summary statistics on our data, it is useful to be able to see where our individual data points are. We've already used `geom_rug()` to help visualize our data distribution in density plots.
+
+Similarly, for a boxplot we can add the data as a separate layer using `geom_point()` to place dots on top of our boxplot, or use `geom_jitter()` to spread our points out a bit. However, a **beeswarm plot** places data points that are overlapping (ie same value) next to each other instead of on top of each other, so we can get a better picture of the distribution of our data. We'll start off by looking at the `geom_beeswarm()` function from the `ggbeeswarm` package.
+
+We'll subset our data to just 3 infection dates using N2 versus the ERTm5 spore strain. After generating the ggplot object, we'll save it into a variable so we can update it later with `geom_beeswarm()` layer.
+
+::: {.alert .alert-block .alert-warning}
+**Filter out those 0 values!** Remember how I just warned your about log transformations? The `ggbeeswarm()` package has some issues with -inf values so be sure to filter them out before trying to work with this kind of layer!
+:::
+
+```{r, fig.width=14, fig.height=7}
+
+# Save our boxplot object to a variable
+boxplot <-
+
+  embryo_norm.df %>% 
+  # Filter for infections by LUAm1 over specific dates
+  filter(wormStrain %in% c("N2"), 
+         expTimepoint == 72,
+         ... %in% c("200704", "200711", "200718"),
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=`Infection Date`, y = normEmb, fill=doseLevel) + # Plot by infection date and colour by doseLevel
+  
+    ### 2.5.2 Adjust the horizontal and vertical justification
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +  
+  
+    # 4. Geoms
+    geom_boxplot(alpha = 0.3) +        # 2.5.0 Switch over to a boxplot geom
+  
+    # 6. Facets
+    facet_wrap(~wormStrain)
+
+# Display the resulting boxplot
+boxplot
+```
+
+------------------------------------------------------------------------
+
+### 2.6.1 Store `ggplot` objects as variables that you can continue to update
+
+As you can see above, an option with `ggplot2` is to save your plot into a *ggplot object*. This works well if you know you are only changing one or two elements of your plot, and you do not want to keep retyping code. What we are going to vary here is how the data points are displayed.
+
+Now, we can simply overlay the points with `geom_beeswarm()`. Notice that this `geom` comes from the `ggbeeswarm` package and is not a part of `ggplot2` itself. However, it was built to ***work with*** `ggplot2` objects!
+
+```{r, fig.width=14, fig.height=7}
+# Load the ggbeeswarm package
+library(ggbeeswarm)
+
+# Add a geom to our saved plot
+boxplot + ...
+```
+
+------------------------------------------------------------------------
+
+Uh oh! What's happened above here? As you can see, all our data points have been split by `Infection Date` but *not* subgrouped by the `doseLevel` variable. In order to plot our data in the correct subgroups, we'll need to set the `dodge.width` parameter. You can think of this conceptually like dodging in our bar graphs.
+
+Let's set the `dodge.width` to 0.78 and see how that goes.
+
+```{r, fig.width=14, fig.height=7}
+# Update the dodge width to help separate our beeswarm plots
+
+# Add a geom to our saved plot
+boxplot + geom_beeswarm(...)
+```
+
+------------------------------------------------------------------------
+
+### 2.6.2 `cex` is a common parameter used to adjust plotting properties of text and symbols
+
+As you can see above, the spacing between points is quite even. Is there an way to change this spacing so the points are further apart?
+
+Depending on the function or geom you may often find that the `cex` parameter can be adjusted to alter some aspect of how a geom or other graphical layer is displayed. In the case of `geom_beeswarm()` we can increase the spacing *between* data points to make its distribution a bit clearer.
+
+```{r, fig.width=14, fig.height=7}
+# Update the cex parameter
+boxplot + geom_beeswarm(dodge.width = 0.78, ...) 
+```
+
+------------------------------------------------------------------------
+
+Now, while it is nice to see all of our data points, it does appear quite crowded. We see problems especially at the lower area of the plot where there are observations with a value of 0. While we can guess at which grouping these belong to, we cannot know with absolulte certainty. For our audience, this is also a less than ideal presentation of these crowded data points.
+
+### 2.6.3 Reduce overplotting with `geom_quasirandom()`
+
+If you think you will have many points to display or if you want to avoid adjusting parameters with each new plot, consider using a `geom_quasirandom()` to give the empirical distribution of the stripplot to avoid overplotting. It is a geom included with the `ggbeeswarm` package and can simplify the look and creation of your plots. The distribution mirrors that of a KDE plot and the points are plotted within this theoretical space as a layer on top of your boxplot. We'll include the `width` parameter to determine how widely each of our distributions are plotted.
+
+```{r, fig.width=14, fig.height=7}
+# replace geom_beeswarm() with a geom_quasirandom()
+boxplot + geom_quasirandom(dodge.width = 0.78, 
+                           width = ..., 
+                           alpha = ...) # Set the alpha to make overlapping points more visible
+```
+
+Other spacing and distribution options are available at <https://github.com/eclarke/ggbeeswarm>.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/quasirandom_vs_simple_beeswarm.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+# 3.0.0 Customizing your plots
+
+### 3.0.1 Attributes Related to Your Data
+
+Up to this point, we've discussed some of the ways to alter our plots in ways to best visualize our data by dabbling with `colour`, `fill`, `shape`, and `position`. This has been accomplished mostly through the `aes()` attribute. Depending on the nature of the layers or elements you add, we can alter their characteristics individually to customize how they are displayed.
+
+Plot elements relating to your data include things like axis labels, titles, colour or shapes that represent subsets of your data, scaling that is data-dependent, legends, and other data-driven parameters.
+
+For customizing your data it is possible to change:
+
+-   `colour()`
+-   `fill()`
+-   `shape()`
+-   `size()`
+-   `alpha()`
+
+Titles and axis labels can be added using:
+
+-   `ggtitle()`
+-   `xlab()`
+-   `ylab()`
+
+We have seen in the above examples that colour can be applied to discrete or continuous variables. We can also use colour (shape, etc.) to represent outliers. In this dataset, outliers beyond the whiskers (above or below 1.5\*IQR) can be coloured red.
+
+Let's update our base boxplot of from section **2.5.2** where we'll make a new variable combining `Infection Date`, `sporeStrain`, and `doseLevel` to plot across the x-axis. We'll also quickly update it to include some colour:
+
+```{r, fig.width=14, fig.height=7}
+# Update our plot to push our text to align with the x-axis
+
+embryo_norm.df %>% 
+  # Filter for N2 observations to include infection by ERTm5 or any Mock infections
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  # We're going to make a new variable here that combines just Infection date, sporeStrain, and doseLevel
+  unite(col = ..., `Infection Date`, sporeStrain, doseLevel, sep = "_") %>%
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=expKey, y = embryos, 
+        fill = ...) + ### 3.0.1 Update the fill colour using the experiment variable
+    
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +  
+  
+    # 4. Geoms
+    geom_boxplot() +
+  
+    # 6. Facets
+    facet_wrap(~wormStrain) # Facet our data by worm strain
+```
+
+------------------------------------------------------------------------
+
+## 3.1.0 Adding a title and axis labels
+
+Let's start off by sprucing up our plot with
+
+-   `ggtitle()` to add a title to the plot.
+-   `ylab()` to rename and capitalize our variable name.
+-   `xlab()` to remove the "expKey" label from the plot. Note that I remove the x-axis label by using the keyword `NULL`.
+-   `guides()` to remove the legend from the right-hand side.
+
+We'll also update the boxplot outlier colour from black to red using the `outlier.colour` parameter in `geom_boxplot()`.
+
+```{r, fig.width=14, fig.height=7}
+# Update the various titles on our plot
+
+embryo_norm.df %>% 
+  # Filter for N2 observations to include infection by ERTm5 or any Mock infections
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  # We're going to make a new variable here that combines just Infection date, sporeStrain, and doseLevel
+  mutate(expKey = paste(`Infection Date`, sporeStrain, doseLevel, sep="_")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=expKey, y = embryos, 
+        fill = expKey) + ### 3.0.1 Update the fill colour using the experiment variable
+    
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +  
+
+    ### 3.1.0 Update our titles and remove the legend
+    ...("Reproductive capability after infection") +
+    ...(NULL) +
+    ...("Embryos") + 
+    ...(fill="none") +
+
+    # 4. Geoms
+    geom_boxplot(outlier.colour = "red") + # Specify the colour of outliers
+  
+    # 6. Facets
+    facet_wrap(~wormStrain) # Facet our data by worm strain
+```
+
+------------------------------------------------------------------------
+
+### 3.1.1 Use the `labs()` command to add multiple labels
+
+Using individual commands to alter the x-, y-axis titles and the title of your plot can give you control over aspects of each individual element like font, size, and colour. If you want them to all have a uniform aesthetic (ie unaltered), you can simply use the `labs()` command to produce the text for each title. This layer can include legend titles too!
+
+```{r, fig.width=14, fig.height=7}
+# Update the various titles on our plot with labs()
+
+embryo_norm.df %>% 
+  # Filter for N2 observations to include infection by ERTm5 or any Mock infections
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  # We're going to make a new variable here that combines just Infection date, sporeStrain, and doseLevel
+  mutate(expKey = paste(`Infection Date`, sporeStrain, doseLevel, sep="_")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=expKey, y = embryos, 
+        fill = expKey) + ### 3.0.1 Update the fill colour using the experiment variable
+    
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +  
+
+    # Update our titles and remove the legend
+    ### 3.1.1 Use the labs() command to set all of your labels
+    ...(title = "Reproductive capability after infection",
+         x = NULL,
+         y = "Embryos") +
+    guides(fill="none") +
+
+    # 4. Geoms
+    geom_boxplot(outlier.colour = "red") + # Specify the colour of outliers
+  
+    # 6. Facets
+    facet_wrap(~wormStrain) # Facet our data by worm strain
+```
+
+------------------------------------------------------------------------
+
+### 3.1.2 Assigning or altering labels on your plot
+
+Looking at our strain labels for each facet, they are noticeably small and not necessarily self-explanatory. Let's update the strain label values on these titles so they are more informative and update their themes to be more visible. This can be done in a couple of ways.
+
+One way would be to change the values in the dataset using string manipulation. A second way, would be using the `labeller()` function. I can make a vector of the updated names to replace **'N2'** and **'JU1400'**. The data is split by worm strain in the `facet_grid()` and this is where we pass our labels to `labeller()`, which will output the names on the strip label. At the same time, we'll increase the font size and bold it as well using the `theme()` layer.
+
+I am now going to save this plot in a *ggplot object*, since we are going to use this as our base plot for the next section.
+
+```{r, fig.width=14, fig.height=7}
+
+# Make a named character vector for our labels
+wormStrain_labels <- c(N2 = "N2 lab reference", JU1400 = "JU1400 wild isolate")
+
+# Assign our plot to an object for alteration later on
+my_plot <-
+
+  embryo_norm.df %>% 
+  # Filter for N2 observations to include infection by ERTm5 or any Mock infections
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  # We're going to make a new variable here that combines just Infection date, sporeStrain, and doseLevel
+  mutate(expKey = paste(`Infection Date`, sporeStrain, doseLevel, sep="_")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=expKey, y = embryos, 
+        fill = expKey) + ### 3.0.1 Update the fill colour using the experiment variable
+    
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),   
+          ### 3.1.2 Update the facet title font
+          ... = element_text(face = "bold", size = 12)                            
+         ) +  
+
+    # Update our titles and remove the legend
+    # Use the labs() command to set all of your labels
+    labs(title = "Reproductive capability after infection",
+         x = NULL,
+         y = "Embryos") +
+    guides(fill="none") +
+
+    # 4. Geoms
+    geom_boxplot(outlier.colour = "red") + # Specify the colour of outliers
+  
+    # 6. Facets
+    facet_wrap(~wormStrain, labeller = ...) ### 3.1.2 rename the worm strains
+  
+# display our plot
+my_plot
+```
+
+------------------------------------------------------------------------
+
+## 3.2.0 Colour palettes!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/colour_visualizations.jpg?raw=true" width="700"/>
+:::
+
+A common custom modification is to change colours from `ggplot2`'s default rainbow palette. There are many reasons to change a colour palette including
+
+-   making it easier on the reader's eye.
+-   making it colour-blind friendly.
+-   plots with continuous data should use good colour spectra for accurate representation.
+
+Let's create our own colour palette for each `experiment` in our boxplot.
+
+### 3.2.1 A Note on Colour Palettes
+
+There are 3 main types of colour palettes in the `RColorBrewer` package: sequential, diverging and qualitative. We'll take a few moments to explore each to discern its purpose.
+
+### 3.2.1.1 Use sequential colour palettes to display low to high values
+
+*Sequential*
+
+-   Implies an order to your data
+
+-   Light to dark implies low values to high values for instance.
+
+-   Think about using these for purposes such as heatmaps when you would like to see a spectrum of distinguishable shades that also suggest some kind of ordinality.
+
+```{r}
+# Load the RColorBrewer library
+library(RColorBrewer)
+
+# display the sequential colour palettes
+display.brewer.all(type = "seq")
+```
+
+------------------------------------------------------------------------
+
+### 3.2.1.2 Use diverging colour palettes to highlight the middle and extremes of a distribution
+
+*Diverging*
+
+-   Low and high values are extremes, and the middle values are still important to distinguish
+
+-   Still goes from light to dark, but 3 colours mainly used.
+
+-   This can also be useful for certain heatmaps if middle values also have an important meaning - such as a kind of inflection point between positive and negative values.
+
+A good example is RNAseq expression data where fold-change might be in the positive or negative direction. Values in the middle range suggest little to no change from control samples and help to distinguish from genes with more interesting changes.
+
+```{r}
+# Display the diverging colour palettes
+display.brewer.all(type = "div")
+```
+
+------------------------------------------------------------------------
+
+### 3.2.1.3 Use qualitative colour palettes for categorical data
+
+*Qualitative*
+
+-   There is no quantitative relationship between colours.
+
+-   This is usually used for categorical data to clearly differentiate between unrelated groups.
+
+-   The lack of relationship between colours helps to highlight the distinction between categorical groups.
+
+```{r}
+display.brewer.all(type = "qual")
+```
+
+------------------------------------------------------------------------
+
+### 3.2.2 Add a colour palette to a plot like a layer
+
+Let's test one of the `RColorBrewer` palettes out on our data. We'll add it as a layer to `my_plot` using `scale_fill_brewer()` to override the fill mappings defined in the `aes()` layer of the plot.
+
+```{r, fig.width=14, fig.height=7}
+my_plot + scale_fill_brewer(palette = "Spectral")
+```
+
+------------------------------------------------------------------------
+
+### 3.2.2.1 Colour palettes are not vector recycled when plotting in `ggplot`
+
+Notice the warning we received: **"n too large..."**? Note that we have **22** different experimental categories along the x-axis but the `Spectral` palette only has **11** colours. Unlike when we saw vector recycling in previous lectures, this does not occur when supplying a colour palette with the `scale_fill_brewer()` layer to our plot. In generating our plot, we only colour the first **11** colours in each facet.
+
+------------------------------------------------------------------------
+
+### 3.2.3 `RColorBrewer` colour palettes can be created with `brewer.pal()`
+
+Many colour palettes now exist. I'll showcase a couple that work nicely with `ggplot2`. These packages also have colour-blind friendly options.
+
+`RColorBrewer` has options for these 3 types of palettes, which you can see with `display.brewer.all()`. With a smaller dataset, we could make a call in `ggplot` directly to `scale_fill_brewer()`, which just requires choosing one of `RColorBrewer`'s palettes, such as "Spectral". However, we have 22 categories and these palettes have 8-12 colours, so we have to get creative.
+
+Using the `brewer.pal()` function, we can pull different colours from palettes of our choosing. In our case, I have simply taken the 2 qualitative palettes that each have a length of 12, put them into one palette, and made sure the resulting vector of colour values were unique.
+
+We can then pass this *combined* colour palette to `ggplot` via a "native" layer, `scale_fill_manual()`.
+
+```{r, fig.height=9}
+display.brewer.all()
+```
+
+------------------------------------------------------------------------
+
+Looks like we can use the `Paired` and `Set3` palettes since they both have 12 colours that seem distinct enough. There may be some close colours though.
+
+```{r}
+# Generate 2 palettes from the longest ones
+palette1 <- brewer.pal(12, "...")
+palette2 <- brewer.pal(12, "...")
+
+# combine into a single palette
+custom <- unique(c(palette1, palette2))
+
+# Do we still have enough colours?
+custom
+length(custom)
+```
+
+------------------------------------------------------------------------
+
+Looks like we have enough colours to satisfy our needs. Notice that these are coded using a hexadecimal system? Let's provide this vector as input.
+
+```{r, fig.width=14, fig.height=7}
+# Update our plot by adding colour
+my_plot + ...(values = custom)
+```
+
+------------------------------------------------------------------------
+
+### 3.2.4 You can always pick your own colours
+
+You can always choose a vector of your own colors using this [R color cheatsheet](https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf).
+
+::: {.alert .alert-block .alert-success}
+**Hexadecimal colours:** The RGB colour scheme is represented by 3 colour values (Red, Green and Blue) using a colour scale between 0-255 for each. This blending of shades produces the colours we see and can be represented by a Hexadecimal value ranging from **000000** to **FFFFFF**. Use an [RGB colourpicker](https://www.rapidtables.com/web/color/RGB_Color.html) if you are obsessed with picking your very own colour palette.
+:::
+
+If you just want a repeating patterns of colours, you can use the `rep()` command to help you out too!
+
+```{r}
+# Reminder of how the rep() command works
+rep(c(1,2,3,4),  # The pattern to repeat
+    4)           # The number of time to repeat it  
+```
+
+```{r, fig.width=14, fig.height=7}
+# Fill the boxplot using a rep() command
+my_plot + scale_fill_manual(values=rep(c("...", "cornflowerblue", "grey", "yellow", "orange", "#FF0000"), 4))
+```
+
+------------------------------------------------------------------------
+
+### 3.2.5 Colour blind accessible palettes can be found in the `viridis` package
+
+Sometimes you may wish to work with a colour palette that best represents a ***continuous*** series of diverging values. In this case you may also want to ensure your colour palette avoids issues for readers that are printing in greyscale or those that may be colour-blind. The `viridis` package contains some colour-blind accessible palettes that can also help to really differentiate between the extremes of your spectrum.
+
+The `viridis` package also has some nice color options (<https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html>). While these might all be diverging palettes (qualitative is best for our `experiment` variable), we will showcase a couple here.
+
+```{r, fig.width=14, fig.height=7}
+# Load the viridis package
+library(viridis)
+
+# Example 1 with viridis
+my_plot + ...(discrete = TRUE)
+
+# Example 2 with viridis (plasma)
+my_plot + scale_fill_viridis(discrete = TRUE, option = ...)
+```
+
+`RSkittleBrewer` is another option for funky colour palettes. `ggsci` has a variety of color palettes inspired by different scientific journals as well as television shows (<https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>).
+
+------------------------------------------------------------------------
+
+## 3.3.0 Theme: attributes unrelated to your data
+
+As mentioned earlier, it is possible to customize ***every single aspect*** of a `ggplot`. Most of this occurs with a call to `theme()`, which you can think of as modifying everything BUT your data. For example, my axis labels can be modified, but they (hopefully) have something to do with my data. However, changing the size of the text or the font of the labels is unrelated to my data, and the same structure (text font & size) could be carried over to other plots if I saved my own theme.
+
+Things that you can change with `theme()` include the axis, legend, panels, gridlines, or background.
+
+Each *element* of a theme inherits from one of:
+
+-   `element_text` (text elements like font, colour, size, face (bold, italics), alignment),
+-   `element_line` (grid lines, axis lines),
+-   `element_rect` (panels and backgrounds - colour, size, fill),
+-   `element_blank` (assigns nothing, usually when you are trying to get rid of something),
+-   `element_grob` (making a grid grob).
+
+`ggplot2` comes with some themes - I suggest starting with the one that is close to what you want, and then modifying from there.
+
+Check out these *themes*:
+
+-   `theme_minimal()`
+-   `theme_classic()`
+-   `theme_bw()`
+-   `theme_void()`
+-   `theme_dark()`
+-   `theme_gray()`
+-   `theme_light()`
+
+You can look at the default for each theme simply by typing it into the console.
+
+```{r}
+theme_bw
+```
+
+And this is what `theme_bw()` practically looks like:
+
+```{r, fig.width=14, fig.height=7}
+# Alter the theme of my_plot
+my_plot + ...
+```
+
+------------------------------------------------------------------------
+
+### 3.3.1 Remember that attribute changes are overridden by order of appearance
+
+Notice how that last addition of the `theme_bw()` layer overrides my previous changes to the plot like x-axis text orientation? When adding `theme()` layers, the latest layer takes precedence over previous layers. Any conflicts between `theme()` layers are overridden by the newly added layers.
+
+In our previous example, the angle of the x-axis text is returned from a vertical to a horizontal orientation since the horizontal orientation is specifically set in the `theme_bw()` layer.
+
+Here is an example of `theme_dark()`. I am going to override the default x-axis text angle of this theme by modifying it AFTER I call `theme_dark()`.
+
+```{r, fig.width=14, fig.height=7}
+# Alter my_plot and fix the x-axis
+my_plot + 
+  theme_dark() + 
+  ...(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+```
+
+```{r, fig.width=14, fig.height=7}
+# When building plots from scratch, be sure to place the theme_* above other theme changes
+
+embryo_norm.df %>% 
+  # Filter for N2 observations to include infection by ERTm5 or any Mock infections
+  filter(wormStrain %in% c("N2", "JU1400"), 
+         (sporeStrain == "ERTm5" | doseLevel == "Mock")) %>% 
+  filter(doseLevel %in% c("Mock", "Medium", "High")) %>% 
+  # We're going to make a new variable here that combines just Infection date, sporeStrain, and doseLevel
+  mutate(expKey = paste(`Infection Date`, sporeStrain, doseLevel, sep="_")) %>% 
+  
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=expKey, y = embryos, 
+        fill = expKey) + # Update the fill colour using the experiment variable
+    
+    ### 3.3.1 Add the dark theme first!
+    ... +
+    ### 3.3.1 Then make your additional thematic adjustments
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+          strip.text.x = element_text(face = "bold", size = 12) 
+         ) +  
+
+    # Update our titles and remove the legend
+    # Use the labs() command to set all of your labels
+    labs(title = "Reproductive capability after infection",
+         x = NULL,
+         y = "Embryos") +
+    guides(fill="none") +
+
+    # 4. Geoms
+    geom_boxplot(outlier.colour = "red") + # Specify the colour of outliers
+  
+    # 6. Facets
+    facet_wrap(~wormStrain, labeller = labeller(wormStrain = wormStrain_labels)) # rename the worm strains
+```
+
+------------------------------------------------------------------------
+
+### 3.3.2 More themes are found in the `ggthemes` package
+
+`ggthemes` is a package of themes. Some of these themes are based off of graphs seen in print or on websites (the economist, wall street journal, fivethirtyeight) or to match standard tools (excel, google docs).
+
+::: {.alert .alert-block .alert-success}
+**See more themes:** Information about the ggtheme options can be found at the [Github homepage](https://github.com/jrnold/ggthemes).
+:::
+
+Here are 2 possible themes.
+
+```{r, fig.width=14, fig.height=7}
+# Load the ggthemes package
+library(ggthemes)
+
+# Add the economist theme to our plot
+my_plot + 
+  ... + # Do you enjoy blue background panels?
+  theme(axis.text.x = element_text(angle=90, hjust=1)) # fix the x-axis
+```
+
+```{r, fig.width=14, fig.height=7}
+# An example of replicating the style from "Stata" software
+my_plot + 
+  ... + # Blue Plot background with white paneling
+  theme(axis.text.x = element_text(angle=90, hjust=1))
+```
+
+------------------------------------------------------------------------
+
+## 3.4.0 Make a customized theme
+
+You can also make your own custom theme as demonstrated here: <http://joeystanley.com/blog/custom-themes-in-ggplot2>
+
+I am going to show you how to customize a plot, starting from `theme_minimal()` because I don't like the grey backgrounds or harsh axis lines.
+
+```{r, fig.width=14, fig.height=7}
+# Start by using the minimal theme
+my_plot + 
+  theme_minimal()
+```
+
+------------------------------------------------------------------------
+
+### 3.4.1 Fix your plot elements with the `theme()` layer
+
+Depending on the layout of your plot you can institute changes to the theme as you build your plot or afterwards. Just remember, each call to `theme()` will override any previous calls that conflict, so the order of changes is important. Many arguments to `theme()` represent major element categories, but there can be arguments that specifically represent sub-categories or sub-elements.
+
+Things I don't like about this plot and their solutions:
+
+| Problem                                   | Solution                          | Layer / Command  |
+|:------------------------------------------|:----------------------------------|:-----------------|
+| x-axis labels overlap and are small       | rotate labels                     | **axis.text.x**  |
+| facet labels are smaller than axis labels | change size and face              | **strip.text.x** |
+| title is not centered                     | adjust position horizontally      | **plot.title**   |
+| need a border to separate strains         | create a border around each panel | **panel.border** |
+| add y axis ticks                          | update y axis ticks               | **axis.ticks.y** |
+
+::: {.alert .alert-block .alert-success}
+**Theme layers are like onions:** No, not smelly. There are just a lot of them. It isn't necessary to remember all of this syntax! It's certainly helpful but you can just bookmark the [ggplot2 theme reference page](http://ggplot2.tidyverse.org/reference/theme.html) instead.
+:::
+
+As mentioned the last call to `theme()` will override previous calls that conflict. Therefore, if we want to start with `theme_minimal()` as our base, it has to be in our code BEFORE the other modifications.
+
+```{r, fig.width=14, fig.height=7}
+
+# Add our own theme elements
+my_plot + 
+  theme_minimal() + # start with theme minimal
+  theme(axis.text.x = ...(angle = 90, hjust = 1, vjust=0.5, size=14), # Adjust x-axis text and position
+        panel.border = ...(fill=NA), # Add a panel border to each facet
+        strip.text.x = element_text(face = "bold", size = 16), # alter the facet title text
+        plot.title = element_text(hjust=0.5, size = 18), # Centre that plot title
+        axis.ticks.y = ...()) # Add some little tick marks on the y-axis
+
+# Note that you could break this into multiple theme() calls as well!
+```
+
+------------------------------------------------------------------------
+
+There are a lot of way to customize your plots! Keep exploring and playing with parameters!
+
+### 3.4.2 Save your personalized themes to a variable
+
+You may be wondering, "Can I save this ***awesome*** theme to apply to all my ***amazing*** plots?" Yes, there are a number of ways to import your themes to other scripts if you learn to save your data objects to file in **Lecture 07**! For now, you can assign your themes to a variable and apply them to plots like any other layer.
+
+::: {.alert .alert-block .alert-info}
+**Work smarter not harder:** A key advantage to saving your theme to a variable is that once you save it, you can apply it easily to all of your plots **but** you can also update and tweak your theme in a single place within your code or notebook, rather than across multiple code cells, etc.!
+:::
+
+```{r, fig.width=14, fig.height=7}
+# Save you theme to a variable
+theme_personal <-
+  theme_minimal() + # start with theme minimal
+  # Our previous theme update
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5, size=14),
+        panel.border = element_rect(fill = NA),
+        strip.text.x = element_text(face = "bold", size = 16),
+        plot.title = element_text(hjust=0.5, size = 18),
+        axis.ticks.y = element_line())
+```
+
+```{r, fig.width=14, fig.height=7}
+# Apply your theme as a layer
+my_plot + theme_personal
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 3.0.0:** Alter the **my_plot** background to a cornflower blue and add major/minor gridlines in black. You can accomplish this by updating the **theme()** layer. Hint: you can use the **plot.background**, **panel.grid.minor**, and **panel.grid.major** arguments.
+:::
+
+```{r, fig.width=14, fig.height=7, eval = FALSE}
+
+# comprehension answer code 3.0.0 - updating the plot background and gridlines
+# Fill the blanks
+my_plot + 
+  theme_minimal() + # start with theme minimal
+  # Our previous theme update
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5, size=14),
+        panel.border = element_rect(fill = NA),
+        strip.text.x = element_text(face = "bold", size = 16),
+        plot.title = element_text(hjust=0.5, size = 18),
+        axis.ticks.y = element_line()) +
+
+  # Our current theme update
+  theme(..., # Set the background to a rectangle with new colour
+        ..., # Add minor grid lines
+          ...) # Add black major grid lines
+```
+
+------------------------------------------------------------------------
+
+# 4.0.0 Saving your figures
+
+Up until now, we have taken for granted that our plots have been displayed using a *Graphic Device*. For our Markdown Notebooks we can see the graphs right away and update our code. You can even save them manually from the output display but sometimes you may be producing multiple visualizations based on large data sets. In this case it is preferable to save them directly to file.
+
+## 4.1.0 Graphics Devices
+
+-   Plots must be created on a graphics device
+
+-   The default graphics device is almost always the screen device, which is most useful for exploratory analysis.
+
+-   File devices are useful for creating plots that can be included in other documents or sent to other people.
+
+-   For file devices, there are vector (pdf, svg, postscript) and bitmap (png, jpeg, tiff) formats.
+
+-   Vector formats are good for line drawings and plots with solid colors using a modest number of points.
+
+-   Bitmap formats are good for plots with a large number of points, natural scenes or web-based plots.
+
+(<https://rdpeng.github.io/Biostat776/notes/pdf/grdevices.pdf>)
+
+`ggplot2` has its own function for saving its graphics: `ggsave()`. This allows us to skip the step of explicitly calling separate graphics devices and shutting them down afterwards (if you have saved plots in base R or `lattice`, this will sound familiar to you).
+
+You can send the plot object to the screen device to preview your image, and then save that image by specifying the file device. If you do not specify the device type, `ggsave()` will guess it from your filename extension (pdf, jpeg, tiff, bmp, svg or png). Note that this will save whatever graphic was last on your screen device.
+
+With `ggsave()` you can minimally input the filename you would like to have, and the path to your file.
+
+```{r}
+# Save the last plot displayed by ggplot
+ggsave("...", path = "data")
+```
+
+------------------------------------------------------------------------
+
+However, in some cases you want to tailor your output. You can specify the width, height and units of your image, or you can apply a scaling factor (the 'eyeballing' approach). You can also specify the plot object you want to save instead of whatever was on your graphics device last using the 'plot' parameter. Note that this time I have combined the path with the filename, and called the file device type separately.
+
+```{r}
+# Save our altered plot to an object
+saved_plot <- my_plot + theme_personal
+
+# Specifically make saved_plot a pdf!
+ggsave("data/crazy_blue_graph2.pdf", # The path for our output
+       plot = saved_plot, # The object we want to save
+       device = "pdf", # explicitly name the type of file we want to make, despite the name
+       scale = 2, width = 250, height = 110, units = "...") # Set some parameters for the final size
+```
+
+No image is sent to the screen device when a file is saved in this manner.
+
+------------------------------------------------------------------------
+
+# 5.0.0 Taking it up a notch with the `ggpub` package
+
+There are many fantastic R packages to analyze and visualize your data. As a group, we are likely working in a variety of specialized areas. The plots we have made so far today should be useful for data exploration for many different kinds of data. In the next section we are going to preview some more complex visualization types, but since these take more time to go through and not everyone may be interested in interactive graphics, network diagrams, time-series analysis, or geospatial data, we will not be plotting all of these together. We will, however learn how to arrange multiple plots per page, and also how to make an upset plot.
+
+## 5.1.0 Multiple plots on one page (ie. for publication images) with `ggarrange()`
+
+There are a variety of methods to mix multiple graphs on the same page, however `ggplot2` does not work well with all of them. I am going to work with a package base called `ggpubr` which allows us to align the axes of our plots. This package relies on `gridExtra` (which allows us to arrange plots) and works well with `ggplot2`.
+
+For a demonstration, we are going to take 3 plots that we made earlier (a beeswarm plot, a KDE plot, and a scatter plot), save them as objects, and then arrange and align them in the same figure. (<http://www.sthda.com/english/rpkgs/ggpubr/>)
+
+`ggarrange()` is a function from `ggpubr` that takes your plots, their labels, and how you would like your plots arranged in rows and columns. It takes the form of:
+
+```         
+ggarrange(
+  ...,
+  plotlist = NULL,
+  ncol = NULL,
+  nrow = NULL,
+  labels = NULL,
+  label.x = 0,
+  label.y = 1,
+  hjust = -0.5,
+  vjust = 1.5,
+  font.label = list(size = 14, color = "black", face = "bold", family = NULL),
+  align = c("none", "h", "v", "hv"),
+  widths = 1,
+  heights = 1,
+  legend = NULL,
+  common.legend = FALSE,
+  legend.grob = NULL
+)
+```
+
+Of the parameters some relevant ones for us are:
+
+1.  `...` - the list of plots to be arranged as a grid or alternatively use...
+
+2.  `plotlist` - An optional `list` of plots to display
+
+3.  `labels` - An optional `list` of labels for each plot
+
+4.  `ncol` - number of columns in the plot grid (optional)
+
+5.  `nrow` - number of rows in the plot grid (optional)
+
+Some examples of simple grid arrangements are :
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/ggarrange_examples.png?raw=true" width="700"/>
+:::
+
+To start, we want our boxplot and dot plot side by side. If you picture each plot as a square in a grid, we need two columns (one for each plot, `ncol = 2`) and one row (since they are side by side, `nrow = 1`).
+
+```{r}
+# Load the ggpubr package
+library(ggpubr)
+
+# Create a KDE
+densityPlot <- 
+  embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=normEmb, fill=`Infection Date`) + 
+    # 3. Scaling
+    xlim(0.1, 2) +             ### 2.1.1 add x-axis limits
+    # 4. Geoms
+    geom_density(alpha=0.2) +
+    geom_rug()
+    
+# Create a scatter plot
+scatterPlot <- 
+  infection_sig.df %>% 
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected) +
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5, alpha = 0.3) +
+    # 5. statistics
+    stat_smooth(method = loess, level = 0.8) + ### 1.3.1 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+
+# Set up a beeswarm for our example
+beeswarmPlot <- 
+  boxplot + 
+  theme(axis.text.x = element_text(angle=0, hjust=0.5, vjust = 1)) +
+  geom_quasirandom(dodge.width = 0.78, width = 0.1, alpha = 0.5) 
+```
+
+------------------------------------------------------------------------
+
+Now lets arrange the scatter and KDE plots beside each other in a single row. To accomplish that we consider that `nrow=1` and `ncol=2`.
+
+```{r, fig.width=14, fig.height=7}
+
+# Arrange the two plots in a single page    
+ggarrange(..., ..., # Plots (and their order)
+          labels = c("A", "B"),
+          ncol = ..., nrow = ...)
+```
+
+------------------------------------------------------------------------
+
+### 5.1.1 Move legend elements around through the `guides()` and `theme()` layers
+
+While the grid areas are of the same size, the backgrounds are not. Let's adjust the legend of our histogram so that it is in the top right corner of the plot, and remove the white background. The movement of the legends requires a couple of layer steps to accomplish:
+
+1.  `guides()` - using this layer will allow us to denote the overall position of any attribute guide (aka legend) we've created. There are a few [different possible kinds of guides](https://ggplot2.tidyverse.org/reference/guides.html) like `guide_bins`, `guide_colourbar`, and `guide_legend` which will be chosen based on your type of data/legend.
+
+2.  `themes()` - we are already acquainted with this a little, but within this layer we will use the `legend.position.inside` parameter which uses a tuple (pair of numbers) where each value is {0,1}. (0,0) is the lower-left and (1,1) is the upper-right of a graph. You can also set multiple ***unassigned*** legends with the `legend.position` parameter if they don't already have a designation in the `guides()` or other layers. With this paremeter, you can specify "left", "right", "top", and "bottom" for positions *outside* your graph.
+
+3.  The `legend.background` parameter and others can be set to elements like a `element_rect()` but they can also be removed using the placeholder `element_blank()`. We'll use this to make the legends backgrounds transparent when placed inside your plot panels.
+
+```{r}
+##----------## Alter our KDE ##----------##
+densityPlot <- 
+  embryo_norm.df %>% 
+  # Filter for uninfected N2 observations
+  filter(wormStrain == "N2", doseLevel == "Mock") %>% 
+  # 1. Data
+  ggplot(.) +
+    # 2. Aesthetics
+    aes(x=normEmb, fill=`Infection Date`) + 
+    ### 5.1.1 Set the anchor position of the legend box.
+    theme(legend.justification=c(1,1),      
+          ### 5.1.1 Reposition the legend based on its anchor to the top right
+          legend.position.inside=c(1,1),          
+          ### 5.1.1 Remove the background of the legend
+          legend.background = element_blank(),   
+          plot.title = element_text(hjust=0.5, size = 18)) + 
+    
+    ### 5.1.1 Send the legend to the inside of the plot
+    guides(fill = guide_legend(position = ...)) +
+
+    # Add a title and axis labels
+    labs(title = "Density plot of N2 normalized embryo counts",
+         x = "Normalized embryo count",
+         y = "Density") +
+
+    # 3. Scaling
+    xlim(0.1, 2) +             # add x-axis limits
+    # 4. Geoms
+    geom_density(alpha=0.2) +
+    geom_rug()
+
+##----------## Alter our scatter plot ##----------##
+scatterPlot <- 
+  infection_sig.df %>% 
+  filter(strain %in% c("N2", "JU1400")) %>% 
+  # 1. Data
+  ggplot(.) + 
+    # 2. Aesthetics
+    aes(x = area, y = area.infected, colour = percent.infected) +
+    ### 5.1.1 Set the anchor position of the legend box.
+    theme(legend.justification=c(1,1),  
+          ### 5.1.1 Reposition the legend based on its anchor to the top right
+          legend.position.inside=c(1,1),       
+          ### 5.1.1 Remove the background of the legend
+          legend.background = element_blank(),   
+          plot.title = element_text(hjust=0.5, size = 18)) + 
+
+    ### 5.1.1 Send the legend to the inside of the plot
+    guides(colour = guide_colourbar(position = "inside")) +
+  
+    # Add a title and axis labels
+    labs(title = "Scatterplot of JU1400 and N2 infection signals",
+         x = "Area (px^2)",
+         y = "Area infected",
+         colour = "% infected") +
+
+    # 3. Scaling
+    # 4. Geoms
+    geom_point(size = 2.5, alpha = 0.3, ) +
+    # 5. statistics
+    stat_smooth(method = loess, level = 0.8) + ### 1.3.1 add in some regression lines for our data
+    # 6. Facets
+    facet_wrap(. ~ strain, scales = "free_y") # use facet_grid to split panels by worm strain
+
+##----------## Alter our beeswarm plot ##----------##
+beeswarmPlot <- 
+  boxplot + 
+  theme(axis.text.x = element_text(angle=0, hjust=0.5, vjust = 1)) +
+
+  ### 5.1.1 Set the anchor position of the legend box.
+  theme(legend.justification=c(1,1),    
+        ### 5.1.1 Reposition the legend based on its anchor to the top right
+        legend.position.inside=c(1,1),                
+        ### 5.1.1 Remove the background of the legend
+        legend.background = element_blank(),   
+        plot.title = element_text(hjust=0.5, size = 18)) + 
+  
+    ### 5.1.1 Send the legend to the inside of the plot
+    guides(fill = guide_legend(position = "inside")) +
+
+  # Add a title and axis labels
+  labs(title = "Boxplot and beeswarm of N2 infection by ERTm5",
+       x = "Microsporidia dose",
+       y = "Normalized embryo count",
+       fill = "Dose Level") +
+
+  geom_quasirandom(dodge.width = 0.78, width = 0.1, alpha = 0.5) 
+
+# Display our updated plots
+densityPlot
+scatterPlot
+beeswarmPlot
+```
+
+```{r, fig.width=14, fig.height=7}
+
+# Arrange the plots again
+ggarrange(scatterPlot, densityPlot, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+```
+
+------------------------------------------------------------------------
+
+### 5.1.2 Arrange plots within plots
+
+Next we will add in the boxplot by nesting a `ggarrange()` call within another.
+
+Imagine a square with 4 quadrants.
+
+1.  We are going to put our beeswarm in the *left-hand side* across the top and bottom quadrants.
+
+2.  The density plot will be placed in the *top right* quadrant.
+
+3.  The scatter plot goes in the *bottom right* quadrant.
+
+To do this, we are arranging 2 columns (one with the boxplot and one with the KDE plot + scatterplot, `ncol = 2`) and we are arranging 2 rows (one with the KDE and one with the scatterplot, `nrow = 2`).
+
+```{r, fig.width=14, fig.height=7}
+
+# Build our new grid setup    
+# 1. First call initiates the 2-column grid
+ggarrange(..., # The left-hand column is a boxplot
+          ...(..., ..., # The right-hand column is a nested call with two plots
+                    labels = c("B", "C"),
+                    nrow = ...), # arrange the right-hand column as two rows
+          ncol = ..., labels = "A") # Arrange the outer grid as two columns
+```
+
+------------------------------------------------------------------------
+
+### 5.1.3 Small changes can be made with `align` and `font()`
+
+If y-axis lines or x-axis lines are not aligned, this can be fixed with a call to `align = "v"` or `align="h"`. Note that this will align the edges of the plot object, and not the panels that represent data alone. For the mismatch between panels B and C, you can see the titles line up but the backgrounds are off and this is due to the unit differences between each plot.
+
+To make sure all axis titles are the same size, we can use `font()` to specify which text we want changed and the size we want to change it to. I am also going to make the legend title size the same.
+
+Let's look at the `font()` function, which is actually part of the `ggpubr` package. You'll see that we can treat it much like adding a layer to our plots as we use the `+` operator. It acts like a wrapper to directly alter the `ggplot` object through underlying calls to the `theme` layer. Although limited, there are a number of elements that it can affect, including fonts for:
+
+-   The individual plot titles: "title"
+
+-   Axis and legend titles: "axis.title", "x.title", "y.title", "legend.title"
+
+-   Axis labels: "xy.text" or "axis.text"
+
+::: {.alert .alert-block .alert-success}
+**More about the font() function:** There are a few more basic elements you can alter through this function and you can find out more at the [rdrr.io website](https://rdrr.io/cran/ggpubr/man/font.html).
+:::
+
+Let's try out the `font()` function now and save the result into a new variable `multiplot`. You'll notice it's still not quite perfect but better in many places.
+
+```{r, fig.width=14, fig.height=7}
+
+# Alter the fonts of our layout
+# set all axis and legend fonts to size 9
+multiplot <-
+ggarrange(beeswarmPlot + 
+            ... +
+            ...,        # Alter boxplot fonts
+          
+          ggarrange(densityPlot + 
+                    font("axis.title", size=9) +   # Alter KDE fonts
+                    font("legend.title", size=9), 
+                    
+                    scatterPlot + 
+                    font("axis.title", size=9) +
+                    font("legend.title", size=9),    # Alter scatterplot fonts
+                    
+                    labels = c("B", "C"),
+                    # Try to align the vertical axis of the histogram and scatterplot
+                    nrow = 2, align = "v"),        
+           ncol = 2, labels = "A")
+
+# View the updated plot
+multiplot
+```
+
+------------------------------------------------------------------------
+
+### 5.1.4 Save your multipanel plots with `ggsave()`
+
+The `ggarrange` objects, while structurally different from `ggplot` objects, inherit much of their information and behaviours from the `ggplot` class. Therefore, you can use other `ggplot` functions like `ggsave()` to write your plots to file. The calls follow the same format as previous examples we've used so let's give it a try.
+
+```{r}
+# Confirm the object type of our multiplot 
+class(multiplot)
+
+# Save it to a JPEG file for using in our presentations
+ggsave(plot = ..., file="data/multiplot.jpg", width = 200, height = 110, units = "mm")
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 5.0.0:** Make a multi-panel combined figure using our three plots **densityPlot**, **scatterPlot**, and **beeswarmPlot**. This time, put the **densityPlot** across the top row, and beneath that, combine the **scatterPlot** and **beeswarmPlot** across the bottom row. Make sure the legend and axis titles are the same size. Change the legend text for the beeswarm/boxplot to be smaller than the legend title.
+:::
+
+```{r, fig.width=14, fig.height=7, eval = FALSE}
+# comprehension answer code 5.0.0
+
+# Let's arrange a new set of panels
+ggarrange(...)
+```
+
+------------------------------------------------------------------------
+
+## 5.3.0 Upset plots summarize your data
+
+### 5.3.1 Venn diagrams, while popular, can be difficult to interpret
+
+`UpSetR`: <https://github.com/hms-dbmi/UpSetR>
+
+Upset plots are an alternative to Venn diagrams that show the intersection of sets, as well as the size of the sets. Additionally, Venn diagrams can be difficult to interpret for greater than 2 or 3 sets. This is a real life figure from BMC Bioinformatics. Sure it looks pretty, but what does the number 24 represent in this picture in terms of A, B, C, D, and E?
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Fig2_Lam_BMCBioinformatics2016_17.png?raw=true" width="400"/>
+:::
+
+### 5.3.2 Working with `ComplexUpset` to visualize overlapping datasets
+
+Let's see how UpSet plots work practically. Let's begin by importing our metadata from `data/infection_meta.csv` to help us determine the overlap in microsporidia strains tested across the various *C. elegans* worm strains used. Basically we can identify the overlap of strains between microsporidia.
+
+```{r}
+# Import the infection metadata
+infection_meta.df <- read_csv("...")
+
+#Take a look at the data structure
+str(infection_meta.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 5.3.3 Format your data for ComplexUpset
+
+The data we have represents 276 experimental conditions each noting which worm strains were tested against various microsporidia strains. We'll want to simplify all this information using our standard `group_by()` and `summarise()` paradigm. For simplicity, we'll capture the number of instances of each worm strain/spore strain combination in our experiments.
+
+The format we want to generate is to have our categories as columns (ie spores), and our observations as rows (ie worm strains). To accomplish that, we'll have to further `pivot_wider()` our summarised data. Let's save the result to a new variable `infection_combinations.df`.
+
+```{r}
+# save our results to this variable
+infection_combinations.df <-
+  # Pass along the metadata
+  infection_meta.df %>% 
+  # Group by worm strain and spore strain
+  group_by(Worm_strain, `Spore Strain`) %>% 
+  # Count occurences within each group
+  summarise(nTotal = n()) %>% 
+  # Ungroup the data
+  ungroup() %>%
+  # Pivot the summary table to move the spore strain names as their own columns
+  pivot_wider(names_from = ..., values_from = ..., values_fill = ...)
+
+# Take a peek at the result
+head(infection_combinations.df)
+str(infection_combinations.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+### 5.3.3.1 `mutate()` values in multiple columns using the `across()` helper
+
+Our resulting tibble now has 21 rows (worm strains) and 11 columns (spore strains). Before we continue we want to convert all of the values representing spore strains to either 0 or 1. Any entries with a value of 1 or more (present) can be converted just to 1, and 0 (not present) will remain 0. There are a few ways we could do this but we'll do a simple mutate and use the `~` syntax again to define a quick function.
+
+```{r}
+# Replace our combo information with the new values of either 0 or 1
+infection_combinations.df <-
+  # Pass the combinations tibble
+  infection_combinations.df %>% 
+  # Mutate columns 2-11
+  mutate(across(.cols = ..., 
+                .fns = ...)) 
+                # Define our function by casting a conditional result to numeric
+                # You could also cast ~as.numeric(as.logical(.x)) instead
+
+head(infection_combinations.df)
+```
+
+------------------------------------------------------------------------
+
+### 5.3.4 Use the `upset()` function to generate an UpSet plot
+
+Now that we've properly formatted our table `infection_combinations.df`, it has 21 rows (worm strains) by 11 columns (10 spore strains we are investigating)
+
+To use the `upset()` plotting function, we enter our data set, the number of sets we are inputting, if we want to order the results (in this case by frequency), and how many intersections we want to show. Here, I will show 15 intersections - we know the remaining intersections would be zero since this is ordered by frequency.
+
+::: {.alert .alert-block .alert-warning}
+**Watch out!** Remember we said that the tibble and data frame were interchangeable for *most* cases? When we venture outside the ***tidyverse*** we may not be afforded the same courtesy. In the case of the **ComplexUpset** package, it prefers to work with **data.frames** instead of **tibble** objects.
+:::
+
+```{r, fig.width=14, fig.height=7}
+# Load the UpSetR package
+library(ComplexUpset)
+
+      # Our dataset  
+upset(...,                
+      # Name the columns we want to analyse
+      intersect = colnames(infection_combinations.df)...,   
+      # Set the label below the intersection matrix
+      name = "Infection Condition",                            
+      # Make the set size width a little smaller
+      width_ratio = 0.1,                                       
+      # Require a minimum of 1 instance to show an intersection
+      min_size = 1,   
+      # Set the max number of intersections we want to plot
+      n_intersections = ...,                                    
+      # Set the plot text size to be 20
+      themes = upset_default_themes(text = element_text(size = 20))
+     )  
+
+# This UpSet plot shows testing occurrence between worm strains and spore strains
+```
+
+------------------------------------------------------------------------
+
+### 5.3.5 Understanding our Upset plot
+
+Our plot can be broken into 3 sections.
+
+1.  The left-hand barplot denotes the number of observations in each set/category.
+
+2.  The bottom plot graphically represents the different combinations of each category up to `nintersects`.
+
+3.  The upper barplot displays the number of occurrences for the combination displayed in the bottom plot.
+
+There are a few things we can quickly point out about our data:
+
+-   From our result, our greatest intersection size is 9 worm strains tested against the LUAm1 spore strain. This means that 9 of our 21 worm strains have ***only been tested*** against the LUAm1 spore strain.
+
+-   At the middle point, we can see that a single strain, is tested against all 10 of the available spore strains in our metadata. This is likely the N2 strain since it is our lab reference control.
+
+-   Looking at the numbers above the bar graphs, we see that this sums to 21 which makes sense since there are only 21 worm strains in our data set.
+
+------------------------------------------------------------------------
+
+## 5.4.0 But wait, there's more!
+
+While we have just scratched the surface of `ggplot`, as mentioned earlier in lecture there are many additional visualization packages that can work with more specific types of data. In some cases, these packages add functionality to the `ggplot` package itself!
+
+### 5.4.1 Interactive graphics
+
+`Plotly`: <https://plot.ly/r/>
+
+`ggvis`: <http://ggvis.rstudio.com/interactivity.html>
+
+Heatmaps: <https://github.com/talgalili/heatmaply>
+
+Interactive time-series data: <https://rstudio.github.io/dygraphs/>
+
+### 5.4.2 Network diagrams
+
+`visNetwork` (based on igraph): <https://datastorm-open.github.io/visNetwork/edges.html>
+
+### 5.4.3 Circos Plots
+
+Migest: <https://gjabel.wordpress.com/category/r/migest/>
+
+### 5.4.4 Geospatial Data
+
+Static Maps: - <https://bhaskarvk.github.io/user2017.geodataviz/notebooks/02-Static-Maps.nb.html>
+
+Interactive Maps: - <https://bhaskarvk.github.io/user2017.geodataviz/notebooks/03-Interactive-Maps.nb.html>
+
+### 5.4.5 Phylogenetics Data
+
+`ggtree`: - <http://www.bioconductor.org/packages/3.7/bioc/vignettes/ggtree/inst/doc/treeAnnotation.html#annotate-clades>
+
+`treeman`: - <https://bmcresnotes.biomedcentral.com/articles/10.1186/s13104-016-2340-8>
+
+`metacoder`: - <https://github.com/grunwaldlab/metacoder>
+
+`phyloseq`: - <https://joey711.github.io/phyloseq/index.html>
+
+### 5.4.6 Genomics Data
+
+`ggbio`: - <http://www.bioconductor.org/packages/2.11/bioc/vignettes/ggbio/inst/doc/ggbio.pdf>
+
+`GenVisR`: - <https://bioconductor.org/packages/release/bioc/vignettes/GenVisR/inst/doc/Intro.html>
+
+`GenomeGraphs`: - <https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-10-2>
+
+------------------------------------------------------------------------
+
+# 6.0.0 Class summary
+
+That's the end for our fourth class on R! We took a break from data wrangling this week to focus on the basics of data visualization including:
+
+1.  Understanding the grammar of graphics philosophy.
+2.  Producing basic plots: scatterplot, barplots, and boxplots.
+3.  Customizing plot elements and themes
+4.  Saving your plots to file
+5.  Arranging multiple plots into a single canvas.
+6.  Packages outside of `ggplot`.
+
+## 6.1.0 Submit your completed skeleton notebook (2% of final grade)
+
+At the end of this lecture a Quercus assignment portal will be available to submit a **RMD** version of your completed skeletons from today (including the comprehension question answers!). These will be due one week later, before the next lecture. Each lecture skeleton is worth 2% of your final grade but a **bonus 0.5%** will also be awarded for submissions made within 24 hours from the end of lecture (ie 1600 hours the following day). To save your notebook:
+
+1.  From the RStudio Notebook in the lower right pane (**Files** tab), select the skeleton file checkbox (left-hand side of the file name)
+2.  Under the **More** button drop down, select the **Export** button and save to your hard drive.
+3.  Upload your RMD file to the Quercus skeleton portal.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RStudioServerExportFile.png?raw=true" width="700"/>
+:::
+
+## 6.2.0 Post-lecture assessment (6% of final grade)
+
+Soon after the end of each lecture, a homework assignment will be available for you in [DataCamp](https://www.datacamp.com/). Your assignment is to complete all chapters from the **Introduction to Data Visualization with ggplot2** course which has a total of 4 chapters and 4,300 points. This is a pass-fail assignment, and in order to pass you need to achieve a least 3,225 points (75%) of the total possible points. Note that when you take hints from the DataCamp chapter, it will reduce your total earned points for that chapter.
+
+In order to properly assess your progress on DataCamp, at the end of each chapter, please print a PDF of the summary. You can do so by following these steps:
+
+1.  Navigate to the **`Learn`** section along the top menu bar of DataCamp. This will bring you to the various courses you have been assigned under **`My Assignments`**.
+2.  Click on your completed assignment and expand each **chapter** of the course by clicking on the **`VIEW CHAPTER DETAILS`** link. ***Do this for all sections on the page***!
+3.  Carefully highlight/select the page starting with the course title (ie Introduction to R) and going to the end of the last section. **Avoid** using `ctrl + A` to highlight all of the visible text.
+4.  Print the page from your browser menu and save as a single PDF. In the options, be sure to print "***selection***" or you may not be able to print the full page. It should print out something like what follows, except with more chapter info.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampIntroR.jpg?raw=true" width="700"/>
+:::
+
+You may need to take several screenshots if you cannot print it all in a single try. Submit the file(s) or a combined PDF for the homework to the assignment section of Quercus. By submitting your scores for each section, and chapter, we can keep track of your progress, identify knowledge gaps, and produce a standardized way for you to check on your assignment "grades" throughout the course.
+
+You will have until 1259 hours on Tuesday, September 30th to submit your assignment (right before the next lecture).
+
+------------------------------------------------------------------------
+
+## 6.3.0 Acknowledgements
+
+**Revision 1.0.0**: materials prepared in R Markdown by Oscar Montoya, M.Sc. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2021 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2022 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.2**: edited and prepared for **CSB1020H F LEC0142**, 09-2023 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2024 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2025 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+------------------------------------------------------------------------
+
+## 6.4.0 Your DataCamp academic subscription
+
+This class is supported by DataCamp, the most intuitive learning platform for data science and analytics. Learn any time, anywhere and become an expert in R, Python, SQL, and more. DataCamp's learn-by-doing methodology combines short expert videos and hands-on-the-keyboard exercises to help learners retain knowledge. DataCamp offers 350+ courses by expert instructors on topics such as importing data, data visualization, and machine learning. They?re constantly expanding their curriculum to keep up with the latest technology trends and to provide the best learning experience for all skill levels. Join over 6 million learners around the world and close your skills gap.
+
+Your DataCamp academic subscription grants you free access to the DataCamp's catalog for 6 months from the beginning of this course. You are free to look for additional tutorials and courses to help grow your skills for your data science journey. Learn more (literally!) at [DataCamp.com](https://learn.datacamp.com/).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampLogo.png?raw=true" width="500"/>
+:::
+
+------------------------------------------------------------------------
+
+## 6.5.0 Resources
+
+Wickham, Hadley. (2010). A Layered Grammar of Graphics. Journal of Computational and Statistical Graphics.\
+Wilkinson, L. (2005), The Grammar of Graphics (2nd ed.). Statistics and Computing, New York: Springer. [14, 18]\
+Tufte, Edward R. The Visual Display of Quantitative Information.
+
+<http://www.cookbook-r.com/Graphs/>\
+<https://github.com/jennybc/ggplot2-tutorial>\
+<http://stcorp.nl/R_course/tutorial_ggplot2.html>\
+<http://ggplot2.tidyverse.org/reference/theme.html>\
+<http://joeystanley.com/blog/custom-themes-in-ggplot2>\
+<https://github.com/jrnold/ggthemes>\
+<https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf>\
+<https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html>\
+[http://www.cookbook-r.com/Graphs/Legends\_(ggplot2)/](http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/){.uri}\
+<https://github.com/eclarke/ggbeeswarm>\
+<https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>\
+<http://www.sthda.com/english/rpkgs/ggpubr/>\
+<https://rpubs.com/drsong/9575>\
+<http://elpub.bib.uni-wuppertal.de/edocs/dokumente/fbb/wirtschaftswissenschaft/sdp/sdp15/sdp15006.pdf>\
+<http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/81-ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page/>\
+<https://rdpeng.github.io/Biostat776/notes/pdf/grdevices.pdf>
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_new.png?raw=true" width="700"/>
+:::
