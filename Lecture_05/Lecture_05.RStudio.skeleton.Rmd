@@ -1,0 +1,2055 @@
+---
+title: 'Lecture 05'
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+# This allows the file to be LIVE and run without errors stopping it.
+knitr::opts_chunk$set(error = TRUE)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_services_slide.png?raw=true" width="700"/>
+:::
+
+# Introduction to R
+
+# Lecture 05: Of Data Cleaning and Documentation - How to regularly use Regular Expressions
+
+# Student Name:
+
+# Student ID:
+
+------------------------------------------------------------------------
+
+## 0.1.0 About Introduction to R
+
+Introduction to R is brought to you by the **Centre for the Analysis of Genome Evolution & Function (CAGEF)** bioinformatics training initiative. This course was developed based on feedback on the needs and interests of the Department of Cell & Systems Biology and the Department of Ecology and Evolutionary Biology.
+
+The structure of this course is a code-along style; It is 100% hands on! A few hours prior to each lecture, links to the materials will be available for download at [QUERCUS](https://q.utoronto.ca/). The teaching materials will consist of an R Markdown Notebook with concepts, comments, instructions, and blank coding spaces that you will fill out with R by coding along with the instructor. Other teaching materials include a live-updating HTML version of the notebook, and datasets to import into R - when required. This learning approach will allow you to spend the time coding and not taking notes!
+
+As we go along, there will be some in-class challenge questions for you to solve either individually or in cooperation with your peers. Post lecture assessments will also be available (see syllabus for grading scheme and percentages of the final mark) through [DataCamp](https://Datacamp.com) to help cement and/or extend what you learn each week.
+
+### 0.1.1 Where is this course headed?
+
+We'll take a blank slate approach here to R and assume that you pretty much know *nothing* about programming. From the beginning of this course to the end, we want to take you from some potential scenarios such as...
+
+-   A pile of data (like an excel file or tab-separated file) full of experimental observations that you don't know what to do with it.
+
+-   Maybe you're manipulating large tables all in excel, making custom formulas and pivot tables with graphs. Now you have to repeat similar experiments and do the analysis again.
+
+-   You're generating high-throughput data and there aren't any bioinformaticians around to help you sort it out.
+
+-   You heard about R and what it *could* do for your data analysis but don't know what that means or where to start.
+
+and get you to a point where you can...
+
+-   Format your data correctly for analysis.
+
+-   Produce basic plots and perform exploratory analysis.
+
+-   Make functions and scripts for re-analysing existing or new data sets.
+
+-   Track your experiments in a digital notebook like R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data-science-explore.png?raw=true" width="500"/>
+:::
+
+### 0.1.2 How do we get there? Step-by-step.
+
+In the first lesson, we will talk about the basic data structures and objects in R, get cozy with the R Markdown Notebook environment, and learn how to get help when you are stuck because everyone gets stuck - a lot! Then you will learn how to get your data in and out of R, how to tidy our data (data wrangling), and then subset and merge data. After that, we will dig into the data and learn how to make basic plots for both exploratory data analysis and publication. We'll follow that up with data cleaning and string manipulation; this is really the battleground of coding - getting your data into just the right format where you can analyse it more easily. We'll then spend a lecture digging into the functions available for the statistical analysis of your data. Lastly, we will learn about control flow and how to write customized functions, which can really save you time and help scale up your analyses.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Draw_an_Owl.jpg?raw=true" width="700"/>
+:::
+
+Don't forget, the structure of the class is a **code-along** style: it is fully hands on. At the end of each lecture, the complete notes will be made available in a PDF format through the corresponding Quercus module so you don't have to spend your attention on taking notes.
+
+------------------------------------------------------------------------
+
+### 0.1.3 What kind of coding style will we learn?
+
+There is no single path correct from A to B - although some paths may be more elegant, or more efficient than others. With that in mind, the emphasis in this lecture series will be on:
+
+1.  **Code simplicity** - learn helpful functions that allow you to focus on understanding the basic tenets of good data wrangling (reformatting) to facilitate quick exploratory data analysis and visualization.
+2.  **Code readability** - format and comment your code for yourself and others so that even those with minimal experience in R will be able to quickly grasp the overall steps in your code.
+3.  **Code stability** - while the core R code is relatively stable, behaviours of functions can still change with updates. There are well-developed packages we'll focus on for our analyses. Namely, we'll become more familiar with the `tidyverse` series of packages. This resource is well-maintained by a large community of developers. While not always the "fastest" approach, this additional layer can help ensure your code still runs (somewhat) smoothly later down the road.
+
+------------------------------------------------------------------------
+
+## 0.2.0 Class Objectives
+
+This is the fifth in a series of seven lectures. Last lecture we learned the basics of data visualization with the `ggplot2` package. This week we return to the world of data cleaning with a very important tool - the regular expression! At the end of this session you will be able to use `tidyverse` tools and regular expressions to tidy/clean your data. This week our topics are broken into:
+
+1.  Introduction to data cleaning.
+2.  The basic syntax of regular expressions (RegEx).
+3.  String manipulation tools via the `stringr` package.
+4.  A step-by-step example for converting a fasta file
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Data-Wrangling-Is-The.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.3.0 A legend for text format in R Markdown
+
+-   `Grey background`: Command-line code, R library and function names. Backticks are also use for in-line code.
+-   *Italics* or ***Bold italics***: Emphasis for important ideas and concepts
+-   **Bold**: Headers and subheaders
+-   [Blue text](): Named or unnamed hyperlinks
+-   `...` fill in the code here if you are coding along
+
+::: {.alert .alert-block .alert-info}
+**Blue box:** A key concept that is being introduced
+:::
+
+::: {.alert .alert-block .alert-warning}
+**Yellow box:** Risk or caution
+:::
+
+::: {.alert .alert-block .alert-success}
+**Green boxes:** Recommended reads and resources to learn R
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Red boxes:** A comprehension question which may or may not involve a coding cell. You usually find these at the end of a section.
+:::
+
+------------------------------------------------------------------------
+
+## 0.4.0 Lecture and data files used in this course
+
+### 0.4.1 Weekly Lecture and skeleton files
+
+Each week, new lesson files will appear within your RStudio folders. We are pulling from a GitHub repository using this [Repository git-pull link](https://r.datatools.utoronto.ca/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fuoft-csb-datasci%2F2025-09-IntroR&urlpath=rstudio%2F&branch=main). Simply click on the link and it will take you to the [University of Toronto datatools Hub](https://datatools.utoronto.ca). You will need to use your UTORid credentials to complete the login process. From there you will find each week's lecture files in the directory `/2025-09-IntroR/Lecture_XX`. You will find a partially coded `skeleton.Rmd` file as well as all of the data files necessary to run the week's lecture.
+
+Alternatively, you can download the R-Markdown Notebook (`.Rmd`) and data files from the RStudio server to your personal computer if you would like to run independently of the Toronto tools.
+
+### 0.4.2 Live-coding HTML page
+
+A live lecture version will be available at [camok.github.io](https://uoft-csb-datasci.github.io/2025-09.IntroToR/index.html) that will update as the lecture progresses. Be sure to refresh to take a look if you get lost!
+
+### 0.4.3 Post-lecture PDFs and Recordings
+
+As mentioned above, at the end of each lecture there will be a completed version of the lecture code released as an HTML file under the Modules section of Quercus.
+
+------------------------------------------------------------------------
+
+### 0.4.4 Data used in this session
+
+Today we have 3 data files to help us work through the concepts of data cleaning with regular expressions.
+
+### 0.4.4.1 Datafile 1: data/ScallionCakes.docx
+
+This is an example file for us to start playing with the idea of regular expressions.
+
+### 0.4.4.2 Datafile 2: data/FoxP2_primate.fasta
+
+This is the main file that we'll be working with for the rest of the lecture. We'll search, replace, and manipulate data from this file after importing it into our notebooks.
+
+### 0.4.4.3 Dataset 3: data/infection_meta.csv
+
+We'll return to this metadata towards the end of lecture but it holds all of the experimental condition information that we've been going over all term.
+
+------------------------------------------------------------------------
+
+## 0.5.0 Packages used in this lesson
+
+The following packages are used in this lesson:
+
+-   `tidyverse` (tidyverse installs several packages for you, like `dplyr`, `readr`, `readxl`, `tibble`, and `ggplot2`). In particular we will be taking advantage of the `stringr` package this week.
+
+Some of these packages should already be installed into your Anaconda base from previous lectures. If not, please review that lesson and load these packages. Remember to please install these packages from the `conda-forge` channel of Anaconda.
+
+```{r}
+#--------- Install packages to for today's session ----------#
+# install.packages("tidyverse", dependencies = TRUE) # This package should already be installed on Jupyter Hub
+
+#--------- Load packages to for today's session ----------#
+library(tidyverse)
+```
+
+------------------------------------------------------------------------
+
+# 1.0.0 Data cleaning or "data munging" or "data wrangling"
+
+In previous weeks the data cleaning we've worked with has been more in the realm of data management - moving columns, converting from wide to long format, and making new variables. We've been more focused on getting the data into a proper format for analysis. Aside from splitting multi-variable columns apart, however, we have done very little to ***alter*** the raw data values and headings themselves.
+
+**Why do we need to do this?**
+
+'Raw' data is seldom (read: nearly never) in a usable format. Data in tutorials or demos have already been meticulously filtered, transformed and readied to showcase that specific analysis. How many people have done a tutorial only to find they can't get their own data in the format to use the tool they have just spent an hour learning about?
+
+Data cleaning requires us to:
+
+-   Get rid of inconsistencies in our data.
+-   Have labels that make sense.
+-   Check for invalid character/numeric values.
+-   Check for incomplete data.
+-   Remove data we do not need.
+-   Get our data in a proper format to be analyzed by the tools we are using.
+-   Flag/remove data that does not make sense.
+
+Some definitions might take this a bit farther and include normalizing data and removing outliers. In this course, we consider data cleaning as getting data into a format where we can start actively exploring our data with graphics, data normalization, etc.
+
+In our previous lectures we focused on how to transform data into a tidy format using functions from the `dplyr` and `tidyr` packages. One thing we've been avoiding addressing is cleaning up problematic column names and values. We've worked with some specific `<tidy-select>` functions that give us a hint about what regular expressions are doing but we haven't taken advantage of the true power in regular expressions.
+
+Today we are going to mostly focus on the **data cleaning of text**. This step is crucial for taking control of your dataset and your metadata. It is considered by many that the prelude to transforming data is actually doing the grunt work of data cleaning.
+
+I have included the functions I find most useful for these tasks but I encourage you to take a look at the [Strings Chapter](http://r4ds.had.co.nz/strings.html) in *R for Data Science* for an exhaustive list of functions. So let's get to it!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/cleaning.gif?raw=true" width="500"/>
+
+Data cleaning is sometimes easier said than done!
+:::
+
+------------------------------------------------------------------------
+
+# 2.0.0 Introduction to regular expressions (RegEx)
+
+*"A God-awful and powerful language for expressing patterns to match in text or for search-and-replace. Frequently described as 'write only', because regular expressions are easier to write than to read/understand. And they are not particularly easy to write."* - Jenny Bryan
+
+**RegEx** is a very sophisticated way to find, replace, and extract information from strings.
+
+For our first regex exercise, use Microsoft Word to open the file "ScallionCakes.docx". This file contains the beginnings of some pre-amble text for a recipe blog. Here is what we are going to do:
+
+-   Once the document is opened, press `ctrl`+`h` to launch the find/replace function
+-   Replace **"pan"** with **"wok"**. Notice that there are some undesired changes? The word **pan** certainly came up a lot in those sentences! Now we have words like **wokdemic** and **wokacea**. Was this really our intention? We could be more stringent by changing settings such as case-sensitive or adding spaces.
+-   Go back to the original form of the sentence by undoing the changes we made, then try it again but this time check the "Match case" box. Does it match our intentions yet?
+-   Revert to the original sentence and try again with the "Find whole words only" option.
+-   Next, since these are really more like cakes by name, replace **"panc"** with just **"c"**. You get a similar problem. We really should have specified replacing **"pancake"** with **"cake"**.
+
+The key to this example, of course, is being more specific with what we want to search for and replace. To accomplish that we turn to RegEx which offers a structured language/syntax for identifying string patterns. Let's take a closer look at it now.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/xkcd-1171-perl_problems.png?raw=true" width="700"/>
+
+Image courtesy of [XKCD](https://xkcd.com/1171)
+:::
+
+------------------------------------------------------------------------
+
+### 2.0.1 Regular expressions can be your friends
+
+So why do regular expressions or 'RegEx' get so much flak if it is so powerful for text matching? Scary example: how to get an email in different programming languages <http://emailregex.com/>.
+
+Writing/reading Regex is definitely one of those situations where you should annotate your code. There are many terrifying urban legends about people coming back to their code and having no idea what their code means.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/yesterdays-regex.png?raw=true" width="500"/>
+
+Don't worry. Eventually you'll think you'll feel like you're on the right track!
+:::
+
+There are sites available to help you make up your regular expressions and validate them against text. These are usually not R specific, but they will get you close and the expression will only need a slight modification for R (like an extra backslash - described below).
+
+ReGex testers:
+
+<https://regex101.com/>\
+<https://simongoring.shinyapps.io/RegularExpressionR/>
+
+Today we will be practicing RegEx at regexr.com to help us better highlight and understand parts of the RegEx syntax:
+
+<https://regexr.com/>
+
+**What does the language look like?**
+
+The language is based on *meta-characters* which have a special meaning rather than their literal meaning. For example, '\\\$' is used to match the end of a string, and this use supersedes its use as a character in a string (i.e. 'Joe paid \$2.99 for chips.').
+
+------------------------------------------------------------------------
+
+## 2.1.0 Classes are groups of reserved characters
+
+What kind of character is it? Classes identify specifically reserved groups of characters and are used as a quick way to represent them. There are two ways to define classes - either using special "escaped" characters denoted with a `\` or using the `[ ]` notation within a regular expression.
+
+| Expression | Meaning |
+|:-----------------------------:|:----------------------------------------|
+| \\w, [A-z, 0-9], [[:alnum:]] | word characters (letters, digits, and underscore) |
+| \\d, [0-9], [[:digit:]] | digits |
+| [A-z], [[:alpha:]] | alphabetical characters |
+| \\s, [[:space:]] | whitespace (spaces, tabs, line breaks) |
+| [[:punct:]] | punctuation |
+| [[:lower:]] | lowercase |
+| [[:upper:]] | uppercase |
+| \\W, [\^A-z0-9] | not word characters |
+| \\S | not space |
+| \\D, [\^0-9] | not digits |
+
+Note that some of these are not *universal* but rather specific to POSIX bracket expression ie [:xx:] and *must* be used **within** a secondary set of brackets to be valid. This kind of syntax is compatible with many regex systems including R and Unix.
+
+------------------------------------------------------------------------
+
+## 2.2.0 Quantifiers denote repetition of patterns
+
+When we are thinking about patterns, we may expect the repetition of patterns within patterns. To account for this as a language, regular expressions use quantifiers to denote the presence or absence of specific patterns. In other words, we use quantifiers to answer "How many times will a character appear?"
+
+| Expression | Meaning                                     |
+|:----------:|:--------------------------------------------|
+|     ?      | 0 or 1 occurrence                           |
+|     \*     | 0 or more occurrences                       |
+|     \+     | 1 or more occurrences                       |
+|    {n}     | exactly *n* occurrences                     |
+|    {n,}    | at least *n* occurrences                    |
+|    {,n}    | at most *n* occurrences                     |
+|   {n,m}    | between *n* and *m* occurrences (inclusive) |
+
+------------------------------------------------------------------------
+
+## 2.3.0 Operators are helper actions
+
+You may recall from lecture 3 that we encountered the idea of conditional operators. Regular expressions can also rely on the `|` OR operator to denote that a subpattern or it's alternative must be present. Additional operators are used to classify character groups. Much like in classes, we can define specific groups of characters to look for within our patterns. Overall, the operators can be thought of as helper actions to match your characters.
+
+| Expression | Meaning |
+|:------------:|:---------------------------------------------------------|
+| \| | or |
+| . | matches any single character except line breaks |
+| [...] | matches ANY of the characters inside the brackets |
+| [...-...] | matches a RANGE of characters inside the brackets |
+| [\^...] | matches any character EXCEPT those inside the bracket |
+| ( ... ) | grouping - used for [backreferencing] (<https://www.regular-expressions.info/backref.html>) |
+
+### 2.3.1 Sets help to group individual characters for matching
+
+A set, as noted above is a group of characters inside a pair of square brackets `[ ]` with a special meaning. Here are some helpful examples of sets you can use to understand the concept.
+
+| Set | Description |
+|:-----------:|:----------------------------------------------------------|
+| [arn] | Returns a match where one of the specified characters (a, r, or n) are present |
+| [a-n] | Returns a match for any lower case character, alphabetically between a and n |
+| [\^arn] | Returns a match for any character EXCEPT a, r, and n. Therefore \^ negates but *only within* a set |
+| [0123] | Returns a match where any of the specified digits (0, 1, 2, or 3) are present |
+| [0-9] | Returns a match for any digit between 0 and 9 |
+| [0-5][0-9] | Returns a match for any two-digit numbers from 00 and 59 |
+| [a-zA-Z] | Returns a match for any character alphabetically between a and z, lower case OR upper case |
+| [+] | In sets, +, \*, ., \|, (), \$, {} have no special meaning, so $$+$$ means: return a match for any `+` character in the string |
+
+------------------------------------------------------------------------
+
+## 2.4.0 Matching to the start or end of a string
+
+Recall we are working with strings - these can be long or short but they all have a start and an end. Sometimes the patterns we are concerned with are located at the beginning or end of a string (think prefixes and suffixes). We use special position-matching characters to denote these ideas.
+
+| Expression | Meaning             |
+|:----------:|:--------------------|
+|     \^     | start of the string |
+|     \$     | end of the string   |
+
+------------------------------------------------------------------------
+
+## 2.5.0 Metacharacters must be escaped with `\`
+
+This can be one of the hardest concepts with regular expressions but remember that we just went over multiple lists where characters had their own meaning like `$` or `(`. These are called ***metacharacters*** because they have meaning beyond just representing string characters. To a regular expression they initiate a specific kind of analysis of the characters that follow.
+
+**Escape sequences** `\`, however, allow you to use a character 'as is' rather than its special RegEx function. In R, RegEx are evaluated as strings first, then as a regular expression unless we specify we are writing a regular expression. A backslash is used to escape each RegEx character in the string, so often we will need **2** backslashes to escape. For instance if we want to use the string `$100` in a RegEx search term, then we need to tell R that we just want to work with the character `$` and not look for the pattern `100` at the end of a string.
+
+If we used `\$100` we wouldn't get what we want because the `\` is also a metacharacter that needs be interpreted as a slash first by R! Instead we must use `\\$100`: one backslash (escape character) per character, so at the end we end up with a RegEx that looks like `\\$`. To the RegEx function, however, we've only provided `\$`.
+
+Below is another table describing the various escaped metacharacters - some of which you have already seen in the previous tables.
+
+| Character | Description | Example |
+|:------------:|:--------------------------------------------|:------------:|
+| \\\\ | escape for meta-characters to be used as characters | (\*, \$, \^, ., ?, \|, \\, [, ], {, }, (, )) |
+| \\A | Returns a match if the specified characters are at the beginning of the string | "\AThe" |
+| \\b | Returns a match where the specified characters are at the beginning or at the end of a word | r"\\bain" r"ain\\b" |
+| \\B | Returns a match where the specified characters are present, but NOT at the beginning (or at the end) of a word | r"\\Bain" r"ain\\B" |
+| \\d | Returns a match where the string contains digits (numbers from 0-9) | "\\d" |
+| \\D | Returns a match where the string DOES NOT contain digits | "\\D" |
+| \\s | Returns a match where the string contains a white space character. This includes \\s, \\t, \\n, etc. | "\\s" |
+| \\S | Returns a match where the string DOES NOT contain a white space character | "\\S" |
+| \\w | Returns a match where the string contains any word characters (characters from a to Z, digits from 0-9, and the underscore \_ character) | "\\w" |
+| \\W | Returns a match where the string DOES NOT contain any word characters | "\\W" |
+| \\Z | Returns a match if the specified characters are at the end of the string | "word\\Z" |
+
+------------------------------------------------------------------------
+
+## 2.6.0 Trouble-shooting RegEx
+
+Trouble-shooting with escaping meta-characters means adding backslashes until something works.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/backslashes.png?raw=true" width="700"/>
+
+Sometime it just takes a little or a lot of experimentation to get things right! Image courtesy of [XKDC](https://xkcd.com/1638/)
+:::
+
+------------------------------------------------------------------------
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RegexBooks.png?raw=true" width="700"/>
+
+Sometimes you just need to use what the internet has given you
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 2.0.0:** In your own words describe the meaning of (or differences between) regular expression **classes**, **quantifiers**, and **metacharacters**.
+:::
+
+------------------------------------------------------------------------
+
+## Section 2.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 3.0.0 Online ReGex exercise
+
+Now that we have some basic ideas and terms under our belts, let's get to working with actual regular expressions. We will kick off this RegEx lecture by playing around with an online tool: <https://regexr.com/>.
+
+## 3.1.0 Breaking down a regular expression example
+
+In the text section of the online tool, replace the default text by:
+
+\>NP_001009020.1 forkhead box protein P2 [Pan troglodytes] MMQESATETISNSSMNQNGMSTLSSQLDAGSRDGRSSGDTSSEVSTVELLHLQQQQALQAARQLLLQQQT SGLKSPKSSDKQRPLQVPVSVAMMTPQVITPQQMQQILQQQVLSPQQLQALLQQQQAVMLQQQQLQEFYK
+
+We are going to explore the following expression by breaking it down into its components: `^>(\w+)\.(\d)\s(.+)\[(\w+)\s(\w+).*\]`
+
+**What do you think it matches in our text?**
+
+### 3.1.1 The breakdown:
+
+| Expression | Meaning                                                                                               |
+|:----------:|:------------------------------------------------------------------------------------------------------|
+|    \\\^    | Beginning of a line                                                                                   |
+|    \\\>    | Greater than symbol, used to designate the beginning of a new read in fasta format                    |
+|    \\w     | Match a word (alphabetic) character (Remember that a second escape character (backslash) is required) |
+|    \\+     | Match the preceding metacharacter more than once                                                      |
+|     .      | match a literal period                                                                                |
+|    \\d     | Match a digit                                                                                         |
+|    \\s     | space                                                                                                 |
+|     .+     | anything, one or more times                                                                           |
+|    \\[     | match a literal squared bracket                                                                       |
+|    .\*     | anything, as many times it is present                                                                 |
+
+------------------------------------------------------------------------
+
+## 3.2.0 Introduction to string manipulation with `stringr`
+
+Common uses of string manipulation are: searching, replacing or removing (making substitutions), and splitting and combining substrings.
+
+Base R offers a variety of built-in RegEx functions such as `grep()`, `grepl()`, and `gsub()` that are common to other programming languages. Even though these functions are computationally very efficient, it can be very challenging to master their use. Tidyverse's `stringr` package offers a more comprehensive, user-friendly set of RegEx-compatible functions that are easier to work with for those unfamiliar with regular expressions. Thus, we will stick to `stringr` to get some hands-on RegEx experience.
+
+You can find a helpful cheatsheet over on their [GitHub too](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf)! As an example, we are going to play with a string of DNA that we'll create called `dino`.
+
+```{r}
+# Build a long string which actually crosses multiple lines
+dino <- 
+">DinoDNA from Crichton JURASSIC PARK  p. 103 nt 1-1200
+GCGTTGCTGGCGTTTTTCCATAGGCTCCGCCCCCCTGACGAGCATCACAAAAATCGACGC
+GGTGGCGAAACCCGACAGGACTATAAAGATACCAGGCGTTTCCCCCTGGAAGCTCCCTCG
+TGTTCCGACCCTGCCGCTTACCGGATACCTGTCCGCCTTTCTCCCTTCGGGAAGCGTGGC
+TGCTCACGCTGTACCTATCTCAGTTCGGTGTAGGTCGTTCGCTCCAAGCTGGGCTGTGTG
+CCGTTCAGCCCGACCGCTGCGCCTTATCCGGTAACTATCGTCTTGAGTCCAACCCGGTAA
+AGTAGGACAGGTGCCGGCAGCGCTCTGGGTCATTTTCGGCGAGGACCGCTTTCGCTGGAG
+ATCGGCCTGTCGCTTGCGGTATTCGGAATCTTGCACGCCCTCGCTCAAGCCTTCGTCACT
+CCAAACGTTTCGGCGAGAAGCAGGCCATTATCGCCGGCATGGCGGCCGACGCGCTGGGCT
+GGCGTTCGCGACGCGAGGCTGGATGGCCTTCCCCATTATGATTCTTCTCGCTTCCGGCGG
+CCCGCGTTGCAGGCCATGCTGTCCAGGCAGGTAGATGACGACCATCAGGGACAGCTTCAA
+CGGCTCTTACCAGCCTAACTTCGATCACTGGACCGCTGATCGTCACGGCGATTTATGCCG
+CACATGGACGCGTTGCTGGCGTTTTTCCATAGGCTCCGCCCCCCTGACGAGCATCACAAA
+CAAGTCAGAGGTGGCGAAACCCGACAGGACTATAAAGATACCAGGCGTTTCCCCCTGGAA
+GCGCTCTCCTGTTCCGACCCTGCCGCTTACCGGATACCTGTCCGCCTTTCTCCCTTCGGG
+CTTTCTCAATGCTCACGCTGTAGGTATCTCAGTTCGGTGTAGGTCGTTCGCTCCAAGCTG
+ACGAACCCCCCGTTCAGCCCGACCGCTGCGCCTTATCCGGTAACTATCGTCTTGAGTCCA
+ACACGACTTAACGGGTTGGCATGGATTGTAGGCGCCGCCCTATACCTTGTCTGCCTCCCC
+GCGGTGCATGGAGCCGGGCCACCTCGACCTGAATGGAAGCCGGCGGCACCTCGCTAACGG
+CCAAGAATTGGAGCCAATCAATTCTTGCGGAGAACTGTGAATGCGCAAACCAACCCTTGG
+CCATCGCGTCCGCCATCTCCAGCAGCCGCACGCGGCGCATCTCGGGCAGCGTTGGGTCCT"
+```
+
+------------------------------------------------------------------------
+
+This piece of DNA is from the book Jurassic park, and was supposed to be dinosaur DNA, but is actually just a cloning vector. Bummer.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/dino.notdino.png?raw=true" width="800"/>
+
+When you try hard to be scientific but don't have actual data
+:::
+
+### 3.2.0.1 Using native output or `print()` to view your strings
+
+We've created the string object, `dino`, which consists of a multi-line declaration in our previous code cell. How do you think this information is stored or represented as a string?
+
+Let's first take a look at the output of this variable in the two ways we are most familiar with: native output by calling on our variable, or by passing it to a function like `print()`.
+
+```{r}
+# Native output of dino
+dino
+```
+
+```{r}
+# Using the print() command
+...
+```
+
+------------------------------------------------------------------------
+
+As you can see from our output that in our R Markdown notebooks the entire string is output to a single line based on unbroken character strings. The text spills over to new lines by wrapping around. The header, however, is disrupted at the `-` character.
+
+While not fully correct, this is a relatively pleasant way to see the output of our string. However, it doesn't quite look the same as how we input the sequence right?
+
+### 3.2.0.2 Use the `cat()` function to interpret and concatenate strings
+
+If you have a sharp eye, you might notice now the presence of additional `\n` characters in our string. These metacharacters represent line breaks and they were inserted by the line breaks present in our original coding cell that assigned the `dino` variable. If we wanted to see `dino` with all of it's metacharacters interpreted, you could use the `cat()` function instead. Note that unlike `print()`, the `cat()` function is limited to atomic input objects!
+
+::: {.alert .alert-block .alert-success}
+**The cat() function has many uses!** Although we are using **cat()** in a very rudimentary way, you can use it to concatenate strings and also write them directly to file! If you're interested in other uses of **cat()** check out this [nice tutorial](https://www.statology.org/r-cat-function/).
+:::
+
+```{r}
+# Interpret all those metacharacters with cat()!
+...
+```
+
+------------------------------------------------------------------------
+
+### 3.2.1 RStudio's find-replace
+
+RStudio markdown notebooks have their own RegEx-compatible find-replace functionality in its graphic user interface (GUI) that you can use. In RStudio you can find this on the menu under **`Edit > Find...`**. As a quick example, let's find out where in this notebook we can find the string `GCGTTGCTGGCG`. You can also check other boxes if your search is case sensitive or if you are looking for whole words.
+
+### 3.2.2 Remove unwanted text with `str_remove()` from the `stringr` package
+
+Our string `dino` is in FASTA format, but we don't need the header; we just want to deal with the DNA sequence. The header begins with '\>' and ends with a number, '1200', with a space between the header and the sequence. Let's practice capturing each of these parts of a string, and then we'll make a regular expression to remove the entire header.
+
+To accomplish all this magic, we'll use the `stringr` package to help us. All `stringr` functions take in as arguments the **string** you are searching or manipulating and the **pattern** you are capturing. `str_remove()` replaces the matched pattern with an empty character string "". In our first search we will remove '\>' from our string, `dino`.
+
+::: {.alert .alert-block .alert-info}
+**Evaluate multiple strings:** All of our examples use a single string as input to search. You can, however, apply many of these **stringr** functions to *multiple* strings simultaneously using a character vector like **c(string_1, string_2, .., string_n)**.
+:::
+
+```{r}
+# Remove the pattern that matches a ">"
+str_remove(string = ..., pattern = ...) %>% cat()
+```
+
+------------------------------------------------------------------------
+
+Next we can search for numbers. The expression '[0-9]' is looking for any number. Always make sure to check that the pattern you are using gives you the output you expect.
+
+```{r}
+# Remove the first instance of an integer 0-9
+str_remove(string = ..., pattern = ...) %>% cat()
+```
+
+------------------------------------------------------------------------
+
+### 3.2.2.1 `str_remove()` replaces the *first* instance of a search string versus `str_remove_all()`
+
+Why aren't all of the numbers replaced? `str_remove()` only replaces the first match in a character string. Switching to `str_remove_all()` replaces all instances of matches in the character string.
+
+```{r}
+# Remove all instances of integers 0-9
+...(string = dino, pattern = "[0-9]") %>% cat()
+```
+
+------------------------------------------------------------------------
+
+### 3.2.2.2 A reminder to escape your escape characters
+
+How do we capture spaces? The pattern `\s` replaces ***whitespace*** (ie spaces and new lines!). However, for the backslash to not be used as an escape character (its special function), we need to add another backslash, making our pattern `\\s`. In other words, you need to escape the backslash itself with another backslash!
+
+```{r}
+# Remove all spaces from dino
+str_remove_all(string = dino, pattern = ...) %>% cat()
+```
+
+------------------------------------------------------------------------
+
+Notice that not only were the spaces in our header removed, but we also lost all of the `\n` characters in our string!
+
+### 3.2.2.3 Combine search terms into a single string
+
+To remove the entire header, we need to combine these patterns. Remember, we are really just converting the header string into a simple description - what are the base components of the header and what pattern do they follow?
+
+The header is everything in between `>` and the number `1200` followed by a newline character. The operator `.` captures any single character and the quantifier `*` matches it any number of times (including zero).
+
+```{r}
+# What can we remove without using the quantifier?
+str_remove(string = dino, pattern = "...") %>% cat()
+
+# removes > and D, the first two characters in the string
+```
+
+```{r}
+# What can we remove without using the quantifier?
+str_remove(string = dino, pattern = "...") %>% cat()
+
+# Will anything match this regex?
+```
+
+```{r}
+# Remove the entire header from the sequence
+str_remove(string = dino, pattern = "...") %>% cat()
+
+# remove entire header
+```
+
+------------------------------------------------------------------------
+
+### 3.2.3 Greedy vs. lazy matching
+
+`>DinoDNA from Crichton JURASSIC PARK  p. 103 nt 1-1200 GCGTTGCTGGCGTTTTTCCATAGGCTCCG...`
+
+versus
+
+`>DinoDNA from Crichton JURASSIC PARK  p. 103`
+
+You may have noticed that we also have a number followed by a space earlier in the header, '103'. Why didn't the replacement end at that first match? The first instance is an example of *greedy* matching - it will capture the longest possible match.
+
+To curtail this behavior and use *lazy* matching - the shortest possible matched string - you can add the `?` quantifier. Remember that this metacharacter can already signify looking for 0 or 1 occurrences of a ***pattern***.
+
+In this case, we are going to use it to make the ***preceding*** quantifier `*` lazy by causing it to match as few characters as possible while ***still matching*** the remainder of the pattern.
+
+```{r}
+# What happens if we modify our * with lazy matching?
+str_remove(string = dino, pattern = "...") %>% cat()
+
+# lazy matching removes the first occurrence of a group of digits followed by a space
+```
+
+------------------------------------------------------------------------
+
+The concepts of greediness and laziness also play a part in why `stringr` has seemingly redundant functions such as `str_extract()` and `str_extract_all()`, or `str_view()` and `str_view_all()`, among others.
+
+In this case, we want the greedy matching to replace the entire header. Let's save the headerless `dna` sequence into its own object.
+
+```{r}
+# Save DNA sequence using the correct header Regex
+dna <- str_remove(string = dino, pattern = "...")
+
+# View the result
+cat(dna)
+```
+
+------------------------------------------------------------------------
+
+## 3.3.0 Assign raw string literals with `r"( )"` to simplify your expressions
+
+Now that we've walked through the complex process of separating our FASTA header from our DNA sequence, we can appreciate some of the finer nuances with using regular expressions.
+
+The ***biggest hurdle*** is always the process of escape characters. For instance in **section 3.2.2.2** we emphasized the importance of identifying the common blank space in our string using `\\s` - even though we know that the metacharacter for whitespace is `\s`. Of course things can get quite complicated if our source string also has metacharacters! Take a look at the following example code:
+
+```{r}
+bad_string = "you\\stay\\here\\now"
+
+# How the string is stored
+bad_string
+
+# How it is interpreted 
+cat(bad_string)
+```
+
+------------------------------------------------------------------------
+
+If we wanted to search through that string for the substring that includes `\\s`, what is our regular expression? Let's try to find `u\\s` to convince ourselves that we're getting the right part of the substring. We'll use the `str_remove()` function to help us out.
+
+```{r}
+# Remove the u\\s from our string
+str_remove(bad_string, pattern = "...")
+```
+
+As of **R version 4.0.0** and above, the ability to produce **raw string literals** has been added. What does that mean? It means that instead of having to use additional `\` escape characters for escape characters, we can use the regular expression as intended to search for the exact pattern you want.
+
+We initiate a raw string literal with the syntax `r"(your_regex_here)"`. That means we need to enclose our regex pattern within both a set of double quotes, and parentheses `"( )"` while also including the prefix `r`. While not a perfect solution as we'll see later in **section 4.2.5** when working with capture groups, this does offer some simplification when working with RegEx in R.
+
+Let's see how we would code the above example and our original `dino` sequence example
+
+```{r}
+# Use a raw string literal to remove u\\s from our bad_string
+str_remove(bad_string, pattern = ...)
+```
+
+```{r}
+# Our original code for removing spaces in our header
+str_remove_all(string = dino, pattern = "\\s") %>% cat()
+```
+
+```{r}
+# Convert it to a raw string literal. Will this work?
+str_remove_all(string = dino, pattern = ...) %>% cat()
+```
+
+```{r}
+# Use the proper raw string literal
+str_remove_all(string = dino, pattern = ...) %>% cat()
+```
+
+------------------------------------------------------------------------
+
+## 3.4.0 Extracting to save for later with `str_extract()`
+
+We may also want to retain our header in a separate string. `str_extract()` will retain the string that matches our pattern instead of removing it. We will save this in an object called `header`. Note that we have *removed* the final space `\\s` from our expression because it's more of a separator between header and sequence.
+
+```{r}
+# Save the header information to a variable
+header <- ...(string = dino, pattern = r"(>.*[0-9])")
+
+# Check that it worked as expected
+header
+```
+
+------------------------------------------------------------------------
+
+## 3.5.0 Searching with `str_extract_all()`
+
+Now we can look for patterns in our (dino) DNA! Does this DNA have balanced GC content? We can use `str_extract_all` to capture every character that is either a G or a C.
+
+Note that both `str_extract()` and `str_extract_all()` can accept a single character object OR a character vector as input. This means that `str_extract_all()` will produce a `list` of length equal to your input vector. Each `list` element will be a character vector of matches to the corresponding input element.
+
+```{r}
+# Use extract all to find any Gs or Cs
+str_extract_all(dna, pattern = "...")
+
+# This is equivalent when using str_extract_all
+str_extract_all(dna, pattern = "...")
+```
+
+------------------------------------------------------------------------
+
+Although we only supplied a single character object, the output is still a ***list*** object in which is stored a vector with entries for each G or C extracted.
+
+We count the number of occurrences of G and C using `str_count()` and divide by the total number of characters in our string to get the %GC content.
+
+```{r}
+# Take advantage of helper functions like str_length()
+str_count(dna, pattern = "...")/... * 100 # percentage of GC content
+```
+
+------------------------------------------------------------------------
+
+## 3.6.0 Replacement using `str_replace_all()`
+
+Let's translate this into mRNA!
+
+To replace multiple patterns at once, a ***named character vector*** is supplied to `str_replace_all()` of patterns and their matched replacements. This allows us to perform multiple replacements multiple times. If you wanted to replace just the first instance of a match, you would use `str_replace()` instead.
+
+Both `str_replace*()` functions include the argument `replacement` in addition to `string` and `pattern`. In this case, however, our named character vector is provided to the `pattern` argument.
+
+::: {.alert .alert-block .alert-warning}
+**Using multiple patterns for replacement:** When searching and replacing multiple patterns you must consider that these replacements are performed ***as a whole in sequential order*** meaning the entire string has a search/replace pattern completed before testing the next one. While this isn't usually a problem, you must be mindful of certain replacement schemes as we'll see in our next example!
+:::
+
+```{r}
+# Use str_replace_all to transcribe our DNA sequence
+mrna <- ...(string = dna, 
+                        pattern = c("G" = "C", # Start by replacing all G instances with C characters
+                                    "C" = "G", 
+                                    "A" = "U", 
+                                    "T" = "A"))
+
+# Look at the resulting mRNA sequence
+mrna %>% cat()
+```
+
+------------------------------------------------------------------------
+
+Notice the conspicuous absence of the "C"? Our replacement vector initially replaced all G's with C's before immediately replacing all C's with G's! We need, instead to temporarly mark any original G's for later conversion to C's. Let's go ahead and fix that!
+
+```{r}
+# Use str_replace_all to transcribe our DNA sequence
+mrna <- str_replace_all(string = dna, 
+                        pattern = c("G" = "...", # placeholder to prevent all C from becoming G
+                                    "C" = "G", 
+                                    "A" = "U", 
+                                    "T" = "A",
+                                    "..." = "C"))
+
+# Look at the resulting mRNA sequence
+mrna %>% cat()
+```
+
+------------------------------------------------------------------------
+
+## 3.7.0 More useful search tools powered by RegEx
+
+How do we query our sequence for the presence of specific patterns or motifs?
+
+### 3.7.1 Query for the presence of specific patterns with `str_detect()`
+
+Is there even a start codon in this sequence?
+
+The `str_detect()` function can be used to return a logical (TRUE or FALSE) vector to whether or not a match is found.
+
+```{r}
+# Check for the presence of a start codon
+str_detect(string = mrna, 
+           pattern = "...")
+```
+
+------------------------------------------------------------------------
+
+### 3.7.2 Counting pattern matches with `str_count()`
+
+It might be more useful to know exactly how many possible start codons we have. `str_count()` will count the number of matches in the string for our pattern.
+
+```{r}
+...(mrna, "AUG")
+```
+
+------------------------------------------------------------------------
+
+### 3.7.3 Locate pattern matches with `str_locate()`
+
+To get the **position** of a possible start codon we can use `str_locate()`, which will return the indices (coordinates) of where the start and end of our **FIRST** substring occurs. Values are returned in a 2-column matrix.
+
+`str_locate_all()` can be used to find ***all*** possible locations but a `list` of 2-column matrices is returned, using a different matrix for each input string.
+
+```{r}
+# try out string locate on two copies of mrna
+...(c(mrna, mrna), "AUG")
+
+# vs string locate all on mrna
+...(mrna, "AUG")
+```
+
+------------------------------------------------------------------------
+
+## 3.8.0 Split up a string with `str_sub()`
+
+Sometimes rather than keeping or discarding a portion of a string and it's pattern, you may want to split the data using a specific regular expression.
+
+Let's split our `mrna` sequence into substrings of codons, starting at the position of our start codon. We have the position of our start codon from `str_locate()`. We can use `str_sub()` to subset the string by position (we will just go to the end of the string for now).
+
+Our command will take the form of `str_sub(string, start, end)` where
+
+-   `start` defaults to the first character of `string`
+
+-   `end` defaults to the last character of `string`
+
+```{r}
+# Examine the mRNA sequence
+mrna %>% cat()
+```
+
+------------------------------------------------------------------------
+
+### 3.8.1 Use `str_length()` to check the length of your character object
+
+You can use the `str_length()` function to check the length of one or more character objects. This means you can supply a character vector and it will return an integer vector of the same length with values denoting the number of ***coding elements*** in each character object. That usually pertains to simple characters BUT this can also include things like metacharacters too (ie `\n`)
+
+```{r}
+# What are the lengths of our various character objects?
+...(c(dino, dna, mrna))
+```
+
+```{r}
+# Subsetting from position 90 (beginning of start codon) to base 1,219 (last base in our sequence). 
+# Note that the beginning of the sequence changed
+str_sub(mrna, ... = 91, ... = 1219) %>% cat()
+```
+
+------------------------------------------------------------------------
+
+If we don't include an `end` argument for `str_sub()` it will simply go to the very end of the string.
+
+```{r}
+# is equivalent to
+str_sub(mrna, ...(mrna, "AUG")[1]) %>% cat() # Look at the nested code (one function inside another)
+```
+
+```{r}
+# Equivalent code using the piping format
+mrna %>% 
+    str_locate(., "AUG") %>%  # Locate the first "AUG"
+    ... %>%                  # Take it's location from the first column of the matrix output
+    str_sub(mrna, .) %>%         # Retrieve the mRNA sequence from that point onwards
+    cat()
+```
+
+```{r}
+# Replace the original mRNA sequence with the trimmed version
+mrna <- str_sub(mrna, str_locate(mrna, "AUG")[1])
+
+mrna %>% cat()
+```
+
+------------------------------------------------------------------------
+
+## 3.9.0 Applying our RegEx skills further
+
+### 3.9.1 Generate codons from the first open reading frame with a regular expression
+
+Remember that `.` represents any character so we can get codons by extracting groups of (any) 3 nucleotides/characters in our reading frame. Note that these methods search for ***non-overlapping*** pattern matches.
+
+::: {.alert .alert-block .alert-warning}
+**Watch out for line breaks!** Up until now we've been wandering through our examples quite blissfully but now we are at the edge of a problem. We wish to search for all the codons in our string using the **.** metacharacter which will match any character ***except line breaks!*** We'll have to incorporate an extra step before then.
+:::
+
+```{r}
+# Remove all the line breaks in our data
+mrna <- 
+    mrna %>% 
+    ...(., r"(\s)") 
+
+# Check the output now
+cat(mrna)
+```
+
+```{r}
+# think of these dots as wildcards to pick any character triplets
+str_extract_all(mrna, "...") 
+
+# how many codons did we retrieve?
+length(str_extract_all(mrna, "..."))
+```
+
+------------------------------------------------------------------------
+
+### 3.9.1.1 Remember some functions return a `list` as output.
+
+Why is the length of our `str_extract_all` output just a 1? The codons are extracted into a list, but we can get our character substrings using `unlist()`.
+
+The `unlist()` function will take a list and simplify it to a vector of the best matching type containing all the atomic elements of the original list.
+
+```{r}
+# Unlist our results
+codons <- 
+    str_extract_all(mrna, "...") %>%  # Make the extraction
+    unlist()                          # Unlist the resulting extracted output
+
+# Take a look at the resulting
+codons
+
+length(codons)
+```
+
+------------------------------------------------------------------------
+
+### 3.9.2 Search for multiple specific patterns using `|`
+
+We now have a vector with 370 codons. Do we have a stop codon in our reading frame?
+
+Remember we've seen a couple of ways to search for multiple patterns in a single RegEx call. Let's check with `str_detect()`. We can use round brackets `( )` in our search pattern to separately group the different stop codons. We'll use the `|` (OR) metacharacter to search for the occurrence of any of our 3 stop codon sequences.
+
+Notice how in this case we are supplying our character vector `codons`?
+
+```{r}
+str_detect(codons, "(UAG)|(UGA)...")
+```
+
+------------------------------------------------------------------------
+
+### 3.9.3 Identify specific occurrences in a vector with `str_which()`
+
+Looks like we have many matches. We can subset the codons using `str_detect()` (instances where the presence of a stop codon is equal to TRUE) to see which stop codons are represented.
+
+Recall from **Lecture 01** that we can use the `which()` function to find which indices the stop codons are positioned at. The call comes in the format of `which(data_vector LOGICAL/BOOLEAN desired_value)` where:
+
+-   `data_vector` is your vector or array
+
+-   `LOGICAL/BOOLEAN` is the equivalency you're looking for like `==`, `>`, `!=`, etc.
+
+-   `desired_value` determines which results are determined as "TRUE" and returned as indices of `data_vector`
+
+So you could combine the two commands `which()` and `str_detect()` to produce output identifying the index location of hits for your search pattern.
+
+The `stringr` package, however, has generated a wrapper function that implements that combination for us in the `str_which()` function! It simplifies the syntax required and works similarly to `str_detect()`, requiring just a character or character vector and a pattern. You can also negate the result with the `negate = TRUE` parameter.
+
+```{r}
+# Which returns a numerical vector of indices 
+...(codons, "UAG|UGA|UAA") 
+
+# Note that this is equivalent
+which(str_detect(codons, "...")) 
+```
+
+Let's subset `codons` to end at the first stop codon.
+
+```{r}
+# Simply grab codons by index position
+codons[1:98]
+
+#equivalent to 
+translation <- codons[...] 
+# The search will be stopped at the first detection of either of the stop codons listed
+
+translation
+```
+
+------------------------------------------------------------------------
+
+### 3.9.4 Replace your codons with amino acids
+
+After finding our unique codons, we can translate codons into their respective proteins by using `str_replace_all` using multiple patterns and replacements as before.
+
+```{r}
+unique(translation)
+
+# It's a custom-made codon table!
+codon_translation = c("UUU" = "F", "UCU" = "S", "UAU" = "Y", "UGU" = "C", 
+                      "UUC" = "F", "UCC" = "S", "UAC" = "Y", "UGC" = "C", 
+                      "UUA" = "L", "UCA" = "S", "UAA" = "*", "UGA" = "*", 
+                      "UUG" = "L", "UCG" = "S", "UAG" = "*", "UGG" = "W", 
+                      "CUU" = "L", "CCU" = "P", "CAU" = "H", "CGU" = "R", 
+                      "CUC" = "L", "CCC" = "P", "CAC" = "H", "CGC" = "R", 
+                      "CUA" = "L", "CCA" = "P", "CAA" = "Q", "CGA" = "R", 
+                      "CUG" = "L", "CCG" = "P", "CAG" = "Q", "CGG" = "R", 
+                      "AUU" = "I", "ACU" = "T", "AAU" = "N", "AGU" = "S", 
+                      "AUC" = "I", "ACC" = "T", "AAC" = "N", "AGC" = "S", 
+                      "AUA" = "I", "ACA" = "T", "AAA" = "K", "AGA" = "R", 
+                      "AUG" = "M", "ACG" = "T", "AAG" = "K", "AGG" = "R", 
+                      "GUU" = "V", "GCU" = "A", "GAU" = "D", "GGU" = "G", 
+                      "GUC" = "V", "GCC" = "A", "GAC" = "D", "GGC" = "G", 
+                      "GUA" = "V", "GCA" = "A", "GAA" = "E", "GGA" = "G", 
+                      "GUG" = "V", "GCG" = "A", "GAG" = "E", "GGG" = "G")
+
+# Replace all of our codons with amino acid codes
+translation <- str_replace_all(translation, codon_translation)
+
+# View the translated version
+translation
+```
+
+------------------------------------------------------------------------
+
+### 3.9.5 Collapsing your results into a single string with `str_flatten()`
+
+What is our final protein string? `str_flatten()` allows us to collapse our individual protein strings (or any character vector) into one long string.
+
+```{r}
+# Flatten or collapse the vector into a single atomic character
+str_flatten(translation)
+
+# Equivalent call using the paste function
+paste(translation, collapse="")
+
+# Save the flattened version 
+translation <- str_flatten(translation)
+
+# Double-check it looks correct!
+translation
+```
+
+------------------------------------------------------------------------
+
+### 3.9.6 Recombining strings with `str_c()`
+
+We can add our header back using `str_c`, which allows us to combine strings. We can use a space to separate our original strings with the `sep` parameter. This, of course, may seem very similar to the `paste()` function! There are, however, some differences in how these functions [handle NA values](https://jrnold.github.io/r4ds-exercise-solutions/strings.html#exercise-14.2.1).
+
+```{r}
+# recombine header with our translation and separate with a space
+str_c(header, translation, sep = ...)
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 3.0.0:** Suppose we wanted to convert all of our header to lower case letter instead of a mix of upper and lower case. Without directly changing the ***header*** variable, update its contents and combine it with the translated protein sequence. What [stringr function(s)](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf) will you use? Use the code cell below to generate the desired output as demonstrated below.
+:::
+
+`>dinodna from crichton jurassic park  p. 103 nt 1-1200\nMVRKGGPSREHKAGTANGLWTGGKREALRTDECDMDRVKPHPASEVRPDTRQVGLATRNRPLIAELRLGHFILSTAVARPSKSRSWRKRPLAGQRTP*`
+
+```{r, eval = FALSE}
+# comprehension answer code 3.0.0
+# generate the above output using stringr functions
+
+header %>% 
+```
+
+------------------------------------------------------------------------
+
+# 4.0.0 Multi FASTA file formatting
+
+Now that we've walked through some of the basic functions that utilize RegEx, let's try some more advanced examples.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Regex_Scientist.jpeg?raw=true" width="500"/>
+
+As you get more comfortable with the ideas of RegEx you'll be able to tackle more complex problems
+:::
+
+In the next exercise, we convert a multifasta file into a csv file that can be viewed in spreadsheet software such as MS Excel.
+
+### 4.0.1 If you wanted to pull down your own version of the data set
+
+Luckily for you, the data is already in your folders **but** if you wanted to get the data yourself, it would go something like this.
+
+-   Go to [NCBI](https://www.ncbi.nlm.nih.gov/)
+
+-   Search "FoxP2[gene] AND primates[orgn" (without the quotation marks)
+
+-   Under "Proteins", Select "Protein"
+
+-   Under "Source Databases" (left side) Select "RefSeq". This is important since each database has a different fasta header format
+
+-   Select "200 per page"
+
+-   Select "FASTA (text)" under the Summary pulldown
+
+-   Save the multifasta file under `Lecture_05_regex/data/` and name it "FoxP2_primate.fasta".
+
+------------------------------------------------------------------------
+
+## 4.1.0 Reorganizing a multi-entry fasta file
+
+**Goal:** Reorganize the data from a fasta format into a tabular format with one row per entry (gene) and the following columns:
+
+-   Accession_number (make sure to remove the "\>")
+-   Protein_info
+-   Genus
+-   species
+-   Sequence (we'll need to remove all the line breaks)
+
+For example, given the entry
+
+**\>NP_001009020.1 forkhead box protein P2 [Pan troglodytes]**\\r\\n MMQESATETISNSSMNQNGMSTLSSQLDAGSRDGRSSGDTSSEVSTVELLHLQQQQALQAARQLLLQQQT\\r\\n SGLKSPKSSDKQRPLQVPVSVAMMTPQVITPQQMQQILQQQVLSPQQLQALLQQQQAVMLQQQQLQEFYK\\r\\n
+
+The expected 5-part output would be
+
+-   Accession_number: `NP_001009020.1`
+-   Protein_info: `forkhead box protein P2 FoxP2`
+-   Genus: `Pan`
+-   species: `troglodytes`
+-   Sequence: `MMQESATETISNSSMNQNGMSTLSSQLDAGSRDGRSSGDTSSEVSTVELLHLQQQQALQAARQLLL...`
+
+Once the file is in the desired format, write the file to disk in CSV format.
+
+As a data frame, it should be organized something like
+
+| Accession_number | Protein_info            | Genus | Species     | Sequence                  |
+|:-----------------|:------------------------|:------|:------------|:--------------------------|
+| NP_001009020.1   | forkhead box protein P2 | Pan   | troglodytes | MMQESATETISNSSMNQNGMST... |
+
+Let's do it!
+
+------------------------------------------------------------------------
+
+### 4.1.1 Read in your file as a single string using `readr::read_file()`
+
+First, we need to read in the file that we just downloaded. We'll use the `read_file()` function from the `readr` package which is already imported with the `tidyverse`. The `read_file()` function is used to read a complete file into a single character vector - aka one long string.
+
+::: {.alert .alert-block .alert-warning}
+**Why not use read_delim()?:** Recall that our FASTA file doesn't exactly take on any of the regular formats (CSV or TSV) that we've been using previously. While it does have a specific structure, it is really delimited by a **\>** symbol to separate entries. Given that information, you might think another option for importing would be the **read_delim()** function. The **readr** functions, however, treat observations by the appearance of the "\\n" or new line. It uses the **delim** parameter to set how *columns* are differentiated. So we cannot simply import the data using these kinds of functions. Instead, you may want to look into the [biostrings package](http://www.bioconductor.org/packages/release/bioc/html/Biostrings.html)
+:::
+
+```{r}
+# Take a quick look at our directory
+getwd()
+list.files("data/")
+```
+
+```{r}
+# read file as a single string
+fasta <- read_file("data/FoxP2_primate.fasta")
+
+# How big is this string?
+...
+
+# a single continuous string with all genes. 
+print(str_sub(...))
+
+# Note the line breaks (\r\n)!
+```
+
+------------------------------------------------------------------------
+
+### 4.1.2 Explore your data to understand its structure
+
+Before we start manipulating our data, let's inspect `fasta`. You'll notice from above that there are `\r\n` characters interspersed throughout the string which are translated as line breaks.
+
+We already know it has 104,129 characters but let's double check the properties of the `fasta` object.
+
+```{r}
+# Retrieve the structure 
+str(fasta)
+
+# is it a vector?
+...(fasta)
+
+# What are it's dimensions?
+dim(fasta) # Is unidimensional so the output of dim() is NULL
+```
+
+------------------------------------------------------------------------
+
+### 4.1.2.1 Use `writelines()` or `cat()` to see your output in a human-readable format
+
+Right now our data is in a character vector but it's just a single long character. We can't even see it properly with`str()` or `glimpse()`. We tried the `print()` function but it did not account for line breaks.
+
+The `writelines()` function, however, will allow us to see the data in a more understandable format. Alternatively, we already know the `cat()` function will also interpret `\n` characters but it technically also puts multiple entries from a vector together with a `sep=` parameter.
+
+To save on output space, we'll limit `fasta` to just the first 2000 lines as we did with print.
+
+```{r}
+# We'll practice our piping here again at the same time
+fasta %>% 
+    # Subset our fasta string
+    str_sub(., 1, 2000) %>% 
+    # Pass it along to writeLines which will properly interpret the line breaks
+    ...
+```
+
+```{r}
+# We'll practice our piping here again at the same time
+fasta %>% 
+    # Subset our fasta string
+    str_sub(., 1, 2000) %>% 
+    # Another base-r alternative, cat will also properly interpret the line breaks
+    ...
+```
+
+------------------------------------------------------------------------
+
+### 4.1.3 How many entries do we have?
+
+Given that we know that `>` represents the beginning of an entry in fasta format, we can count the number of `>` as a proxy for total entries. Recall which function we can use to help count?
+
+```{r}
+# Count the number of > in fasta
+str_count(string = fasta, pattern = "...")
+```
+
+It looks like we have 130 entries. It's actually 129 but we'll get to that problem eventually. Time to work on our tasks!
+
+------------------------------------------------------------------------
+
+## 4.2.0 Identify a structural pattern and come up with a plan
+
+Now that we know more about the nature of our fasta information, we can put together a plan for how we want to transform (parse) it into our final format. We see that:
+
+-   Each entry has a header beginning with `>` and ending with species information like `[binomial name]`.
+-   Between each *entry*, there is an empty line - probably due to multiple `\r\n` creating **two linebreaks**.
+-   Each amino acid sequence is broken into multiple lines every 70 characters.
+
+::: {.alert .alert-block .alert-success}
+**Why \\r\\n?** Due to some historical differences between operating systems, there are three possible combinations of metacharacters to represent a newline. Unix and the newer Mac OS use **\\n** (newline), the old Mac OS used **\\r** (carriage return), and Windows uses **\\r\\n**. Across operating systems, the unused metacharacters are usually silently ignored. As a consequence of this diversity, most internet text files (including FASTA) will have the **\\r\\n** format for newlines but even Windows can silently interpret a lone **\\n** as a newline. Suffice to say, when creating new lines, you can use **\\n** for simplicity and it should work across most systems. If you're interested in more about this quirk, check it out on [Wikipedia](https://en.wikipedia.org/wiki/Newline).
+:::
+
+------------------------------------------------------------------------
+
+Let's use the following plan to set our order of operations.
+
+1.  Remove the square brackets we see for each species ie `[Homo sapiens]`
+2.  Split each entry into separate rows
+3.  Remove the `>` symbol from each entry
+4.  Split each entry into a "header" and "sequence" portion
+5.  Further subdivide the header into the components we want
+6.  Clean up the sequences so they are each single strings uninterrupted by line breaks
+
+First let's prepare a second variable `subfasta` which contains a smaller portion of our entries ie. a subsampling!
+
+```{r}
+# Make a smaller version of our string to play with
+subfasta <-
+  fasta %>% 
+  str_sub(., 1, 2000)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.1 Strip out and replace all occurrences of `[` and `]`
+
+The best way to go through the entire string is to use `str_replace_all()`
+
+```{r}
+subfasta  %>% 
+  str_replace_all(pattern = ...,    # look for opening or closing squared brackets
+                  replacement = ...) %>%    ### 4.2.1 replace squared brackets with nothing
+  writeLines() # Let's make it easier to look at
+```
+
+------------------------------------------------------------------------
+
+### 4.2.2 Split each entry into an individual row
+
+Each `FASTA` entry is separated by a few characters. If we had printed the output instead to take a closer look at the end of each entry we would see `...PELEDDREIEEEPLSEDLE\r\n\r\n>NP_683697.2`. Contrast this to the characters between lines of amino acid sequence which are just `\r\n`. Can we take advantage of this difference?
+
+We can use `str_split()` but what pattern should we give it?
+
+```{r}
+# Use str_split to break up the line breaks
+subfasta  %>% 
+  str_replace_all(pattern = r"(\[|\])", 
+                  replacement = "") %>%   # Remove square brackets
+  
+  ### 4.2.2 Use str_split to break up the line breaks. On unix you can use \\n\\n
+  str_split(...)          
+```
+
+------------------------------------------------------------------------
+
+`str_split()` returns a list but we want to work with a vector! Let's quickly fix that with the `unlist()` function to retrieve a vector instead.
+
+```{r}
+# You need to convert the result to a vector to work with.
+subfasta  %>% 
+  str_replace_all(pattern = r"(\[|\])", 
+                  replacement = "") %>%    # Remove square brackets
+  
+  # Use str_split to break up the line breaks. On unix you can use \\n\\n
+  str_split(r"(\r\n\r\n)") %>%             
+  
+  ...                                 ### 4.2.2-b Convert our list to a character vector
+```
+
+------------------------------------------------------------------------
+
+### 4.2.3 Remove the `>` from the start of each entry
+
+Remember each entry is now separately stored in a character vector. We want to go through each and remove the `>` symbol. To accomplish this we will use `str_replace_all()` which expects a character vector as input. Perfect!
+
+```{r}
+# remove the ">" from the start of each entry
+subfasta  %>% 
+  str_replace_all(pattern = r"(\[|\])", 
+                  replacement = "") %>%    # Remove square brackets
+  
+  # Use str_split to break up the line breaks. On unix you can use \\n\\n
+  str_split(r"(\r\n\r\n)") %>%    
+  
+  unlist() %>%                             # Convert our list to a character vector
+  
+  str_replace_all(pattern = "...", 
+                  replacement = "")        ### 4.2.3 remove the ">" from the start of each entry
+```
+
+------------------------------------------------------------------------
+
+### 4.2.4 Split your entries into a header and sequence with `str_split_fixed()`
+
+Now we want to break away our header from the rest of the actual amino acid sequence in each entry. To accomplish this we'll use `str_split_fixed(string, pattern, n)` where:
+
+-   `string` is our character vector that we want to split.
+
+-   `pattern` is the string pattern that we want to use to split each entry.
+
+-   `n` is the number of times we want to split each entry in the vector. Our pattern may occur **multiple** times but our call will return a character matrix with only `n` columns
+
+At this point we'll switch back to using the full `fasta` string variable and save the resulting output into a new variable called `header_seq_fasta`. The function `str_split_fixed()` will return a character matrix with `n` columns.
+
+```{r}
+# Break each entry into 2 columns with str_split_fixed and save it
+header_seq_fasta <- 
+fasta %>% 
+  str_replace_all(pattern = r"(\[|\])", 
+                  replacement = "") %>%    # Remove square brackets
+  
+  # Use str_split to break up the line breaks. On unix you can use \\n\\n
+  str_split(r"(\r\n\r\n)") %>%      
+  
+  unlist() %>%                             # Convert our list to a character vector
+  
+  str_replace_all(pattern = "^>", 
+                  replacement = "") %>%    # remove the ">" from the start of each entry
+  
+  ### 4.2.4 Split the string by the first occurrence of our pattern
+  str_split_fixed(pattern = ..., 
+                  n = ...)                   
+
+class(header_seq_fasta)
+```
+
+------------------------------------------------------------------------
+
+While it is still possible to work with this matrix of characters, we'll convert it to a `tibble` since we are more familiar with the workings of that data structure.
+
+```{r}
+# Convert the object to a tibble and overwrite it to the original header_seq_fasta
+header_seq_fasta <-
+  header_seq_fasta %>% 
+  as_tibble()     
+  # Notice that this casting doesn't use the same "as.object()" format but rather as_object()
+
+# double check that the conversion worked
+head(header_seq_fasta)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.4.1 Remove `duplicated()` entries with the help of `which()`
+
+Okay, a quick side trip to remind/show you some of the tricks you can use in your data wrangling. Are there duplicated entries in our original fasta file? Perhaps there are unique entry headers but sequences may be duplicated. Let's cull them from the set for now.
+
+How do we check **which** entries hold **duplicated** sequences already present in `fasta`?
+
+```{r}
+# Which entries within our dataset are duplicated by sequence?
+which(...)
+```
+
+```{r}
+# Use which to filter out duplicated copies
+header_seq_subset <- header_seq_fasta[...]
+
+# Take a look at the resulting subset
+str(header_seq_subset)
+```
+
+------------------------------------------------------------------------
+
+Wow, almost half of our sequence entries are duplicated!
+
+### 4.2.4.2 Remove `duplicated()` entries with the help of `filter()`
+
+Rather than use the more complicated code above, we can rely on `dplyr` to help us out with a call to `filter()` instead. In this case, recall that we want to filter for the *non-duplicated* entries. We can accomplish this with the logical not `!` annotation.
+
+Again we'll save the final filtered result into the variable `header_seq_subset`.
+
+::: {.alert .alert-block .alert-info}
+**Don't forget about the ".":** While we are often omitting this particular notation in our pipes, it comes in crucial when we want to do more than just pass around data. As we'll see, you can treat it just like whatever the object represents.
+:::
+
+```{r}
+# Use filter to remove duplicated entries
+header_seq_subset <- 
+    header_seq_fasta %>%           # Pass the header/seq data to filter
+    filter(...)     # identify the duplicated entries and filter on the negated result
+
+str(header_seq_subset)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.5 Break up the header column into the components that we want
+
+Let's review. We now have a filtered data frame consisting of 2 columns. The first represents the headers from each fasta entry, and the second column contains the sequences of the fasta entry. Let's break our header into the components we wanted:
+
+-   accession number
+-   protein_info
+-   genus
+-   species
+
+We'll accomplish this with `str_match_all()` which takes in our string and returns a `list` of our matched groups in a `matrix` format. The key here is in the pattern where each **group** is defined by the matching pattern within each set of `( )` **(parentheses)**. Recall from section **2.3.0** we saw a table with the grouping syntax. The `(...)` syntax is also known as a **capture group** because the information inside each set of parentheses is captured or stored for use in the immediate function that is using this particular regular expression.
+
+Let's also keep in mind that the return output of `str_match_all()` will be a list of character matrices where the *first* column in each has the complete match, and each additional column is reserved for matching groups as defined above. If multiple matches are identified in the same character entry, it will make additional rows in the matrix of matches. For a vector of characters, each entry (i.e. each header in our case) will result in a new list entry within the `str_match_all()` output.
+
+In this case we are *also* going to take advantage of greedy matching to capture **protein_info** which may take any non-uniform format!
+
+```         
+XP_007980836.1 PREDICTED: forkhead box protein P2 isoform X2 Chlorocebus sabaeus 
+```
+
+Let's break this header down into some subcomponents which are all separated by whitespace
+
+| Text Entry                                    | Properties                                                |
+|:----------------------------------------------|:----------------------------------------------------------|
+| XP_007980836.1                                | alphanumeric series, separated by ".", ending with digits |
+| PREDICTED: forkhead box protein P2 isoform X2 | alphanumeric with any number of words and spaces present  |
+| Chlorocebus                                   | single alphabetical word                                  |
+| sabaeus                                       | single alphabetical word                                  |
+
+::: {.alert .alert-block .alert-warning}
+**The stringr package is for STRINGS:** We have to remember when working with this package, that for many (if not all) of the functions, the expected input is a **character object** or **character vector**. You also have to recall that when working with tibbles, that most indexing/selecting methods will return a tibble! Instead, to get a vector back we can use the **pull()** method.
+:::
+
+```{r}
+# Check the structure of our data
+str(header_seq_subset)
+```
+
+------------------------------------------------------------------------
+
+If everything goes as planned, we expect to see a matrix structured something like the following:
+
+| 1                                                             | 2             | 3                                    | 4      | 5         |
+|---------------------------------------------------------------|---------------|--------------------------------------|--------|-----------|
+| "NP_683696.2 forkhead box protein P2 isoform II Homo sapiens" | "NP_683696.2" | "forkhead box protein P2 isoform II" | "Homo" | "sapiens" |
+
+```{r}
+fasta_header <-
+  header_seq_subset %>%    # Pass along the data frame
+  pull(1) %>%              # Retrieve just a single column (vs select) as a vector
+  
+   # Use the power of regex and greedy matching to create 4 capture groups
+  str_match_all(r"(...)")     
+
+# Take a look at the last few rows of our result
+tail(fasta_header, 3)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.6 Reformat our header information into a data frame
+
+We now have a list of 1x5 matrices where we only care about the information in column 2-5 of each matrix. How do we pull that information from each entry of the list itself? Currently `fasta_header` exists as a list where each element is a matrix. Let's convince ourselves in the following code cell.
+
+```{r}
+# Look at the first entry of fasta_header
+fasta_header[[1]]
+
+# Two ways to drop the first column
+print("Select our columns specifically...")
+fasta_header[[1]][...]
+
+print("Leave a column behind")
+fasta_header[[1]][...]
+```
+
+------------------------------------------------------------------------
+
+How do we approach converting this to something like a data frame? There are a number of ways to do this and we'll show you a couple.
+
+1.  Remove the unwanted entry as we build the data frame
+2.  Convert the list to a data frame and remove the unwanted columns
+
+```{r}
+# Convert the results of str_match_all into a data frame
+...(fasta_header[[1]][,2:5])
+```
+
+Not quite what we expected from our conversion. The vector was coerced into a series of ***rows*** rather than ***columns***. In order to get what we want, we'll have to transpose for proper coercion.
+
+```{r}
+# You need to transpose the trimmed data for proper coercion
+data.frame(...(fasta_header[[1]][, 2:5]))
+```
+
+------------------------------------------------------------------------
+
+### 4.2.6.1 A note about working with data frames and `rbind()`
+
+There are a number of ways to *add* a row to a `data.frame`. What must always be remembered about data frames is that to add a row, two criteria must be met:
+
+1.  The number of columns must match.
+
+2.  The names of the columns must match.
+
+Otherwise, the program may not stop but it will certainly not give you the output you were expecting.
+
+A great way to add rows is with the `rbind()` command. As a corollary to the **above rules**, when adding `vectors` to a dataframe (or to another `vector`) then, the number of *elements* must be matching as well. So `rbind()` will AUTOMATICALLY transpose your vector for you!
+
+Behind the scenes, when we call this command, the interpreter evaluates the inputs for the call and decides on which implementation of `rbind()` to use i.e. is this for a data frame? or a matrix? etc. In our case, we will explicitly call on `rbind.data.frame()` to ensure we get a `data.frame` as a result.
+
+```{r}
+str(fasta_header, 
+    list.len = 5) # Limit the number of elements in the list output
+```
+
+------------------------------------------------------------------------
+
+Let's compare what happens when we allow the R interpreter to choose which version of `rbind()` it will use versus specifying.
+
+```{r}
+# What happens if we call rbind?
+...(fasta_header[[1]][,-1], fasta_header[[2]][,-1])
+```
+
+```{r}
+# What about rbind.data.frame?
+...(fasta_header[[1]][,-1], fasta_header[[2]][,-1])
+```
+
+------------------------------------------------------------------------
+
+### 4.2.6.2 Use a loop to build your data frame one row at a time
+
+We want to repeat the above command **for** every entry within `fasta_header`. We haven't discussed loops yet, but will delve into these control structures in **lecture 07**. Here, however, we want to quickly use it to accomplish a repetitive action. Remember our rules for adding rows to a data frame!
+
+```{r}
+# Create a data frame and place-hold the column names to match with what we have in fasta6
+header.df <- rbind.data.frame(fasta_header[[1]][,-1])
+
+rm(i) ## remove any previous instances of i
+
+for (i in ...){
+  # Drop the last potential list in fasta_header since it was blank!
+
+  header.df <- rbind.data.frame(header.df, fasta_header[[...]][, -1])
+}
+
+head(header.df)
+str(header.df)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.6.3 `do.call()` to save youself some trouble
+
+The `do.call()` function *"constructs and executes a function call from a name or a function and a list of arguments to be passed to it."* It takes the form of:
+
+```         
+do.call(what, args, quote=FALSE, envir = parent.frame())
+```
+
+where the arguments:
+
+-   `what` = the function you want run ***OR*** the name of the function you want to use.
+
+-   `args` = a *list* of arguments that will be passed to the function declared in `what`
+
+How does this help us? Although not exactly the same, it works very similarly to the `lapply()` function where we can provide a list and it will vectorize a function over that list. The distinction, however, is under the hood where `lapply()` will apply the same function to *each element* of a list, `do.call` will supply a list of arguments just one time to a function call. Furthermore, `lapply()` always returns a list versus `do.call()` which will return an object based on the function called.
+
+Let's use a simple example involving numbers.
+
+```{r}
+# Let's do some quick math to help us convince ourselves of what will be happening
+# Set up some vectors of numbers
+vecNum1 = c(1:10)
+vecNum2 = c(11:21)
+
+# Put these vectors into a list
+listNum = list(...)
+
+# Take the sum of each vector
+...
+```
+
+------------------------------------------------------------------------
+
+Now suppose we had a `list` of vectors that we wanted to add up? We could constantly sum them all. We could use a `for` loop like we saw above or maybe we can just add the vectors and take the sum?
+
+```{r}
+# Can we just take the sum of the two vectors added together?
+sum(vecNum1 ... vecNum2)
+
+# Or do we provide each vector as an argument?
+sum(vecNum1 ... vecNum2)
+```
+
+------------------------------------------------------------------------
+
+Looks like if we try to add the vectors and then sum we are getting an incorrect answer? Long story short - ***vector recycling!*** Recall from **Lecture 01** that when you are doing *element-wise* manipulation of vectors, they will recycle for vectors of differing sizes!
+
+Instead what we want is to take the sum of each individual vector as before by ***providing it as an argument*** to the function. If we had a long enough list of vectors, writing the code to sum them individually would get quite long. We could use a more complicated `lapply()` coding since we do have a list.
+
+We've already seen, however, that we can provide a `list` of arguments to a function such as `sum()` and then it's just a matter of figuring out *how* we provide the list as an argument. Finally we can see what `do.call()` can do to perform a `sum()` function across our `listNum` object.
+
+```{r, error = TRUE}
+# Can we simply sum the elements of the list?
+sum(listNum)
+```
+
+```{r}
+# If we use do.call, it breaks the elements out of the list before passing them all at once to sum()
+# Note that we are providing the function name, "sum", not calling on the function using "sum()"
+...
+```
+
+------------------------------------------------------------------------
+
+Now that we've really dug into understanding the `do.call()` function, let's get back to our dilemma. We have a `fasta_header` which is a `list` of matrices that we want to bind together with the function `rbind.data.frame()`. Our binding function will bind together any number of arguments supplied as individual data frames. Sound like a familiar problem?
+
+Sure, if we use `lapply()` it will only return a list of individual dataframes and not a single one. It's time for `do.call()` to shine!
+
+```{r}
+# Now use do.call
+header.df <- 
+  do.call(...) %>% 
+  select(-1) # remember you need to get rid of the first column
+
+head(header.df)
+```
+
+------------------------------------------------------------------------
+
+Don't forget to rename your columns!
+
+```{r}
+# rename the columns "Accession_number", "Protein_info", "Genus", and "Species"
+...(header.df) <- c("Accession_number", "Protein_info", "Genus", "Species")
+
+head(header.df,2)
+```
+
+------------------------------------------------------------------------
+
+Looks like we are halfway through our problem. We've split the header into new columns and we now need to cleanup the sequence entries which exist in the 2nd column of `header_seq_subset`.
+
+### 4.2.7 Reformat our sequence entries with `str_*()` methods
+
+Our sequence entries in `header_seq_subset` are full of line breaks in the form of `\r\n` and we don't want these anymore. So how can we go about removing those easily?
+
+There are a number of approaches we could take but let's use the tools we've already encountered:
+
+1.  `str_split()` - Break a string into pieces based on a pattern.
+
+2.  `str_flatten()` - Combine entries of a character vector into a single character object.
+
+```{r}
+# Take a closer look at our tibble
+str(header_seq_subset)
+```
+
+```{r}
+# Confirm what our sequence data looks like for a single entry
+print(header_seq_subset[1,2])
+```
+
+```{r}
+# Let's split off all of the extra line breaks
+header_seq_subset %>% 
+  # Break off the 2nd column
+  pull(2) %>% 
+  # Split the strings
+  str_split(...) %>% 
+  # Take a look at the results of the split
+  head(3)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.7.1 Is it `lapply()` or `do.call()`?
+
+Good question!
+
+It can be confusing trying to figure out which is most appropriate to use at this point. We have a list of vectors for our translated sequences. For each ***individual*** vector, we want to `str_flatten()` all of the sequences into a single one. We ***do not*** want to end up with a single large string vector but rather maintain a list of each individual sequence after it has been made whole.
+
+More importantly, `str_flatten()` only takes in a single character vector, and not multiple vectors! Therefore, we're going with `lapply()`.
+
+```{r}
+# Let's split off all of the extra line breaks
+header_seq_subset %>% 
+  # Break off the 2nd column
+  pull(2) %>% 
+  # Split the strings
+  str_split(r"(\r\n)") %>% 
+  ### 4.2.7.1 Now you'll have a list of split sequences that you'll need to re-unite
+  ... %>% 
+  # Turn this result back into a vector
+  unlist()  %>% 
+  # drop the last element because it's not helpful
+  head(-1) %>% 
+  # Let's just look at the last few entries
+  tail(5)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.7.2 Work smarter not harder by picking the right functions
+
+Congratulations! It's a vector and it works!
+
+So we went through quite the number of steps to remove the `\r\n` values from each of our entries in column 2 of `header_seq_subset`, including `str_split()` and `str_flatten()`. Instead of these extra steps, however, we could use `str_remove_all()` which can operate on a string vector and will return a string vector.
+
+As we'll see, this approach can save us a few extra steps.
+
+```{r}
+# Let's remove all of the extra line breaks
+seq_united <- 
+  header_seq_subset %>% 
+  # Break off the 2nd column
+  pull(2) %>% 
+  ### 4.2.7.2 Remove all of the line breaks from each individual vector element
+  ...(r"(\r\n)") %>% 
+  # Now you'll have just have a vector that you need to trim
+  head(-1)
+
+# Take a peek at the result
+print(tail(seq_united, 5))
+```
+
+------------------------------------------------------------------------
+
+### 4.2.8 Adding columns to your data frame - a tool for each purpose
+
+It's the last step. We want to add our final sequence information to `header.df` but there are a number of ways to perform this last step based on what we've learned. Remember we also want to have the new column named "Sequence"
+
+1.  A for loop... but that's more coding than we need
+
+2.  `cbind()` can add to our data frame
+
+3.  Using `$` to create a new variable/column directly in `header.df`
+
+4.  Use a `dplyr` verb to create a new column
+
+Let's try some of them!
+
+```{r}
+# we can combine the columns, but will we get the column names we want?
+# Remember we already have the sequences in header.df
+cbind(...) %>% head()
+
+# Note that cbind will permanently alter seq_united
+```
+
+```{r}
+# Replace the sequence column of our header.df but this is a PERMANENT CHANGE!
+header.df$... <- seq_united
+head(header.df)
+```
+
+------------------------------------------------------------------------
+
+We're done! Just like we wanted it:
+
+| Accession_number | Protein_info            | Genus | Species     | Sequence                  |
+|:-----------------|:------------------------|:------|:------------|:--------------------------|
+| NP_001009020.1   | forkhead box protein P2 | Pan   | troglodytes | MMQESATETISNSSMNQNGMST... |
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 4.0.0:** From our work above, use **header.df** and a **dplyr** function to add in the new column called "Sequence" from our **seq_united** variable. You can use the below coding cell to accomplish your task.
+:::
+
+```{r, eval = FALSE}
+# comprehension answer code 4.0.0
+
+# Use %>% and a dplyr verb to accomplish the same task as the previous 2 coding cells.
+header.df %>% 
+    ... %>%  
+    head()
+```
+
+------------------------------------------------------------------------
+
+# 5.0.0 Dealing with bad variable name formatting
+
+You might recall from our previous lectures that we were working with a metadata set containing a lot of different information about our experimental conditions. One of the main issues was very human-readable column names that were much harder to deal with in our code.
+
+Let's begin by importing our metadata and taking another look at those variable names. We'll save the file in a variable called `infection.df`.
+
+```{r}
+# Import the infection_meta.csv file
+infection.df <- read_csv("...") 
+
+str(infection.df, give.attr = FALSE)
+```
+
+------------------------------------------------------------------------
+
+## 5.1.0 Using `rename()` and `rename_with()` to fix column names
+
+As we can see from above, many of the variable names have white spaces in them which forces us to use the grave accent to encapsulate many of these variable names to work with them. In other cases, we see variations on `XXX Date` vs `XXX date` and finally we encounter some special characters like the use of parentheses `()` to describe units and even an appearance of the forward slash `/`.
+
+There are a number of ways you could approach fixing these names. Sometimes you might find there are an excess of columns which will make the renaming process much harder. We can use the `dplyr` verb `rename_with()` to help make the process a little easier now that we also know some regular expression grammar. For this function, the parameters we are interested in are:
+
+-   `.data`: the data frame you wish to alter
+-   `.fn`: the function we'll use to alter the variable names. You can substitute a simple one like `toupper` to make all of the variable characters upper case, or more complex ones like building your own.
+
+The `rename_with()` function can receive a data frame as input and outputs a data frame (tibble).
+
+Let's set a few ground rules for how we'd like to rename our variables:
+
+1.  Remove all spaces and non-standard characters
+
+2.  Use Camel case where appropriate
+
+To accomplish this we'll carry out a series of `rename_with()` calls. First lets use it to replace the `.` and `_` in names with spaces, to consistently separate words in each variable name.
+
+```{r}
+infection.df %>% 
+  ### 5.1.0 Let's make sure all words in our names are separated with a space
+  rename_with(., .fn = ~ str_replace_all(string = ..., 
+                                         pattern = ..., 
+                                         replacement = ...)) %>% 
+  # Look at the column names
+  colnames()
+```
+
+------------------------------------------------------------------------
+
+## 5.2.0 The `str_to_*` functions quickly update the string case
+
+You may have already used the `str_to_lower()` function to convert some strings all to lower case. There are, of course, some additional functions to quickly alter your strings between upper and lower case.
+
+| function          | Description                                               | Example string for You |
+|:------------------|:----------------------------------------------------------|:-----------------------|
+| `str_to_lower`    | Convert all characters in a string to lowercase           | example string for you |
+| `str_to_upper`    | Convert all characters in a string to uppercase           | EXAMPLE STRING FOR YOU |
+| `str_to_sentence` | Make a series of words in a string into a sentence format | Example string for you |
+| `str_to_title`    | Make a series of words in a string into a title format    | Example String For You |
+
+As with our above code cell, we can substitute these functions into `rename_with()`! In this case we'll use one of them to make each word in our variable names begin with an uppercase letter. This will help in our conversion to camel case style. After that we'll remove the space between our words with a `str_remove_all()`.
+
+```{r}
+infection.df %>% 
+  # Let's make sure all words in our names are separated with a space
+  rename_with(., .fn = ~ str_replace_all(string = .x, pattern = r"(\.|_)", replacement = " ")) %>% 
+  ### 5.2.0 Make sure all of the words begin with a capital letter
+  rename_with(., .fn = ...) %>% 
+  ### 5.2.0 now bring all of the words together
+  rename_with(., .fn = ~ ...(.x, pattern = r"(\s)")) %>% 
+  # Look at the column names
+  colnames()
+```
+
+------------------------------------------------------------------------
+
+## 5.3.0 Use a function within the `str_replace()` function
+
+We're nearly there! Now we just need to make the first letter of our words into lower case. To accomplish that task we'll go the route of using `str_replace()` but for the `replacement` parameter we will provide a function name! That's right, you don't need to just provide a specific replacement character. Here we'll take advantage of the `str_to_lower()` function to accomplish our task.
+
+After that, we'll simply remove the extra characters like `(`, `)`, and `/` by replacing them with the empty character.
+
+```{r}
+infection.df %>% 
+  # Let's make sure all words in our names are separated with a space
+  rename_with(., .fn = ~ str_replace_all(string = .x, pattern = r"(\.|_)", replacement = " ")) %>% 
+  # Make sure all of the words begin with a capital letter
+  rename_with(., .fn = ~ str_to_title(.x)) %>% 
+  # now bring all of the words together
+  rename_with(., .fn = ~ str_remove_all(.x, pattern = r"(\s)")) %>% 
+
+  ### 5.3.0 Make all titles begin with lower case
+  rename_with(., .fn = ~ str_replace(string = .x, 
+                                     pattern = r"(^.)", 
+                                     replacement = ...)) %>% 
+  
+  ### 5.3.0 now get rid of the parentheses
+  rename_with(., .fn = ~ ...(.x, pattern = r"(\(|\)|/)", replacement = "")) %>% 
+  # Look at the column names
+  colnames()
+```
+
+------------------------------------------------------------------------
+
+We did it! And in a few "simple" steps, we've made our variable names much more manageable!
+
+And now you've started your RegEx journey!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Matrix_regex.jpeg?raw=true" width="400"/>
+
+Get out there and start to fix those terrible column names!
+:::
+
+------------------------------------------------------------------------
+
+# 6.0.0 Class summary
+
+That's the end for our fifth class on R! You've made it through Regular Expressions and we've learned about the following:
+
+1.  Regular expression classes, quantifiers, and operators
+2.  The `stringr` package and its RegEx-based functions
+3.  How to break down complex patterns into regular expressions
+4.  How to parse and convert a multi FASTA file into a data frame
+5.  How to reformat variable names using regex.
+
+## 6.1.0 Submit your completed skeleton notebook (2% of final grade)
+
+At the end of this lecture a Quercus assignment portal will be available to submit a **RMD** version of your completed skeletons from today (including the comprehension question answers!). These will be due one week later, before the next lecture. Each lecture skeleton is worth 2% of your final grade but a **bonus 0.5%** will also be awarded for submissions made within 24 hours from the end of lecture (ie 1600 hours the following day). To save your notebook:
+
+1.  From the RStudio Notebook in the lower right pane (**Files** tab), select the skeleton file checkbox (left-hand side of the file name)
+2.  Under the **More** button drop down, select the **Export** button and save to your hard drive.
+3.  Upload your RMD file to the Quercus skeleton portal.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RStudioServerExportFile.png?raw=true" width="700"/>
+:::
+
+## 6.2.0 Post-lecture assessment (6% of final grade)
+
+Soon after the end of this lecture, a homework assignment will be available for you in [DataCamp](https://www.datacamp.com/). Your assignment is to complete all chapters from the **String manipulation in R with stringr** course (5150 points total). This is a pass-fail assignment, and in order to pass you need to achieve a least 3,863 points (75%) of the total possible points. Note that when you take hints from the DataCamp chapter, it will reduce your total earned points for that chapter.
+
+In order to properly assess your progress on DataCamp, at the end of each chapter, please print a PDF of the summary. You can do so by following these steps:
+
+1.  Navigate to the **`Learn`** section along the top menu bar of DataCamp. This will bring you to the various courses you have been assigned under **`My Assignments`**.
+2.  Click on your completed assignment and expand each **chapter** of the course by clicking on the **`VIEW CHAPTER DETAILS`** link. ***Do this for all sections on the page***!
+3.  Carefully highlight/select the page starting with the course title (ie Introduction to R) and going to the end of the last section. **Avoid** using `ctrl + A` to highlight all of the visible text.
+4.  Print the page from your browser menu and save as a single PDF. In the options, be sure to print "***selection***" or you may not be able to print the full page. It should print out something like what follows, except with more chapter info.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampIntroR.jpg?raw=true" width="700"/>
+:::
+
+You may need to take several screenshots if you cannot print it all in a single try. Submit the file(s) or a combined PDF for the homework to the assignment section of Quercus. By submitting your scores for each section, and chapter, we can keep track of your progress, identify knowledge gaps, and produce a standardized way for you to check on your assignment "grades" throughout the course.
+
+You will have until 1259 hours on Tuesday, October 7th to submit your assignment (right before the next lecture).
+
+------------------------------------------------------------------------
+
+## 6.3.0 Acknowledgements
+
+**Revision 1.0.0**: materials prepared in R Markdown by Oscar Montoya, M.Sc. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2021 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2022 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.2**: edited and prepared for **CSB1020H F LEC0142**, 09-2023 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2024 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2025 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+------------------------------------------------------------------------
+
+## 6.4.0 Your DataCamp academic subscription
+
+This class is supported by DataCamp, the most intuitive learning platform for data science and analytics. Learn any time, anywhere and become an expert in R, Python, SQL, and more. DataCamp's learn-by-doing methodology combines short expert videos and hands-on-the-keyboard exercises to help learners retain knowledge. DataCamp offers 350+ courses by expert instructors on topics such as importing data, data visualization, and machine learning. They?re constantly expanding their curriculum to keep up with the latest technology trends and to provide the best learning experience for all skill levels. Join over 6 million learners around the world and close your skills gap.
+
+Your DataCamp academic subscription grants you free access to the DataCamp's catalog for 6 months from the beginning of this course. You are free to look for additional tutorials and courses to help grow your skills for your data science journey. Learn more (literally!) at [DataCamp.com](https://learn.datacamp.com/).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampLogo.png?raw=true" width="500"/>
+:::
+
+------------------------------------------------------------------------
+
+## 6.5.0 Resources
+
+<http://stat545.com/block022_regular-expression.html>\
+<http://stat545.com/block027_regular-expressions.html>\
+<http://stat545.com/block028_character-data.html>\
+<http://r4ds.had.co.nz/strings.html> <http://www.gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf>\
+<http://www.opiniomics.org/biologists-this-is-why-bioinformaticians-hate-you/>\
+<https://figshare.com/articles/Wellcome_Trust_APC_spend_2012_13_data_file/963054> \>\
+<http://emailregex.com/>\
+<https://regex101.com/>\
+<https://regexr.com/>\
+<https://www.regular-expressions.info/backref.html>\
+<https://www.regular-expressions.info/unicode.html>\
+<https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf>\
+<https://simongoring.shinyapps.io/RegularExpressionR/>
+
+------------------------------------------------------------------------
+
+# 7.0.0 Appendix: A real messy dataset challenge
+
+I looked for a messy dataset for data cleaning and found it in a blog titled:\
+["Biologists: this is why bioinformaticians hate you..."](http://www.opiniomics.org/biologists-this-is-why-bioinformaticians-hate-you/)
+
+**Challenge:**
+
+This is [Wellcome Trust APC dataset](https://github.com/eacton/CAGEF/blob/master/Lesson_4/data/University%20returns_for_figshare_FINAL.xlsx) on the costs of open access publishing by providing article processing charge (APC) data.
+
+<https://figshare.com/articles/Wellcome_Trust_APC_spend_2012_13_data_file/963054>
+
+The main and common issue with this dataset is that when data entry was done there was no *structured vocabulary*; people could type whatever they wanted into free text answer boxes instead of using dropdown menus with limited options, giving an error if something is formatted incorrectly, or stipulating some rules (i.e. must be all lowercase, uppercase, no numbers, spacing, etc).
+
+What I want to know is:
+
+1.  List 3 problems with this dataset that require data cleaning.
+2.  What is the mean cost of publishing for the top 3 most popular publishers?
+3.  What is the number of publications by PLOS One in dataset?\
+4.  Convert sterling to CAD. What is the median cost of publishing with Elsevier in CAD?
+
+The route I suggest to take in answering these question is:
+
+-   Inspect your dataset. Are the data types what you expect?
+-   Identify any immediate problems. (Answer Question #1)
+-   Clean up column names.
+-   Data clean the publisher column.
+    -   convert all entries to lowercase
+    -   correct typos
+    -   correct multiple names for a publisher to one name
+    -   remove newline characters and trailing whitespace
+-   Answer Questions #2-4
+
+There is a [README](https://github.com/eacton/CAGEF/blob/master/Lesson_4/data/Readme_file.docx) file to go with this spreadsheet if you have questions about the data fields.
+
+The blogger's opinion of cleaning this dataset:
+
+*'I now have no hair left; I?ve torn it all out. My teeth are just stumps from excessive gnashing. My faith in humanity has been destroyed!'*
+
+Don't get to this point. The dataset doesn't need to be perfect. No datasets are 100% clean. Just do what you gotta do to answer these questions.
+
+We can talk about how this went at the beginning of next week's lecture.
+
+------------------------------------------------------------------------
+
+And we are done for the day! Well done!
+
+------------------------------------------------------------------------
+
+## 7.1.0 Just for fun
+
+There are some other things you can do with special codes and characters. Here are some other uses for `writeLines()` and `cat()` functions
+
+```{r}
+writeLines("hello\n\U0001F30D") # U1F30D prints a planet icon on datacamp but not here
+# similar to cat. Unicode characters in: http://www.unicode.org/charts/
+cat("hello\n\U0001F30D")
+
+
+# Use writeLines() with "\u0928\u092e\u0938\u094d\u0924\u0947 \u0926\u0941\u0928\u093f\u092f\u093e"
+# Hello world in Hindi (taken from datacamp.com)
+writeLines("\U00000928\u092e\u0938\u094d\u0924\u0947 \u0926\u0941\u0928\u093f\u092f\u093e")
+cat("\u0928\u092e\u0938\u094d\u0924\u0947 \u0926\u0941\u0928\u093f\u092f\u093e")
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_new.png?raw=true" width="700"/>
+:::
