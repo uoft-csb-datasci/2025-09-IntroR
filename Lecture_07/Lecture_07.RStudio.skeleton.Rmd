@@ -1,0 +1,2360 @@
+---
+title: 'Lecture 07'
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+# This allows the file to be LIVE and run without errors stopping it.
+knitr::opts_chunk$set(error = TRUE)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_services_slide.png?raw=true" width="700"/>
+:::
+
+# Introduction to R
+
+# Lecture 07: Flow Control
+
+# Student Name:
+
+# Student ID:
+
+------------------------------------------------------------------------
+
+## 0.1.0 About Introduction to R
+
+Introduction to R is brought to you by the **Centre for the Analysis of Genome Evolution & Function (CAGEF)** bioinformatics training initiative. This course was developed based on feedback on the needs and interests of the Department of Cell & Systems Biology and the Department of Ecology and Evolutionary Biology.
+
+The structure of this course is a code-along style; It is 100% hands on! A few hours prior to each lecture, links to the materials will be available for download at [QUERCUS](https://q.utoronto.ca/). The teaching materials will consist of an R Markdown Notebook with concepts, comments, instructions, and blank coding spaces that you will fill out with R by coding along with the instructor. Other teaching materials include a live-updating HTML version of the notebook, and datasets to import into R - when required. This learning approach will allow you to spend the time coding and not taking notes!
+
+As we go along, there will be some in-class challenge questions for you to solve either individually or in cooperation with your peers. Post lecture assessments will also be available (see syllabus for grading scheme and percentages of the final mark) through [DataCamp](https://Datacamp.com) to help cement and/or extend what you learn each week.
+
+### 0.1.1 Where is this course headed?
+
+We'll take a blank slate approach here to R and assume that you pretty much know *nothing* about programming. From the beginning of this course to the end, we want to take you from some potential scenarios such as...
+
+-   A pile of data (like an excel file or tab-separated file) full of experimental observations that you don't know what to do with it.
+
+-   Maybe you're manipulating large tables all in excel, making custom formulas and pivot tables with graphs. Now you have to repeat similar experiments and do the analysis again.
+
+-   You're generating high-throughput data and there aren't any bioinformaticians around to help you sort it out.
+
+-   You heard about R and what it *could* do for your data analysis but don't know what that means or where to start.
+
+and get you to a point where you can...
+
+-   Format your data correctly for analysis.
+
+-   Produce basic plots and perform exploratory analysis.
+
+-   Make functions and scripts for re-analysing existing or new data sets.
+
+-   Track your experiments in a digital notebook like R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/data-science-explore.png?raw=true" width="500"/>
+:::
+
+### 0.1.2 How do we get there? Step-by-step.
+
+In the first lesson, we will talk about the basic data structures and objects in R, get cozy with the R Markdown Notebook environment, and learn how to get help when you are stuck because everyone gets stuck - a lot! Then you will learn how to get your data in and out of R, how to tidy our data (data wrangling), and then subset and merge data. After that, we will dig into the data and learn how to make basic plots for both exploratory data analysis and publication. We'll follow that up with data cleaning and string manipulation; this is really the battleground of coding - getting your data into just the right format where you can analyse it more easily. We'll then spend a lecture digging into the functions available for the statistical analysis of your data. Lastly, we will learn about control flow and how to write customized functions, which can really save you time and help scale up your analyses.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Draw_an_Owl.jpg?raw=true" width="700"/>
+:::
+
+Don't forget, the structure of the class is a **code-along** style: it is fully hands on. At the end of each lecture, the complete notes will be made available in a PDF format through the corresponding Quercus module so you don't have to spend your attention on taking notes.
+
+------------------------------------------------------------------------
+
+### 0.1.3 What kind of coding style will we learn?
+
+There is no single path correct from A to B - although some paths may be more elegant, or more efficient than others. With that in mind, the emphasis in this lecture series will be on:
+
+1.  **Code simplicity** - learn helpful functions that allow you to focus on understanding the basic tenets of good data wrangling (reformatting) to facilitate quick exploratory data analysis and visualization.
+2.  **Code readability** - format and comment your code for yourself and others so that even those with minimal experience in R will be able to quickly grasp the overall steps in your code.
+3.  **Code stability** - while the core R code is relatively stable, behaviours of functions can still change with updates. There are well-developed packages we'll focus on for our analyses. Namely, we'll become more familiar with the `tidyverse` series of packages. This resource is well-maintained by a large community of developers. While not always the "fastest" approach, this additional layer can help ensure your code still runs (somewhat) smoothly later down the road.
+
+------------------------------------------------------------------------
+
+## 0.2.0 Class Objectives
+
+This is the final in a series of seven lectures. Last lecture we explored the realm of statistical analyses with linear regression and other general linear models. Now we arrive at the final destination, addressing how to create looping and branching code, as well as our own functions in the topic of control flow. At the end of this session we will have covered:
+
+1.  Control of flow statements.
+2.  Combining control flow with useful functions.
+3.  Build your own function in R.
+4.  Saving data and your workspace.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Data-Wrangling-Is-The.jpg?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 0.3.0 A legend for text format in R Markdown
+
+-   `Grey background`: Command-line code, R library and function names. Backticks are also use for in-line code.
+-   *Italics* or ***Bold italics***: Emphasis for important ideas and concepts
+-   **Bold**: Headers and subheaders
+-   [Blue text](): Named or unnamed hyperlinks
+-   `...` fill in the code here if you are coding along
+
+::: {.alert .alert-block .alert-info}
+**Blue box:** A key concept that is being introduced
+:::
+
+::: {.alert .alert-block .alert-warning}
+**Yellow box:** Risk or caution
+:::
+
+::: {.alert .alert-block .alert-success}
+**Green boxes:** Recommended reads and resources to learn R
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Red boxes:** A comprehension question which may or may not involve a coding cell. You usually find these at the end of a section.
+:::
+
+------------------------------------------------------------------------
+
+## 0.4.0 Lecture and data files used in this course
+
+### 0.4.1 Weekly Lecture and skeleton files
+
+Each week, new lesson files will appear within your RStudio folders. We are pulling from a GitHub repository using this [Repository git-pull link](https://r.datatools.utoronto.ca/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fuoft-csb-datasci%2F2025-09-IntroR&urlpath=rstudio%2F&branch=main). Simply click on the link and it will take you to the [University of Toronto datatools Hub](https://datatools.utoronto.ca). You will need to use your UTORid credentials to complete the login process. From there you will find each week's lecture files in the directory `/2025-09-IntroR/Lecture_XX`. You will find a partially coded `skeleton.Rmd` file as well as all of the data files necessary to run the week's lecture.
+
+Alternatively, you can download the R-Markdown Notebook (`.Rmd`) and data files from the RStudio server to your personal computer if you would like to run independently of the Toronto tools.
+
+### 0.4.2 Live-coding HTML page
+
+A live lecture version will be available at [camok.github.io](https://uoft-csb-datasci.github.io/2025-09.IntroToR/index.html) that will update as the lecture progresses. Be sure to refresh to take a look if you get lost!
+
+### 0.4.3 Post-lecture PDFs and Recordings
+
+As mentioned above, at the end of each lecture there will be a completed version of the lecture code released as an HTML file under the Modules section of Quercus.
+
+------------------------------------------------------------------------
+
+### 0.4.4 Microsporidia infection data set description
+
+The following datasets used in this week's class come from a published manuscript on PLoS Pathogens entitled "High-throughput phenotyping of infection by diverse microsporidia species reveals a wild *C. elegans* strain with opposing resistance and susceptibility traits" by [Mok et al., 2023](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1011225). These datasets focus on the an analysis of infection in wild isolate strains of the nematode *C. elegans* by environmental pathogens known as microsporidia. The authors collected embryo counts from individual animals in the population after population-wide infection by microsporidia and we'll spend our next few classes working with the dataset to learn how to format and manipulate it.
+
+### 0.4.4.1 Dataset 1: embryo_data_long_merged.csv
+
+It's the last time we'll be working with this dataset that we carefully created. It will help us work through the different aspects of control flow.
+
+### 0.4.4.2 Source file: lecture07.R
+
+We'll be using this source file later to show how you can save your own functions and import them for data analysis.
+
+------------------------------------------------------------------------
+
+## 0.5.0 Packages used in this lesson
+
+The following packages are used in this lesson:
+
+-   `tidyverse` (tidyverse installs several packages for you, like `dplyr`, `readr`, `readxl`, `tibble`, and `ggplot2`). In particular we will be taking advantage of the `stringr` package this week.
+
+-   `viridis` our colour-blind friendly package for providing specific colour palettes to our visualizations
+
+Some of these packages should already be installed into your Anaconda base from previous lectures. If not, please review that lesson and load these packages. Remember to please install these packages from the `conda-forge` channel of Anaconda. `conda install -c conda-forge r-biocmanager` `BiocManager::install("limma")` `conda install -c conda-forge r-gee` `conda install -c conda-forge r-multcomp`
+
+```{r}
+#--------- Install packages to for today's session ----------#
+# install.packages("tidyverse", dependencies = TRUE) # This package should already be installed on RStudio
+
+#--------- Load packages to for today's session ----------#
+library(tidyverse)
+library(viridis)
+```
+
+------------------------------------------------------------------------
+
+# 1.0.0 Control flow moves you beyond linear programming
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Gru_copy_paste.jpg?raw=true" width="700"/>
+
+Don't repeat code when you can use flow control!
+:::
+
+Although we have only briefly touched on some of the aspects regarding control flow, it has been implemented behind the scenes in many of the functions you've used throughout this course. From your experience in R Markdown Notebooks, the order in which a code cell's individual statements or instructions are executed can be considered part of control flow. Expanding on this idea, when you see the number order of the code cells, this also indicates the control flow of the entire notebook or program. Once a code cell is run, the objects it has generated remain stored in memory and available for access.
+
+Within our code cells and overall program, control flow can involve statements that help to generate choice loops, conditional statements, and move throughout the program. These specific statements allow us to run different blocks of code at different times. This can be accomplished through
+
+-   for loops
+-   cycling through values
+-   if statements
+-   while and repeat loops
+-   next and break
+
+In this lecture, we'll touch on all of these concepts to give you a taste of how you can make your programs accomplish more with less actual code. Let's start by loading up an example dataset to play around with.
+
+```{r}
+# set working directory
+getwd()
+list.files("./data")
+
+# read our file in with read_csv()
+embryos.df <- read_csv("...", col_types = "cdffffdfllddfddffff")
+
+# explore our loaded data frame
+head(embryos.df)
+```
+
+------------------------------------------------------------------------
+
+## 1.1.0 Use `for()` loops to repeat commands for a maximum number of iterations
+
+R doesn't care if you write the same code 1000 times or have the interpreter repeat a single copy 1000 times. However, the second is a lot easier for you. The `for()` loop helps to reduce code replication by compartmentalizing a set of instructions to repeat instead of copying and pasting the same code several times.
+
+More specifically, a `for()` loop executes a statement repetitively until a well-defined endpoint. In this case, it determines when a specific variable's value is no longer contained in a given sequence.
+
+For example, let's say that we want to add `a + 2` 10 times and overwrite it everytime:
+
+```{r}
+# Increment a by 2, the bad way...
+a <- 2
+a <- a+2
+...
+a
+```
+
+Sure, 10 times is doable by hand, just copy-paste. But what if you need to perform that same task, say 1,000 times? What if the code was more complex than `a <- 2`? That is when `for()` loops come to the rescue.
+
+```{r}
+# Increment 'anything' using a for loop
+anything = 23
+
+# Set up your for loop with a variable named 'tally'
+...
+
+tally
+anything
+```
+
+------------------------------------------------------------------------
+
+### 1.1.1 The `for` loop can be described in three stages
+
+1.  `for(x in y)`: Set a variable `x` to equal the next value in a given sequence `y`
+2.  `{ code to run }` Run a set of code which may use the variable `x` at its assigned value in the cycle
+3.  Repeat (hence the loop)
+
+There are a number of ways to set the counting variable within the `for()` initialization. In reality, you just need to supply a vector of elements for it to iterate through. This could be a sequence where `y` is defined as `a:b`, or a numeric vector, or even a vector of strings! Each of these is assigned to `x` in our loop and must be used appropriately.
+
+Note that **without** `{...}` enclosing your code, R will run *only* the first statement right after the `for()` call. This can exist on the same line, or on the next line. Subsequent lines, regardless of indentation, **will not be run** as part of the loop. This behaviour lets you quickly build a simple `for()` loop or you can extend the behaviour to accomplish many or more complex tasks.
+
+Let's take a look at the `seq()` function and how you can use it within a `for()` loop.
+
+```{r}
+# Use the seq() function
+seq(from = 1, to = 10, by = 0.5)
+
+# let's use seq() in a for loop to count, no braces but indentation
+for(... in seq(...)) 
+    print(variable)
+    print("middle but not really")
+print("This is the end")
+```
+
+```{r}
+# for loop on a single line
+for(variable in seq(1, 10, 0.5)) print(variable); print("middle but not really"); print("This is the end")
+```
+
+```{r}
+# for loop on a single line, with brackets
+for(variable in seq(1, 10, 0.5)) ...; print("This is the end")
+```
+
+------------------------------------------------------------------------
+
+### 1.1.2 Common functions are just pre-programmed `for()` loops
+
+As was mentioned at the start of this section, under the hood, many of the functions that we commonly use are just `for()` loops. We can easily replicate them with explicit for loops but it takes up extra coding time! For example, we can replicate the `rep()` function.
+
+```{r}
+# Use the rep() function to print the number 1-5, 8 times
+rep(x = 1:5, times = 8)
+```
+
+Let's duplicate the function of `rep()` with a `for()` loop!
+
+```{r}
+# for loop version variables need to be set
+rm(result, i)  # Remove the variables result and i, if they exist.
+x <- ... 
+n <- ...
+result <- x # What happens if we remove this line?
+
+# Build our for loop
+for (i in 1:(...)){
+  result <- c(result, x)
+  print(result)
+  }
+
+result
+i
+```
+
+------------------------------------------------------------------------
+
+### 1.1.3 Self-referencing variables must be declared outside your loops
+
+Why did we declare `result <- x` ahead of the for loop? It can get a little complicated but for our purposes, we can say that the offending issue lies within the for loop itself `result <- c(result, x)`. Remember, when the kernel encounters this command, it tries to evaluate the right side of the assignment first. When it goes to look for `result` it does not exist and cannot complete the assignment. To help facilitate this, we need to declare `result` outside the loop.
+
+There are a few ways we could do this such as with `result <- NULL` just so that it ***exists*** as an initialized placeholder. Instead we assigned it initially to hold the first iteration of our sequence. Either would have worked but would require different numbers of loop iterations.
+
+If you declared `result <- NULL` or `result <- x` within the loop, it would repeat this command ***with every iteration***, thus overwriting it back to a native state with each loop. Nothing would progress! We'll use this concept to springboard us into the idea of scope.
+
+------------------------------------------------------------------------
+
+### 1.1.4 The scope (persistence) of variables is tied to when/where they are declared
+
+Control flow statements as with other compartmentalized sections of code can be thought of as separate rooms in a house or sandboxes in a playground.
+
+-   The R kernel is somewhat like a person in a house (your program/script) that is navigating from room to room based on a set of instructions.
+-   If you've been following our lectures, the very first thing we do in each class is load our libraries. These packages are given precedence by their load order, with the most recent taking highest precedence. These can be considered like a toolbox carried around by the R kernel.
+-   When the kernel first enters the house, it is given a (Global) notepad to take notes (like variables)
+-   When the kernel wanders into a new room (ie a function) it is provided a new (local) notepad to write about any *new* variables it encounters. If it sees anything in this new room that pertains to the outside area, it will write it down on the Global notepad.
+-   When it leaves a room, it must leave behind the local notepad.
+
+Thus a variable is either global or local in scope. If it is local, then the information about it simply disappears at the end of the function or control flow. The scope of a variable can usually be considered as between the `{...}` of a programming section. After you've left that section, anything explicitly declared within (ie new variables from that section) will be released from memory. Of course, R doesn't exactly play by those rules, and stray variables can float in memory. If you want to ensure that variables from something like a for loop remain local, you can use the `local()` command or create a `function()`.
+
+::: {.alert .alert-block .alert-success}
+**Lexical and Dynamic scoping:** Going even deeper, R and other programming languages implement what are known as **dynamic** and **lexical** scoping. When you create functions within functions they can inherit variables based on the context of their creation. This can affect the behaviour of functions when they are used later within your programs. You can find more information on the rules of [dynamic and lexical scoping here](https://bookdown.org/rdpeng/rprogdatascience/scoping-rules-of-r.html).
+:::
+
+**Why is scope important?**
+
+Understanding this concept will save you a lot of troubles down the road as you make more and more complex programs. You'll learn to avoid declaring variables in the wrong place, or trying to access ones that no longer exist in your scope. Let's revisit our example from above.
+
+```{r, error = TRUE}
+# Clear some memory and check the value of variables that may already exist
+rm(result, j)
+cat("The prior value of i is :", i, "\n")
+
+# for loop version variables need to be set
+x <- 1:5 
+n <- 8
+result <- 100
+
+# Build a local for loop - this completely isolates any new variables from the global scope
+...(
+  for (i in 1:n){
+      result <- c(result, x)
+      print(result)
+      j <- ... # assign a value to j
+  }
+)
+
+cat("The value of result is: ", result, "\n")
+cat("The value of i is :", i, "\n")
+cat("The value of j is :", j)
+```
+
+------------------------------------------------------------------------
+
+### 1.1.4.1 The `local()` scope isolates your code from the global environment
+
+What happened to our variable `result`? You can see that it was initially declared as the value of `100`. When we entered the `local()` scope and then had the first iteration of our `for()` loop the code `result <- c(result,x)` looked locally first for the values of `result` and `x` but these variables did not exist so it pulled the values from the global environment. Subsequently a local `result` variable was then declared and assigned a value. This local version of `result` was updated with each iteration but the global version was ***never*** altered. Similarly, within the `local()` scope, the values of `i` were assigned to a new version of `i` within the function and never overwrote the original values of `i` in the main part of the code cell.
+
+A similar effect is seen when creating and using your own functions (to be discussed) but you can see that the kernel searches for variables (and functions) in the local namespace before checking the global namespace, followed by the namespaces of the loaded packages.
+
+### 1.1.5 Cycle through values using a `for()` loop
+
+The most useful thing to do with a for loop is to cycle through values. Let's return to `embryos.df` and plot the total embryos for each observation across each infection date. As a twist we'll add each infection date one at a time using a loop until we get to the final version of our visualization.
+
+```{r}
+# Pull down the structure and colnames of our embryos.df
+str(embryos.df, give.attr = FALSE)
+...(embryos.df)
+```
+
+```{r, fig.width = 8, fig.height = 5}
+# Grab a list of infection dates from the dataset
+days = ...(embryos.df$infectionDate)
+
+for (i in 1:...) {
+    
+    plot <-
+        embryos.df %>% 
+        filter(infectionDate %in% ...) %>% 
+    
+        ggplot(.) +
+        # 2. Aesthetics
+        aes(x = infectionDate, y = embryos, colour = infectionDate) +
+    
+        labs(title = paste0("Embryos per infection date with ", i, " days")) + # Add a title based on the day range
+        guides(colour = "none") +
+    
+        # 4. Geoms
+        geom_jitter()
+    
+    suppressWarnings(print(plot)) # Drop the warnings when we print the plot
+    
+    # Sys.sleep(2) # Pause the system for 2 seconds
+    
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.1.6 Iterating through a vector of elements in a `for()` loop
+
+Another handy feature of the `for()` loop in R is being able to directly give the loop a vector to iterator through until there are no elements left. This will come in handy when applying the same transformations, functions, or calculations on different subsets or elements within a vector.
+
+We'll start with a simple example of looping through a small character vector.
+
+```{r}
+# for loop in a single line, with brackets
+for(variable in c(...)) { 
+    print(variable) 
+    print("scream;") 
+} 
+print ("for ice cream")
+```
+
+------------------------------------------------------------------------
+
+Lets use a `t.test()` to look for embryo production differences between N2 and JU1400 animals when infected at medium dose levels by the microsporidia *LUAm1*. We'll use a for loop to gather this information across all days.
+
+```{r}
+# Build a very specific subset of data looking at only N2 and JU1400 populations 
+# infected by a medium does of LUAm1
+subdata <-
+  embryos.df %>% 
+  filter(... %in% c("N2", "JU1400"),
+         ... == "LUAm1",
+         ... == "Medium"
+        )
+  
+# create an empty data frame to store the output of the for loop
+result <- ...(infectionDate = unique(subdata$infectionDate),
+                     difference = NA,
+                     p_value = NA)
+    
+result
+
+# for loop to calculate difference in means between N2 and JU1400 infected by LUAm1 on the same date
+
+for(i in ...) {
+  # Generate a t-test on subset by day
+  t <- t.test(embryos ~ wormStrain, subdata[subdata$infectionDate == i, ])
+  # write the results to our data frame
+  result[result$infectionDate == i, "difference"] <- diff(t$estimate)
+  result[result$infectionDate == i, "p_value"] <- t$p.value
+}
+
+result
+```
+
+------------------------------------------------------------------------
+
+### 1.1.6.1 `for` loops run beneath the `group_by()`
+
+If the code from above seems familiar in idea, you might recognize that we are simply breaking the data into subgroups and performing a `t.test` on it.
+
+We've seen this kind of paradigm before using the `group_by()` function in conjunction with `summarise()`. Using a call to `group_by()` we can make groups based on `infectionDate` and then passing along to `summarise()` will produce the calculations we want on each subgroup. In this case, the code is slightly cleaner and simplified compared to the for loop.
+
+```{r}
+subdata_ttest <-
+  # Pass the subdata
+  subdata %>% 
+  # Group the data
+  ... %>% 
+  # Use Summarise to do the repetitive work for you
+  summarise(difference = diff(t.test(...)$estimate),
+            p_values = t.test(...)$p.value)
+
+subdata_ttest
+```
+
+------------------------------------------------------------------------
+
+## 1.2.0 Generate conditional branches using `if()` statements
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/left_exit_dropday.jpg?raw=true" width="700"/>
+
+Conditional branching only runs code when criteria have been met!
+:::
+
+One of the big advantages of programming is to have conditional statements in your code. R can make binary decisions like "if data meets a condition, do this". Some of these happen implicitly as in a `for()` loop (ie keep repeating the code until you run out of input) but you can also declare these decision branches ***explicitly***.
+
+The `if()` (conditional argument) evaluates statements that produce a **single** TRUE or FALSE result. The general format is
+
+```         
+if (boolean expression) {
+   # statement(s) will execute if the boolean expression is true.
+}
+```
+
+Let's give it a try on a simple example.
+
+```{r}
+# Practice with an if() statement
+x <- c("what", "is", "truth")
+
+if(...) {
+  print("Truth is found")
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.2.1 More complex conditional branches may require the `else()` statement
+
+Now that we know how to use `if()` statements, what if we want to give a second instruction based on the outcome of the `if()` statement? The `else()` and `else if()` statements exist to extend the conditional branch through additional considerations. In general, the structure looks like this:
+
+```         
+if(boolean_expression #1) {
+   # statement(s) will execute if the boolean expression #1 is TRUE.
+} else if (boolean_expression #2) {
+   # statement(s) will execute if the new boolean expression #2 is TRUE.
+} else {
+   # statement(s) will execute if none of the above boolean expressions were TRUE.
+}
+```
+
+You can include any number of `else if()` statements in the middle of the flow control but you should end with only a single `else()` statement or none at all. Remember, the `else()` statement is a catch-all, last-resort to deal with any unexpected scenarios.
+
+```{r}
+# Practice with a complex if() statement
+x <- c("what", "is", "truth")
+
+# Build a complex cascade of statements looking for Truth
+if("TRUTH" %in% x) {
+    print("TRUTH is found")
+} ... ("Truth" %in% x) { 
+    print ("Truth is found")
+} ... { # notice the placement of else is directly after the closing }
+    print ("The truth is out there somewhere")
+}
+    
+```
+
+------------------------------------------------------------------------
+
+Remember that the `if`/`else` statements will cascade through! Therefore, with proper ordering of your expressions, you can simplify them as we see below with a grade assignment conditional branching statement.
+
+```{r}
+# Pick a student grade
+grade <- 69
+letterGrade <- "Unassigned"
+
+# Long if statement for choosing grades
+if (grade >= 90) { letterGrade <- "A+"
+} else if (grade >= 85) { letterGrade <- "A"
+} else if (grade >= 80) { letterGrade <- "A-"
+} else if (grade >= 77) { letterGrade <- "B+"
+} ... (grade >= 73) { letterGrade <- "B"
+} ... (grade >= 70) { letterGrade <- "B-"
+} ... {letterGrade <- "FZ"} 
+    
+# What is the assigned letter grade?  
+letterGrade
+```
+
+------------------------------------------------------------------------
+
+### 1.2.2 `if()` statements can be nested
+
+Sometimes you may have a series of *branching* criteria that you want met or you want to perform a series of additional checks after a first level of criteria are met. In that case you may wish to use a series of *nested* `if()` statements. Let's take a look at the code cell below for an example of nesting `if()` statements.
+
+```{r}
+# Only proceed if you have data in embryos.df
+numVector <- c(1,2,3,4)
+
+if(...) {
+    # You have data to look at so print it
+    print(numVector)
+    
+    if(...) {
+        # Your vector has a minimum sum
+        print(sum(numVector))
+        
+        if(prod(numVector) < 20) {
+            # Your vector has a product of less than 20
+            print(prod(numVector))
+        } else { 
+            print("product is >= 20")
+        }
+    } else {
+        print("sum is <= 8 ")
+    }
+} else {
+    print("vector is empty")
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.2.3 Use `if()` statements to generate system messages
+
+If/else statements can also be used to perform system-wide tasks, like generating a warning or breaking a code. For example, if we are writing a file to a directory and there is already a file with the same name, we should generate a warning or simply stop. Without the warning, the existing file will be silently overwritten.
+
+```{r}
+# Check if our file exists
+# Use dir() to return a vector of file names and then ask if any match ours. 
+if(...) {
+    
+  print("Stop! A file with that same name already exists")
+
+} else {
+    
+    # The file does not exist, print the go-ahead and save the file
+    print("No files with the same name. Good to go!")
+    
+}
+
+write_csv(x = subdata_ttest, file = "embryo_subdata_ttest.csv", col_names = TRUE)    
+```
+
+------------------------------------------------------------------------
+
+**Challenge:** Is there a *cleaner* way to produce our conditional?
+
+### 1.2.3.1 Use effective control flow to ensure your intentions are met
+
+Despite the warning output generated by our code, the file in our example would ***still be overwritten***. The call to `write.csv()` is ***outside*** the control flow of the conditional `if()`/`else()`. To fulfill our true intentions, we should move the placement of the `write_csv()` function so that it is under the direct influence of the control flow.
+
+```{r}
+# Check if our file exists
+# Use dir() to return a vector of file names and then ask if any match ours. 
+if(...) {
+    
+  print("Stop! A file with that same name already exists")
+
+} else {
+    
+    # The file does not exist, print the go-ahead and save the file
+    print("No files with the same name. Good to go!")
+    # Write the file as part of the same control statement
+    write_csv(x = subdata_ttest, file = "embryo_subdata_ttest.csv", col_names = TRUE)   
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.2.4 The `if()` and `else` statement is an effective control flow statement for simple tasks
+
+As we've seen a couple of time in lecture now, rather than making a large control flow block for simple tasks, we can supplement the `if()` or `ifelse()` commands as a way to contain all of our conditional statements and commands in one function.
+
+The `if() else` syntax can take the take the simple form of:
+
+```         
+if (conditional_expression) TRUE_result else FALSE_result
+```
+
+The `conditional_expression` used in our statement must evaluate to a **single** `TRUE` or `FALSE`. In most cases, if this requirement is not met, an error will be produced, or in the case of a logical vector, a warning will be produced.
+
+The results from the above syntax may also be assigned to a variable to use later. Let's look at the following code cells for more examples.
+
+```{r, error = TRUE}
+# Use if when x is TRUE
+x <- ...
+if(x) "True result"
+
+# Use if when x is FALSE
+x <- ...
+if(x) "False result"
+
+# Use if when x is NA
+x <- ...
+if(x) "NA result"
+```
+
+```{r}
+# You can make complex logical expressions as long as they evaluate to either TRUE or FALSE!
+x <- TRUE
+y <- FALSE
+z <- if...) "At least one variable was TRUE!!!"
+
+z
+```
+
+```{r}
+# Use if else when x is TRUE
+x <- TRUE
+if(x) "True result" else "..."
+
+# Use if else when x is FALSE
+x <- FALSE
+if(x) "True result" else "..."  
+```
+
+------------------------------------------------------------------------
+
+### 1.2.5 The `ifelse()` statement allows vectorized conditional assignment
+
+Like the above `if()` statement, this allows us to assign branched output without building the full branching structure. However, as we alluded to in **lecture 6**, this is a much more powerful command than it appears to be as you can supply a set of vectors to this function to produce a vector of results!
+
+```         
+ifelse(test = boolean_expression_vector, 
+       yes = true_outcome_vector/true_outcome_action, 
+       no = false_outcome_vector/false_outcome_action)
+```
+
+Watch out for vector recycling! It's convenient for re-assigning values across vectors but note that we aren't performing any complex actions or response - just assigning outcomes/values based on our evaluation expression.
+
+```{r}
+# A simple example of ifelse()
+rm(a)
+
+i <- 8
+
+ifelse(test = i < 5, yes = a <- 0, no = a <- 1)
+
+a
+
+# A complex vectorized example of ifelse()
+i <- ...
+
+ifelse(test = i < 5, yes = 0, no = 1) # Can we achieve this in a simpler way?
+```
+
+```{r}
+# Don't forget that we can quickly convert booleans to numeric!
+...
+```
+
+------------------------------------------------------------------------
+
+If you are looking for more ways to do this kind of general vectorised "if" assignment, you can look into the [dplyr::case_when()](https://dplyr.tidyverse.org/reference/case_when.html) function which will allow multiple conditionals and specific assignment outcomes.
+
+### 1.2.6 Replace long/simple/cascading if statements with `switch()`
+
+There are a lot of simple cases where one can imagine a series of possible `character` input values and corresponding output values.
+
+For instance, when examining a specific series of categories or character values, we can definitely create a complex and rather long `if/else/else if` series of statements. We can however, replace that long series of code with a more compact version where we simply identify the case/assignment pairings.
+
+In programming we call these ***switch*** or ***case*** statements. Let's look at an example below.
+
+```{r}
+# Pick your favourite pokemon!
+pokemon <- "squirtle"
+dexType <- "unknown"
+
+# Look at how long this listing gets
+if (pokemon == "bulbasaur") {dexType <- "plant"
+} else if (pokemon == "squirtle") {dexType <- "water"
+} else if (pokemon == "charmander") {dexType <- "fire"
+} else if (pokemon == "pikachu") {dexType <- "electric"
+} else if (pokemon == "lapras") {dexType <- "water/ice"
+} else if (pokemon == "snorlax") {dexType <- "normal"
+} else if (pokemon == "magikarp") {dexType <- "water" 
+} else {dexType <- "unknown input"}
+                                   
+dexType
+```
+
+------------------------------------------------------------------------
+
+As we can see above, things can get long and complicated for assigning values with an if statement.
+
+```{r}
+# Pick your favourite pokemon!
+pokemon <- "lapras"
+
+dexType <-
+...(...,
+       "bulbasaur" = "plant",
+       "squirtle" = "water",
+       "charmander" = "fire",
+       "pikachu" = "electric",
+       "lapras" = "water/ice",
+       "snorlax" = "normal",
+       "magikarp" = "water",
+       "unknown input")
+
+dexType
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-success}
+**Switch cases or hashmaps?** We've just spent a while working through longer examples of switch/case statements. There are some advantages and disadvantages to programming with this method. On the one side, you can quickly make some assignments for specific cases, on the other hand this is *still* cumbersome to deal with when your list of cases becomes long. In the above examples we wouldn't want to program a whole pokedex like this but rather would use the power of dataframes or other data structures like a [hashmap](https://www.rdocumentation.org/packages/hashmap/versions/0.2.2) to help us manage the mapping of data from one piece of information to another. Remember, use the right data structure for the right circumstances!
+:::
+
+## 1.3.0 Running loops without a predetermined end-point
+
+There may be instances where you need to run loops on data until you find a certain piece of information, or until a specific condition is met rather than examining all of the elements within a set. There are two ways you can accomplish these "open-ended" loops.
+
+### 1.3.1 `while()` loops run conditionally
+
+Unlike using `for()` loops which continue to execute until a specific iteration number, the `while()` loop executes a command as long as a conditional expression continues to evaluate as `TRUE` at each iteration. This conditional expression must evaluate as `TRUE` to begin execution as well. The `while()` loop can be thought of as a special implementation of an `if()` statement that repeats over and over again until the conditional fails.
+
+Let's work with some simple examples.
+
+```{r}
+# Initialize our variable for conditional assessment
+x <- 0
+
+# Generate the while loop, incrementing x by 1 on each iteration, as long as x < 10
+while(...) {
+  x <- x + 1
+  print(x)
+}
+```
+
+```{r}
+# Loop will be ignored if the condition is FALSE and nothing gets printed
+x <- ...
+
+while(x < 10) {
+    x <- x + 1
+    print(x)
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.3.1.1 Conditional loops can become endless
+
+When programming a conditional loop you must ***always*** include a statement that alters the condition or breaks out of the upcoming loop itself. It's also important to note the order or placement of when you alter the condition in your loops. All the command statements within the loop, unless otherwise specified, will execute before the re-evaluation of the conditional statement.
+
+For example, a programmer is assigned a task: "While you're at the grocery store, buy some eggs". The programmer never came back home.
+
+```{r}
+# Set your initial value
+programmer <- " at the grocery store"
+
+# Build your while loop
+while(programmer == " at the grocery store") {
+  print("buy some eggs")
+  programmer <- "..."   # What would happen if we commented out this line?
+}
+
+print(programmer)
+# When do we provide the opportunity to change?
+```
+
+------------------------------------------------------------------------
+
+### 1.3.2 Using `next` and `break` to exit any kind of looping structure
+
+The explicit use of the `next` and `break` commands will break free from the current looping structure but each differs in what they do afterwards.
+
+-   The `next` command will exit the current iteration in the loop structure but will return to run the *next iteration* of the loop.
+
+-   Use this to skip over or avoid specific commands within your loop.
+
+-   the `break` command will completely exit the loop structure, as if it had reached its natural end.
+
+-   Use this to permanently exit your looping structure.
+
+Let's use the following examples to see how these mechanisms work.
+
+```{r}
+# using next within our for loop
+for(i in 1:10) {
+  
+    if (i >= 5 & i <= 8) {
+        ... # skips ends the current iteration of the loop
+    }
+    print(i)
+}
+
+i
+```
+
+```{r}
+# Using break
+for(i in 1:10) {
+  
+    if (i == 5) {
+        ... # completely exits the loop
+    }
+    print(i)
+}
+i
+```
+
+------------------------------------------------------------------------
+
+### 1.3.3 `repeat` loops run endlessly unless specifically interrupted by `break`
+
+Unlike the while loop, which can end through the conditional being met, a `repeat()` loop has no explicit conditional statement built into it's formation. Instead, it will continue to repeat until it is broken out of by the `break` command.
+
+```{r}
+# Using repeat() to endlessly loop
+
+i = 1
+
+repeat {
+
+    if (i == 20) {
+        break # completely exits the loop
+    }
+    print(i)
+    i = i + 1
+}
+i
+```
+
+------------------------------------------------------------------------
+
+### 1.3.4 Be mindful of how you iterate through your loops
+
+Depending on the *order* in which you set up your conditionals, you may accidentally produce unexpected issues. It is best to consider the order in which you want to accomplish tasks within your loops before beginning the next iteration. This is especially relevant in the case of a conditional loop (`while()` or `repeat`) where you must include a variable that can eventually meet the desired conditions for exit.
+
+::: {.alert .alert-block .alert-warning}
+**Loops don't care about you!** Although loops and other control flow structures can vastly simplify our code, you must remember they are agnostic to your intentions. These structures have a very specific purpose and design, so to program successfully with these, we need to understand their inner workings.
+
+Take the time to visually and mentally test your code using a series of base cases by asking yourself what input and output should look like: before the first iteration, after the first iteration, in the middle of your dataset, in your penultimate iteration, in your final iteration. Quickly assessing these on a small test set can also help you identify potential problems!
+:::
+
+```{r}
+# Using repeat() to demonstrate that conditional placement matters.
+i = 1
+
+# What numbers will this code print?
+# What happens if we move the print command around?
+repeat {
+
+    ...
+    if (i == 20) {
+        break # completely exits the loop
+    }
+    print(i)
+}
+```
+
+------------------------------------------------------------------------
+
+### 1.3.4.1 Use loops to simplify your code, but don't re-invent the wheel!
+
+Depending on task you working on, perhaps there is already a function that satisfies your need so you don't have to use explicit `for()` loops. Make use of existing functions whenever you can because those have already been optimized to be fast and efficient.
+
+Taking advantage of functions can allow you to keep your code clean rather than programming for loops to generate a simple number pattern.
+
+::: {.alert .alert-block .alert-success}
+**Use R's vectorized functions:** Many of the base R functions we've seen over the span of this course work well on vectors. In fact these functions are optimized to work on these data structures and you should take advantage of this. Often completing the same operations in something like a **for()** loop can take much longer. While not apparent on small datasets, you can begin to see the consequences of your choices on much larger ones. [Here](http://alyssafrazee.com/2014/01/29/vectorization.html) are [some resources](http://hansekbrand.se/code/vectors-vs-loops-in-R.html) that [highlight](https://bookdown.org/rdpeng/rprogdatascience/vectorized-operations.html) this [efficient option](https://swcarpentry.github.io/r-novice-gapminder/09-vectorization/).
+:::
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 1.0.0:** In your own words describe the difference between a while loop and a for loop. What is the purpose of one over the other?
+:::
+
+------------------------------------------------------------------------
+
+## Section 1.0.0 comprehension answer:
+
+------------------------------------------------------------------------
+
+# 2.0.0 Increasing our complexity by combining `for()` loops with `ggplot()`
+
+Let's say, we are ready to start making some plots for our manuscript, and we want to make ***individual plots*** for each `infectionDate` (replicate). The code below makes a boxplot for each worm strain from the 190423 replicate of our data.
+
+```{r, fig.width=12, fig.height=7}
+ggplot(embryos.df[embryos.df$infectionDate == "190423",]) +
+  #2 Aesthetics
+  aes(x = ..., y = ..., fill = wormStrain) +
+  # 4. Geoms
+  geom_boxplot()
+```
+
+------------------------------------------------------------------------
+
+But what if I were to have, say, multiple infection dates? In this case, a for loop will be the way to go. Take a look at the following code:
+
+```{r, fig.width=12, fig.height=7}
+# Loop through the possible infection dates
+for (...) {
+
+  infectionRep <-
+  
+    ggplot(embryos.df[embryos.df$infectionDate == i,]) +
+      #2 Aesthetics
+      aes(x = wormStrain, y = embryos, fill = wormStrain) +
+      theme_grey() +
+      ggtitle("Embryo counts") + # plot title
+      # 4. Geoms
+      geom_boxplot()
+  
+  print(infectionRep) # This is the only way to view the plot in a for loop
+      
+  # Save each plot as it's generated
+  ggsave(plot = infectionRep, filename = paste(i, "boxplot.png", sep = "_"), path = "data/" , 
+         scale=1, device = "png", units = c("in"))
+}
+```
+
+------------------------------------------------------------------------
+
+## 2.1.0 Take advantage of for loop variables to customize output in each loop
+
+From above you can see that we can take advantage of our variables that increment within the for loop. We can use it to help subset data, generate titles, and file names. You can use it in combination with other control statements to update the image as well! Just remember to avoid generating errors within your `for()` loop when access or altering data. Ensure you aren't trying to reference or alter data or subsets that do not exist due to missing information in your original datasets.
+
+What if I want to facet our data for each infection data across `sporeStrain` and `doseLevel`?
+
+```{r, fig.width=12, fig.height=7}
+# Loop through the possible infection dates
+for (i in unique(embryos.df$infectionDate)) {
+
+  infectionRep <-
+
+    ggplot(embryos.df[embryos.df$infectionDate == i,]) +
+      # 2. Aesthetics
+      aes(x = wormStrain, y = embryos, fill = wormStrain) +
+      theme_grey() +
+      # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    
+      ### 2.1.0 Alter the title of the plot based on the infection date!
+      ggtitle(paste0("Embryo counts on infection date: ", i)) + # plot title
+      # 4. Geoms
+      geom_boxplot() +
+      # 6. Facets
+      facet_grid(...)  ### 2.1.0 Facet our data by strain and dose
+
+      # Only print the 190423 dataset
+  if (i == "190423") {
+    print(infectionRep) # The only way to see the plot is to print it within a for loop
+  }
+          
+  # Save each plot as it's generated
+  ggsave(plot = infectionRep, filename = paste(i, "boxplot.facet.png", sep = "_"), path = "data/" , 
+         scale=1, device = "png", width = 12, height = 7, units = c("in"))
+}
+```
+
+------------------------------------------------------------------------
+
+# 3.0.0 Can we jump around our code to perform different tasks?
+
+Yes! So far we've covered many options for control flow but all of our programs have been moving in a linear direction from start to end. That is also just a consequence of working with a Markdown notebook. Programs, however, are not necessarily run in a linear fashion.
+
+What if you need to perform a set of similar instructions multiple times, at multiple points within your control flow? Perhaps it's even the same kind of `for()` loop on different sets of data? There are a lot of tricks like nested loops but you're better off knowing how to make functions that can be used in other code as well!
+
+The general structure of a script or program can be divided into
+
+1.  Global/environmental variables and declarations
+
+    -   Describe your script and assumptions
+
+    -   Import your libraries
+
+    -   Declare any global variables
+
+2.  Main program
+
+    -   The place where the main statements occur.
+    -   It may also be a function call with specific arguments like the location of data files.
+    -   Reading through your annotations, someone else should be able to discern what your program is doing.
+
+3.  Helper functions or subroutines
+
+    -   Here you can create functions or "mini" programs that do work for you.
+    -   They can be called from ***anywhere*** within the program (once loaded into memory).
+    -   Repetitive tasks whose output only vary based on the input provided.
+    -   Subroutines may work together or call on each other to accomplish a greater task.
+    -   Functions that you use often can be placed into their own files for importing ***just like a package***.
+
+### 3.0.1 Do One Thing - but do it well
+
+A best practice when writing functions is the "Do One Thing" principle: each function should do one thing; one task. Instead of a big function, you can write several small ones per task, without going to the other extreme which would be fragmenting your code into a ridiculous amount of small code snippets/functions. By doing the one (main) thing, your functions become:
+
+-   More flexible
+-   More easily understood
+-   Simpler to test
+-   Simpler to debug
+-   Easier to change
+
+Time to start writing our own functions!
+
+### 3.0.2 Document your functions
+
+While we have been using `help()` and `?` to look up documentation on the various functions we've been using, our user-defined functions will not have any kind of accessible documentation. Of course if we were making specific packages for R we could [create accessible documentation](https://r-pkgs.org/man.html).
+
+Regardless of this problem, it is best practice to document your functions much like you document the rest of your code. In this case you can include information such as:
+
+-   Description: what the function does
+-   Parameters: these are inputs for the function and any object-typing or formatting that is expected. You can also include a description of the default values for each.
+-   Returns: what is the structure of the return object?
+
+------------------------------------------------------------------------
+
+## 3.1.0 Declare your own functions with `function()`
+
+In R, a function is declared with the following syntax:
+
+```         
+function_name <- function(parameter1_name, parameter2_name, ... parameterN_name = preset_value) {
+    # The specific code of your function goes within the {...}
+    
+    return(output)
+}
+```
+
+Let's convert our plotting code from above into a simple function!
+
+```{r}
+# Description: This function, given a set of data from the embryo.df format will produce
+#              a faceted series of box plots for a specific infection date, organized by sporeStrain and doseLevel
+
+# Input: 
+# data.df: a data frame at least with the following column names
+# $infectionDate, $wormStrain, $sporeStrain, $doseLevel
+# infDate: a character string used to subset the data
+
+# Output: make.facet.plot will generate a facet plot from data.df based on the infDate variable
+# The plot will be saved to a file ending in "boxplot.facet.function.png"
+
+make.facet.plot <- function(...) {
+
+  infectionRep <-
+
+    # You could also filter your data with filter() and piping instead!
+    ggplot(data.df[data.df$infectionDate == infDate,]) +
+
+      # 2. Aesthetics
+      aes(x = wormStrain, y = embryos, fill = wormStrain) +
+      theme_grey() +
+      # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+      ggtitle(paste0("Embryo counts on infection date: ", infDate)) + # plot title
+
+      # 4. Geoms
+      geom_boxplot() +
+
+      # 6. Facets
+      facet_grid(sporeStrain ~ doseLevel)
+  
+  # Print the plot 
+  print(infectionRep)
+  
+  # Save each plot as it's generated
+  ggsave(plot = infectionRep, 
+         filename = paste(infDate, "boxplot.facet.makeFunction.png", sep = "_"), 
+         path = "data/" , 
+         scale=1, device = "png", width = 12, height = 7, units = c("in"))
+
+} # End of make.face.plot
+```
+
+------------------------------------------------------------------------
+
+### 3.1.1 Once your declared functions are stored in memory, they can be called from *anywhere*.
+
+Now that our subroutine is stored in memory, it can be called as we want! Maybe even use it for different data sets as long as it meets the requirements set out in our description of the function itself. You can even build upon it to use control flow to decide if it will be faceted or not. The code between the two versions is so similar, you could break it into an `if` statement.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/pokemon_choose_function.jpg?raw=true" width="500"/>
+
+Call your functions from anywhere once they are stored in memory.
+:::
+
+Let's try to use it right now.
+
+```{r}
+unique(embryos.df$infectionDate)
+```
+
+```{r, fig.width=12, fig.height=7}
+# Use a for loop to iterate through the first 3 levels of infectionDate
+for (i in unique(embryos.df$infectionDate)[1:3]){
+
+    # Call on our function now
+    make.facet.plot(...)
+}
+```
+
+------------------------------------------------------------------------
+
+## 3.2.0 Retrieve data from your function using the `return()` command
+
+Some of your functions may generate subsets of data or results that you would like to further investigate for analysis. For example, when we generate our plots, perhaps we would like to also retrieve information like where the file was saved, along with the subset of data for each.
+
+Using the `return()` command has two consequences:
+
+1.  It will **terminate or exit** the function currently running once this command is called.
+
+2.  It will return a **single** object that will be assigned to a variable or be displayed to the console if unassigned
+
+A special note about the returned object. This can be any kind of object and if you want to return *multiple* objects, put them in a `list`! Let's update our function.
+
+```{r}
+# Description: This function, given a set of data from the embryo.df format will produce
+#              a faceted series of box plots for a specific infections date organizing by sporeStrain and doseLevel
+
+# Input: 
+# data.df: a data frame at least with the following column names
+# $infectionDate, $wormStrain, $sporeStrain, $doseLevel
+# infDate: a character string used to subset the data
+
+# Output: make.facet.plot will generate a facet plot from data.df based on the infDate variable
+# The plot will be saved to a file ending in "boxplot.facet.function.png"
+# It will return 
+# [1] subset data
+# [2] ggplot object 
+# [3] save plot filename
+
+save.facet.plot <- function(data.df, infDate) {
+
+  ### 3.2.0 We've updated the plot to use a filter() function!
+  infection.data <- data.df %>% filter(infectionDate == ...)
+  
+  infectionPlot <-
+
+  ggplot(infection.data) +
+
+    # 2. Aesthetics
+    aes(x = wormStrain, y = embryos, fill = wormStrain) +
+    theme_grey() +
+    # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    ggtitle(paste0("Embryo counts on infection date: ", infDate)) + # plot title
+
+    # 4. Geoms
+    geom_boxplot() +
+
+    # 6. Facets
+    facet_grid(sporeStrain ~ doseLevel)
+
+  # Save the name of the plot file
+  save.file = paste(infDate, "graph.facet.function.png", sep = "_")
+     
+  # Save each plot as it's generated
+  ggsave(plot = infectionPlot, 
+         filename = paste(infDate, "boxplot.facet.saveFunction.png", sep = "_"), 
+         path = "data/" , 
+         scale=1, device = "png", width = 12, height = 7, units = c("in"))
+  
+  ### 3.2.0 return the file name and data subset
+  # Create a list so that you can send multiple objects back as a single object
+  return(...(infection.data, infectionPlot, save.file))    
+  
+}
+```
+
+```{r, fig.width=12, fig.height=7}
+# Call on save.facet.plot function now
+
+inf200704.plot <- save.facet.plot(embryos.df, "200704")
+
+# Look at the data
+head(inf200704.plot...)
+
+# What's the file name?
+inf200704.plot[[3]]
+
+# Display the plot to output
+inf200704.plot[[2]]
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-success}
+**Treat your functions like a black box!** Now that you know how to build a function and return data from it, you should consider that it is ***best practice*** to treat your functions like a black box. What does that really mean? Your functions should stand alone, independent. If you were to copy it from one program or notebook to another, they should still work (for the most part). That means they should never have to rely on variables that exist ***outside of*** the function itself.
+
+If you need to pass information to the function like a variable, dataframe, list etc - ***do this through the arguments!*** Whenever you need to return information, then return it as part of a list if needed. The function should be agnostic or independent of the world around it. Some assumptions can be made like loading preset libraries outside the function, but you can even do that within your functions!
+:::
+
+## 3.3.0 Arguments for your functions can have a default value
+
+The last helpful part of making functions is to consider providing default values for some of your arguments. In some cases you may have a subset of datasets that need to be treated differently so including an argument for your function to toggle certain behaviours is helpful. Including these arguments, however, means you have to define them ***every time*** you call on the function *unless* you assign a default value.
+
+Default values are only overridden by supplied arguments, otherwise these will be applied within your function.
+
+Before we update our `save.facet.plot()` let's see what happens if we simply forget to include a parameter.
+
+```{r, error = TRUE}
+# Rerun our function without an infection date
+save.facet.plot(embryos.df)
+```
+
+------------------------------------------------------------------------
+
+As you can see, our user-defined function throws an error when we neglect to provide an argument for the `infDate` parameter. Let's update the `save.facet.plot()` function by setting the `infDate` parameter to a known date "190423". This could easily be something different like setting a logical parameter to default to `TRUE` or `FALSE`, which could change internal behaviours of the function itself.
+
+```{r}
+# Description: This function, given a set of data from the embryo.df format will produce
+#              a faceted series of box plots for a specific infections date organized by sporeStrain and doseLevel
+
+# Input: 
+# data.df: a data frame at least with the following column names
+# $infectionDate, $wormStrain, $sporeStrain, $doseLevel
+# infDate: a character string used to subset the data
+
+# Output: make.facet.plot will generate a facet plot from data.df based on the infDate variable
+# The plot will be saved to a file ending in "boxplot.facet.function.png"
+# It will return 
+# [1] subset data
+# [2] ggplot object 
+# [3] save plot filename
+
+### 3.3.0 Set the default value of infDate to 190423
+save.facet.plot <- function(data.df, infDate = "...") {
+
+  # We've updated the plot to use a filter() function!
+  infection.data <- data.df %>% filter(infectionDate == infDate)
+  
+  infectionPlot <-
+
+    ggplot(infection.data) +
+
+      # 2. Aesthetics
+      aes(x = wormStrain, y = embryos, fill = wormStrain) +
+      theme_grey() +
+      # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+      ggtitle(paste0("Embryo counts on infection date: ", infDate)) + # plot title
+
+      # 4. Geoms
+      geom_boxplot() +
+
+      # 6. Facets
+      facet_grid(sporeStrain ~ doseLevel)
+
+  # Save the name of the plot file
+  save.file = paste(infDate, "graph.facet.function.png", sep = "_")
+
+  # Save each plot as it's generated
+  ggsave(plot = infectionPlot, 
+         filename = paste(infDate, "boxplot.facet.saveFunction.png", sep = "_"), 
+         path = "data/" , 
+         scale=1, device = "png", width = 12, height = 7, units = c("in"))
+  
+  #return the file name and data subset
+  # Create a list so that you can send multiple objects back as a single object
+  return(list(infection.data, infectionPlot, save.file))    
+    
+}
+```
+
+```{r, fig.width=12, fig.height=7}
+# Rerun our function without an infection date
+save.facet.plot(embryos.df)
+```
+
+------------------------------------------------------------------------
+
+## 3.4.0 User-defined functions can also define functions
+
+While a rarer occurrence, your user-defined functions can be used to instantiate and return a function itself. In these cases, the scoping of your variables can become a little trickier but variables within your code can be set using parameters from the initial function.
+
+Let's start with a simple example before we return to our plot-saving function.
+
+```{r}
+# Define our function(s)
+make.power <- function(...) { # This sets the variable values (via lexical scoping) of the exponent
+    
+    pow <- function(...) { # When we call on the resulting function it will require a base value
+        
+        base^power # Make the actual calculation
+    }    
+}
+```
+
+```{r}
+# Define a new function that does cubic calculations
+cube = make.power(...)
+
+# Now we have a function cube() that takes a parameter called base to calculate base^power
+
+# Call on our cubic function using a base of 4
+cube(...)
+```
+
+------------------------------------------------------------------------
+
+Now let's revisit our plot-saving function. We'll make a new plot-setting function that we can use to permanently set the data frame that is used when making plots. We can initialize this newly set function and save it as the function `set.facet.plot()`.
+
+```{r}
+# Description: This function, given a set of data from the embryo.df format will produce
+#              a faceted series of box plots for a specific infections date organized by sporeStrain and doseLevel
+
+# Input: 
+# data.df: a data frame at least with the following column names
+# $infectionDate, $wormStrain, $sporeStrain, $doseLevel
+# infDate: a character string used to subset the data
+
+# Output: make.facet.plot will generate a facet plot from data.df based on the infDate variable
+# The plot will be saved to a file ending in "boxplot.facet.function.png"
+# It will return 
+# [1] subset data
+# [2] ggplot object 
+# [3] save plot filename
+
+### 3.4.0 Define a new function where we set the data.df parameter as input.
+set.facet.plot <- function(...) {
+
+  # Set the default value of infDate to 190423
+  save.facet.plot <- function(infDate = "190423") {
+
+    # We've updated the plot to use a filter() function!
+    infection.data <- data.df %>% filter(infectionDate == infDate)
+
+    infectionPlot <-
+
+      ggplot(infection.data) +
+  
+        # 2. Aesthetics
+        aes(x = wormStrain, y = embryos, fill = wormStrain) +
+        theme_grey() +
+        # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+        ggtitle(paste0("Embryo counts on infection date: ", infDate)) + # plot title
+  
+        # 4. Geoms
+        geom_boxplot() +
+  
+        # 6. Facets
+        facet_grid(sporeStrain ~ doseLevel)
+
+    # Save the name of the plot file
+    save.file = paste(infDate, "graph.facet.function.png", sep = "_")
+
+    # Save each plot as it's generated
+    ggsave(plot = infectionPlot, 
+           filename = paste(infDate, "boxplot.facet.saveFunction.png", sep = "_"), 
+           path = "data/" , 
+           scale=1, device = "png", width = 12, height = 7, units = c("in"))
+
+    #return the file name and data subset
+    return(list(infection.data, infectionPlot, save.file))    
+
+  }
+}
+```
+
+```{r, fig.width=12, fig.height=7}
+# Step 2. Make a function where the data set is embryos.df
+make.embryo.plot <- set.facet.plot(...)
+
+# Make a plot and filter it by infection Date
+infection.results <- make.embryo.plot("...")
+
+infection.results[[2]]
+```
+
+------------------------------------------------------------------------
+
+## 3.5.0 The `stop()` function exits a function with a message
+
+Sometimes you might produce a function that could fail at a number of points for various reasons. While the R-kernel may simply produce a warning and proceed, you may wish to stop the function wherever it is rather than proceeding. Using the `stop()` function can help produce "controlled" error stopping points in your program. You can also include an optional message that will help to clarify why you have stopped the function.
+
+First, however, let's produce a simple example of using the `stop()` function.
+
+```{r}
+# Let's see what happens when we work with the log function
+log10(1)
+log10(0)
+log10(...)
+```
+
+------------------------------------------------------------------------
+
+Suppose we aren't interested in producing `-Inf` or `NaN` values? We can build a wrapper around the `log10` function with some conditional branching inside it.
+
+```{r, error = TRUE}
+get.log10 <- function(x) {
+    
+  if(x <= 0) ...("Execution stopped: ", x, " is not acceptable input")
+  log10(x)
+}
+
+get.log10(1) # test our function
+get.log10(-1) # Check it will stop when it's supposed to
+get.log10(10) # Will this code run?
+```
+
+------------------------------------------------------------------------
+
+## 3.6.0 Use `tryCatch()` to identify errors without stopping
+
+In our above example of `stop()` the result of using it halts the execution of our code. Instead, sometimes we may wish to note an error has occurred but we also want to proceed with the remainder of the code. In that case you can use the `tryCatch()` function which takes on a somewhat complex structure.
+
+The `tryCatch()` function can be used to run an expression (or lines of code) and if an `error` or `warning` is produced, it can catch the result without halting your program's execution. Additional message information can be produced in each case so that the user can be warned of potential issues. Using `tryCatch()` takes the form of:
+
+```         
+func_name = function(input) {
+    out <- tryCatch({ ## This is where we try code that might fail
+                     expression(s) },
+                     
+                     warning = function(condition) {
+                     ## statements to execute upon warning
+                     message("Optional consolidated warning message") 
+                     return() # optional return value
+                     },
+                     
+                     error = function(condition) {
+                     ## statements to execute upon error
+                     message("Optional consolidated error message") 
+                     return() # optional return value 
+                     },
+                     
+                     finally = { 
+                     ## Code to complete regardless of an error
+                     }
+                   ) ## End of tryCatch
+                     
+    return(out)
+}    
+                     
+```
+
+### 3.6.1 Remember that your functions should do one thing well
+
+Let's focus again on our plotting functions we produced. Previously our versions of `save.facet.plot()` included steps where the input was being filtered - sometimes by sub-functions that should just be producing a plot object. To remedy this we'll go back to our rule of "Do One Thing" and we'll generate `make.facet.plot()` so that it's sole purpose is to produce a plot when given a filtered dataset `infection.data` and a specific infection date `infDate`.
+
+```{r}
+# Simplify our main function which takes in pre-filtered data and plots it
+# Define a new function where we set the data.df parameter as input.
+# @Input
+# infection.data: a filtered set of infection data that represents a single replicate date
+# infDate: the actual replicate date that will be used in the title information
+
+# Set the default value of infDate to 190423
+make.facet.plot <- function(infection.data, infDate) {
+
+  infectionPlot <-
+
+  ggplot(infection.data) +
+
+    # 2. Aesthetics
+    aes(x = wormStrain, y = embryos, fill = wormStrain) +
+    theme_grey() +
+    # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    ggtitle(paste0("Embryo counts on infection date: ", infDate)) + # plot title
+
+    # 4. Geoms
+    geom_boxplot() +
+
+    # 6. Facets
+    facet_grid(sporeStrain ~ doseLevel)
+
+  return(infectionPlot)
+
+}
+```
+
+------------------------------------------------------------------------
+
+### 3.6.2 Call on subfunctions within your function to simplify debugging
+
+One of the things you can do as your functions and needs become more complex is to nest functions within other functions. We've already applied this when we call `ggplot()` functions within `save.facet.plot()`.
+
+Next we want to generate a second function that will be able to filter a set like `embryos.df`, call on `make.facet.plot()`, and save the results as needed. In doing so we simplify the debugging process and it will help when we begin to incorporate a `tryCatch()` structure into our code.
+
+```{r, fig.width=12, fig.height=7}
+# Make a function to filter data, make the plot, then save the plot
+# @Input
+# data.df: A dataset containing individual observations of embryo counts with at least: 
+#          $wormStrain, $embryos, $infectionDate
+# infDate: The infection date to filter data.df
+#
+# @Output
+# List of 3 objects: 1) Filtered infection data
+#                    2) A ggplot object of the infection data
+#                    3) file name of saved plot
+
+save.facet.plot <- function(...) {
+
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+        
+    # make the plotted data
+    infection.plot <- make.facet.plot(infection.data, infDate)
+
+    # generate a save file name
+    save.file = paste(infDate, "graph.facet.saveFunction2.png", sep = "_")
+
+    # save the plot
+    ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+         scale=1, device = "png", units = c("in"))
+
+    #return the file name and data subset
+    return(list(infection.data, infection.plot, save.file))   
+}
+
+# save a facet plot but look at the output of the plot
+save.facet.plot(embryos.df, "200704")[[2]]
+```
+
+------------------------------------------------------------------------
+
+### 3.6.3 Test the boundary cases of your function
+
+Here's where we need to get creative. What would happen inside `save.facet.plot()` if we happened to forget to supply a `infDate` parameter to our call? Previously we included a default value like "190423" but we have no do so here. Using a call like `save.face.plot(embryos.df)` will produce an error.
+
+```{r, fig.width=12, fig.height=7, error = TRUE}
+# save a facet plot but but don't provide a salinity type
+save.facet.plot(...)[[2]]
+```
+
+------------------------------------------------------------------------
+
+### 3.6.4 Implement a `tryCatch()` series to try and capture your error
+
+Instead of allowing the execution to halt when we reach an error maybe we can produce some messages and return a null value? In this implementation we will return a `NULL` value for the user to deal with.
+
+```{r}
+# Make a function to filter data, make the plot, then save the plot
+save.facet.plot <- function(data.df, infDate) {
+    
+  # Initiate a tryCatch and assign its output to a variable
+  out <- ...({
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # What happens if we pick a non-existent infection date or if the parameter is not set?
+  },
+  error = function(c) { # The actual error information is passed in as the variable "c"
+    # Assume the error occurs when no infDate is provided
+    message("Error: potentially missing parameter information")
+    
+    return(NULL)
+    # return NULL so we can recognize an error has occurred
+    # You're kind of a function inside a function.
+    # when you return, you'll leave to the next section.
+      
+  }) # End tryCatch
+  
+  if (...) {
+      
+    # make the plotted data
+    infection.plot <- make.facet.plot(infection.data, infDate)
+
+    # generate a save file name
+    save.file = paste(infDate, "graph.facet.saveFunction.tryCatch.png", sep = "_")
+
+    # save the plot
+    ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+         scale=2, device = "png", units = c("cm"))
+
+    #return the file name and data subset
+    return(list(infection.data, infection.plot, save.file))          
+  }
+
+  else return(out) # if it's an error we'll get the NULL
+}
+```
+
+```{r}
+# save a facet plot but look at the output of the plot
+save.facet.plot(embryos.df)[[2]]
+```
+
+------------------------------------------------------------------------
+
+### 3.6.5 Use `tryCatch()` to set values within your function
+
+Suppose instead of just returning a `NULL` value when we produce an error, we can change values on the user's behalf and continue? Of course our example here is in the context of an expected error and we can't always account for the nature of the error(s) we'll encounter. You could make things more complex and try to program some statements to determine the error type!
+
+In our example, we'll try to anticipate the issue of a missing salinity value and "assume" that will be our only problem. We'll take advantage of the `<<-` scoping assignment operator. It will search the hierarchy of scopes until it can assign a value to the specified variable. This happens in place of R dynamically assigning a local variable.
+
+Let's modify `save.facet.plot()` function so that our error handler can set the `salinity.val` variable within `save.facet.plot()`.
+
+```{r}
+# Make a function to filter data, make the plot, then save the plot
+save.facet.plot <- function(data.df, infDate) {
+
+  # Initiate a tryCatch and assign its output to a variable
+  out <- tryCatch({
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # What happens if we pick a non-existent infection date or if the parameter is not set?
+  },
+  error = function(c) { # The actual error information is passed in as the variable "c"
+    # Assume the error occurs when no infDate is provided
+    message("Warning: No infection date provided")
+    message("substituting with a first-level value")
+    
+    ### 3.6.5 Remember: we are in a mini function at the moment
+    # We need to go up a level and set infDate within the save.facet.plot function
+    # Set it to the first level of $infectionDate
+    infDate ... levels(data.df$infectionDate)[1] 
+    
+    # Then we'll remake the data subset
+    infection.data ... filter(data.df, infectionDate == infDate)
+    # This will allow us to proceed with the rest of the code as though nothing were amiss
+
+    # return(NULL)
+    # return NULL so we can recognize an error has occurred
+    # You're kind of a function inside a function.
+    # when you return, you'll leave to the next section.
+      
+  }) # End tryCatch  
+  
+  # make the plotted data
+  infection.plot <- make.facet.plot(infection.data, infDate)
+
+  # generate a save file name
+  save.file = paste(infDate, "graph.facet.saveFunction.tryCatchv2.png", sep = "_")
+
+  # save the plot
+  ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+       scale=2, device = "png", units = c("cm"))
+
+  #return the file name and data subset
+  return(list(infection.data, infection.plot, save.file))
+}
+```
+
+```{r, fig.width=12, fig.height=7}
+# save a facet plot but look at the output of the plot
+save.facet.plot(embryos.df)[[2]]
+```
+
+------------------------------------------------------------------------
+
+Here's an alternative version of our code that runs all of the code within the `tryCatch` call using the `finally` option.
+
+```{r}
+# Make a function to filter data, make the plot, then save the plot
+save.facet.plot = function(data.df, infDate) {
+  
+  # Initiate a tryCatch and assign its output to a variable
+  out <- tryCatch({
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # What happens if we pick a non-existent infection date or if the parameter is not set?
+  },
+  error = function(c) { # The actual error information is passed in as the variable "c"
+    # Assume the error occurs when no infDate is provided
+    message("Warning: No infection date provided")
+    message("substituting with a first-level value")
+    
+    # Remember: we are in a mini function at the moment
+    # We need to go up a level and set infDate within the save.facet.plot function
+    # Set it to the first level of $infectionDate
+    infDate <<- levels(data.df$infectionDate)[1] 
+    
+    # Then we'll remake the data subset
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # This will allow us to proceed with the rest of the code as though nothing were amiss
+
+    # return(NULL)
+    # return NULL so we can recognize an error has occurred
+    # You're kind of a function inside a function.
+    # when you return, you'll leave to the next section.
+    
+  },
+  ### Set up a finally section which runs regardless of whether or not an error has been caught
+  # You could put all or some of your end-code here depending on your needs
+  # We'll move all the post-catch code into here for fun
+  ... = {
+    # make the plotted data
+    infection.plot <- make.facet.plot(infection.data, infDate)
+
+    # generate a save file name
+    save.file = paste(infDate, "graph.facet.saveFunction.tryCatchv2.png", sep = "_")
+
+    # save the plot
+    ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+         scale=2, device = "png", units = c("cm"))
+
+    #return the file name and data subset
+    return(list(infection.data, infection.plot, save.file))
+    
+  }) # End tryCatch  
+}
+```
+
+```{r, fig.width=12, fig.height=7}
+# save a facet plot but look at the output of the plot
+save.facet.plot(embryos.df)[[2]]
+```
+
+------------------------------------------------------------------------
+
+### 3.6.6 Use flow control to handle error situations
+
+So it looks like we've provided some leeway for the user in case they fail to provide any sort of infection date to subset our data. What if, however, they simply provide an incorrect date? Let's see what the result will be if we try to run our current version of `save.facet.plot` with an incorrect date.
+
+```{r, error = TRUE}
+save.facet.plot(embryos.df, "...")[[2]]
+```
+
+------------------------------------------------------------------------
+
+As is the case above, we've accounted for a lack of input when we call on `save.facet.plot` but not for the situation where the input provided is incorrect! If we wanted to add another layer of protection, we'd have to include that, or add some flow control as below!
+
+```{r}
+# Make a function to filter data, make the plot, then save the plot
+save.facet.plot = function(data.df, infDate) {
+    
+  # Initiate a tryCatch and assign its output to a variable
+  out <- tryCatch({
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # What happens if we pick a non-existent infection date or if the parameter is not set?
+  },
+  error = function(c) { # The actual error information is passed in as the variable "c"
+    # Assume the error occurs when no infDate is provided
+    message("Error: No infection date provided")
+    message("substituting with a first-level value")
+    
+    # Remember: we are in a mini function at the moment
+    # We need to go up a level and set infDate within the save.facet.plot function
+    infDate <<- levels(data.df$infectionDate)[1] 
+    
+    # Then we'll remake the data subset
+    infection.data <<- filter(data.df, infectionDate == infDate)
+    # This will allow us to proceed with the rest of the code as though nothing were amiss
+           
+  }) # End the tryCatch having made a subset or default version if no infDate is supplied
+  
+  # In the case of an INCORRECT infDate there are a couple of ways to go about doing it
+  # Check if our filtered data has any rows
+  if(...) {
+    
+    infection.plot <- make.facet.plot(infection.data, infDate)
+
+    # generate a save file name
+    save.file = paste(infDate, "graph.facet.saveFunction.tryCatchv2.png", sep = "_")
+
+    # save the plot
+    ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+         scale=2, device = "png", units = c("cm"))
+
+    #return the file name and data subset
+    return(list(infection.data, infection.plot, save.file))
+    
+  } else {
+  
+    # filter results in 0-row subset
+    return(rep("Warning: data filtering resulted in 0-row subset", 3))
+  }    
+}
+```
+
+```{r}
+# save.facet.plot(embryos.df)[[2]]
+save.facet.plot(embryos.df, "221019")[[2]]
+```
+
+------------------------------------------------------------------------
+
+::: {.alert .alert-block .alert-danger}
+**Comprehension Question 3.0.0:** As you saw in the last code cell, we used flow control to determine the state of the filtered/subset data. There are other ways we could use flow control to ensure our functions will work as expected. Take a look at the code cell below and complete the flow control measures based on your understanding of how factors work!
+
+**Hint:** How do you check your unfiltered data for different factor levels? Which variable will you query?
+:::
+
+```{r, eval = FALSE}
+# comprehension answer code 3.0.0
+
+# Make a function to filter data, make the plot, then save the plot
+save.facet.plot.updated = function(data.df, infDate) {
+    
+  # Initiate a tryCatch and assign its output to a variable
+  out <- tryCatch({
+    # filter the data
+    infection.data <- filter(data.df, infectionDate == infDate)
+    # What happens if we pick a non-existent infection date or if the parameter is not set?
+  },
+  error = function(c) { # The actual error information is passed in as the variable "c"
+    # Assume the error occurs when no infDate is provided
+    message("Error: No infection date provided")
+    message("substituting with a first-level value")
+    
+    # Remember: we are in a mini function at the moment
+    # We need to go up a level and set infDate within the save.facet.plot function
+    infDate <<- levels(data.df$infectionDate)[1] 
+    
+    # Then we'll remake the data subset
+    infection.data <<- filter(data.df, infectionDate == infDate)
+    # This will allow us to proceed with the rest of the code as though nothing were amiss
+    
+    return(NULL)
+    # return NULL so we can recognize an error has occurred
+    # You're kind of a function inside a function.
+    # when you return, you'll leave to the next section.
+      
+  }) # End the tryCatch having made a subset or default version if no infDate is supplied
+  
+  # In the case of an INCORRECT infDate, how can we tell if it isn't a possible value?
+  if(...) {
+      
+    infection.plot <- make.facet.plot(infection.data, infDate)
+
+    # generate a save file name
+    save.file = paste(infDate, "graph.facet.saveFunction.tryCatchv2.png", sep = "_")
+
+    # save the plot
+    ggsave(plot = infection.plot, filename = save.file, path = "data/" ,
+         scale=1, device = "png", units = c("in"))
+
+    #return the file name and data subset
+    return(list(infection.data, infection.plot, save.file))
+    
+  } else {
+  
+      # filter results in 0-row subset
+      return(rep("Error: infData provided is not a level of infectionDate", 3))
+  }    
+}
+```
+
+::: {.alert .alert-block .alert-success}
+**Error-catching for the data scientist:** While error-catching can seem complicated, it provides all sorts of ways to help save on headaches when debugging your code. As your code increases in complexity you may want to learn more about these systems. You can find a well-written section on debugging your code and using error-handling by [Hadley Wickham](http://adv-r.had.co.nz/Exceptions-Debugging.html) as well as some [helpful examples](https://www.r-bloggers.com/2020/10/basic-error-handing-in-r-with-trycatch/).
+:::
+
+Now that you have the basics, you can continue to build on complexity (or simplicity) as you need it.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/coding_mistakes.jpg?raw=true" width="700"/>
+
+Call your functions from anywhere once they are stored in memory.
+:::
+
+------------------------------------------------------------------------
+
+# 4.0.0 Taking full advantage of your R environment
+
+While working within the R environment we've learned to manipulate data and save it's output as text or excel files. We've also learned to generate our own functions and save output as variables. When we create very useful functions and want to keep the code, there isn't a need to necessarily copy and paste it into ***every script we make*** either.
+
+In this last section we will discover how we can import our own functions, save data objects, and load R workspaces into memory.
+
+## 4.1.0 Keep all of your helper functions and subroutines in a file as a `source()`
+
+As a final extension of our control flow lesson, you already know about packages - these hold functions and data that are pre-made by others within the R community. You normally install these with `install.packages()` and then load them into memory with `library()`.
+
+You don't need to make your own packages to get similar capabilities using your customized functions. Instead, you can certainly make source files to keep functions and pertinent variables you may re-use in all of your analyses.
+
+To access a saved "R" file which contains purely code (and comments!), you can use the `source()` command. Let's try!
+
+```{r}
+#?source
+# Load data and information from another R script
+source("...")
+```
+
+------------------------------------------------------------------------
+
+## 4.2.0 Query your environment with `ls()` to find variables and functions
+
+After loading your script into memory, you may want to see what is available in your environment's memory. The `ls()` command allows you to see what is available but it does not discriminate between objects or functions.
+
+```{r}
+# See what variables and functions you have in memory
+print(...)
+```
+
+------------------------------------------------------------------------
+
+### 4.2.1 Check functions loaded into memory with `lsf.str()`
+
+As you can see from above, using `ls()` ti ***list*** all the ***objects*** currently saved in memory but also the functions we've previously declared and possibly some new ones imported from our call to `source()`. To see which functions we have loaded outside of those from packages in memory, we can use `lsf.str()` to ***list functions*** in memory! Let's see what's new and try something out.
+
+```{r}
+# To see which functions are available in memory
+...
+```
+
+```{r}
+# Let's look at a new function from "Lecture07.R"
+...
+```
+
+```{r}
+# Look up newly added variables
+codon_translation
+
+# Use codonToAA on a single codon
+codonToAA("AUA")
+
+# Use codonToAA on multiple codons
+codonToAA(c(...))  %>% str_flatten()
+```
+
+------------------------------------------------------------------------
+
+## 4.3.0 `save()` objects or your whole kernel memory!
+
+From time to time you may have objects from analyses that aren't easily translated back as data tables or excel files. Perhaps you may want to save objects or plots from a complex analysis for later use. You can accomplish this with the `save()` command by providing a list of one or more objects to save.
+
+```{r}
+print(ls())
+
+save(inf200704.plot, subdata, ..., 
+     file="./data/Lecture07.RData")   # Note the filetype we use to save data is "RData"
+```
+
+------------------------------------------------------------------------
+
+### 4.3.1 `save.image()` saves your entire workspace
+
+Sometimes you just want to save everything in memory. This may be a safeguard against accidental errors after running long analyses. The same can be said about saving single objects but you may find this a useful command in the future.
+
+```{r}
+# Save an image of everything to an RData file
+...(file="./data/Lecture07.all.RData")
+```
+
+------------------------------------------------------------------------
+
+## 4.4.0 `load()` .RData files into memory
+
+When you're finally ready to revisit your saved objects or memory, you'll want to restore them. It's as easy as using the command `load()`. Let's demonstrate, but first we need to clean up our current memory with `rm()`
+
+```{r}
+# Clear memory
+rm(list = ls())
+# check that it's clear
+print(ls())
+```
+
+```{r}
+# reload it all
+...("./data/Lecture07.all.RData")
+
+print(ls())
+```
+
+------------------------------------------------------------------------
+
+## 4.5.0 One last code cell to run
+
+As we wrap up this section, let's go back and run one of our previously imported funtions!
+
+```{r}
+# Let's try surprise.class()
+
+surprise.class("...")
+```
+
+------------------------------------------------------------------------
+
+# 5.0.0 Using AI to power your analyses!
+
+In the past few years we have seen an explosion in field of artificial intelligence with large language models and their utility across our society. LLMs are changing how we learn and practice [medicine](https://pubmed.ncbi.nlm.nih.gov/38639098/), [science](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10485814/), and even [art](https://www.forbes.com/sites/danidiplacido/2023/12/30/ai-generated-art-was-a-mistake-and-heres-why/) with some level of controversy. More importantly, these tools can help you fix, analyse and even generate code!
+
+### 5.0.1 What are LLMs?
+
+Simply put, large language models train on very large datasets, with one of original purposes being to generate sentences in a conversation-like manner. This kind of language generation requires predictive capabilities so that the LLM knows what word to pick next. Along with this predictive training, the LLMs learn grammar rules, and other facts about the world at large.
+
+Once trained, the LLM contains a neural network of probabilities that help it to decide what word is likely to come next after a series of previous words. Moreover, the predictive capabilities of LLMs allow them to further interpret queries that they may come across and respond accordingly.
+
+There are, of course a few different versions of this idea, but there are currently 2 front-running variants of LLMs to currently consider:
+
+1.  [ChatGPT](https://openai.com/index/chatgpt/) is a generative pre-trained transformer. It uses a transformer-based neural network architecture which include 2 key components: a self-attention mechanism and feed forward layers. The former allows ChatGPT to simultaneously assess all words within a sentence, allowing it give context to each component. The latter passes information (and probabilities) from the former on to additional layers of the network to refine "understanding" of the data.
+
+2.  [Google Gemini](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/) (formerly known as Bard) also runs on a pre-trained transformer using Google-curated data.
+
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+|                            | ChatGPT                                                                                    | Gemini                                                                                               |
++============================+============================================================================================+======================================================================================================+
+| Created By                 | OpenAI and Microsoft                                                                       | Google                                                                                               |
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| Underlying LLM             | GPT-3.5 (free)                                                                             | Gemini LLM                                                                                           |
+|                            |                                                                                            |                                                                                                      |
+|                            | GPT-4 (Pro)                                                                                |                                                                                                      |
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| Data sources               | Data from the Internet - aka Wikipedia and scientific papers up to 2021                    | A curated list of archived internet content but also has access to up-to-date information via Google |
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| Connected to the internet? | Only Pro version                                                                           | Yes                                                                                                  |
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| Available Tools            | Toolkit available allowing multiple AI-bot tools to be integrated across various platforms | Integration into Google services: docs, gmail, drive, calendar, etc.                                 |
++----------------------------+--------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+
+Recreated and altered from [DataCamp](https://www.datacamp.com/blog/bard-vs-chat-gpt)
+
+### 5.0.2 Use ChatGPT and Google Gemini to code
+
+Now that you should have a grasp of the foundations to coding and data science concepts (ie long-form data, the layered grammar of graphics, regular expressions, stats, etc.), you can ask these LLMs to help you out. You have many options including the aforementioned chatGPT and Google Gemini. If you use Microsoft Windows, you'll find they have a GPT-powered version called [copilot](https://copilot.microsoft.com/).
+
+With it you can ask questions about concepts or coding. Beware, however, that answers can be incorrect! You can query for code snippets and these chatbots can provide an explanation of the code as well. Despite having these tools at your disposal, it is best to take the time and understand the code itself before making use of it!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_Gemini_vs_chatGPT.png?raw=true" width="700"/>
+
+Coding with (AI)ds can be a lifesaver. Just beware that these models draw their answers from the internet and sometimes information can be out of date or just incorrect!
+:::
+
+------------------------------------------------------------------------
+
+## 5.1.0 Using DataCamp to help with your coding
+
+The proliferation of the GPT toolkit means that you'll find LLMs being specifically trained on many different disciplines. Programming and data science tools are plentiful in that respect. Since you already have access to DataCamp, you'll find that it also provides a workspace for you to experiment and improve your code. You'll find the [DataLab](https://www.datacamp.com/datalab/) in your own account and ready to be accessed.
+
+### 5.1.1 Upload data
+
+We'll begin by uploading the same data we've been working with today into a new workbook. In DataLab menu, you can select `Environment > Language > R 4.4`.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-1-1.png?raw=true" width="700"/>
+:::
+
+From there you can add data to your workbook in one of 2 ways:
+
+1.  Go to `Data > Show data sources` and from the sidebar, be sure to select the `Files` tab and use the `+ Add` button. This will allow you to add your data to the workbook. For this task you'll want to download this week's `embryo_data_long_merged.csv` file from RStudio Server to your desktop first!
+
+2.  You can use the `Kickstart your analysis` interface to drag and drop a file into your workbook.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-1-1p2.png?raw=true" width="700"/>
+:::
+
+### 5.1.2 Insert your first code cell
+
+You can insert your first code cell by clicking on the `Start writing...` section with `<R>` to create a code cell (much like in our notebooks).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-1-2.png?raw=true" width="700"/>
+:::
+
+### 5.1.3 Import your libraries and dataset
+
+Next we'll want to load our libraries and import the data into R. You can copy and paste the following code into your code cell. Nothing we haven't done before. Afterwards, hit the Run button on the right side of the code cell.
+
+```{r, eval = FALSE}
+# Install the ggbeeswarm package if it is not already installed
+if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
+  install.packages("ggbeeswarm")
+}
+
+# Load the necessary libraries
+library(tidyverse)
+library(ggbeeswarm)
+
+# Read the CSV file into a dataframe
+embryo.df <- read_csv("embryo_data_long_merged.csv")
+```
+
+### 5.1.4 Generate a faceted plot from our own data
+
+We'll start by making a simple faceted plot - again much like what we've done before but THEN we'll use the power of AI to help us improve it! Insert a new code cell and run it on DataLab!
+
+```{r, eval = FALSE}
+embryo.df %>%
+  filter(infectionDate == "200718") %>% 
+  ggplot(.) +
+  # 2. Aesthetics
+  aes(x = wormStrain, y = embryos, fill = wormStrain) +
+  theme_grey() +
+  # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  
+  # 4. Geoms
+  geom_boxplot() +
+  # 6. Facets
+  facet_grid(sporeStrain ~ doseLevel)
+```
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-1-4.png?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 5.2.0 Use the AI function to help improve your code!
+
+The output looks a little small right? Maybe we can use the AI function to help us out. You can activate the chat window by clicking on the `AI` button on the right-hand side of the code cell or by using `Ctrl+G`.
+
+Let's walk through the following prompts. Each time we enter a prompt, you'll see the updated code and will need `Accept` it before running it in order to see the updated output. In most of the following sections, you can use the section title as our AI prompt.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-0.png?raw=true" width="700"/>
+:::
+
+### 5.2.1 Make the output larger
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-1.png?raw=true" width="700"/>
+:::
+
+Note that while we are using the `repr` package, that is more for Jupyter Notebooks rather than R Markdown!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-1p2.png?raw=true" width="700"/>
+:::
+
+### 5.2.2 Make the plot colour-blind friendly
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-2.png?raw=true" width="700"/>
+:::
+
+### 5.2.3 Filter out LuaM3 and Mam1 data
+
+What does the output look like to you?
+
+Oops it looks like our filtering didn't work! While it made a good attempt to filter, we really need to specify the variable we wanted to filter AND the correct spelling.
+
+### 5.2.4 Be specific with your prompts!
+
+Let's try "Filter sporeStrain by removing LUAm3 and MAM1". You can also remove the erroneous filter line from the result.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-4.png?raw=true" width="700"/>
+:::
+
+### 5.2.5 Convert to a violin plot with datapoints as a beeswarm with 50% transparency
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-5.png?raw=true" width="700"/>
+:::
+
+### 5.2.6 Replace beeswarm with a quasirandom plotting
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-6.png?raw=true" width="700"/>
+:::
+
+### 5.2.7 Decrease the quasirandom width to match the violin width
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-7.png?raw=true" width="700"/>
+:::
+
+### 5.2.8 Make the facet titles bold and increase their font size
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-8.png?raw=true" width="700"/>
+:::
+
+### 5.2.9 Make facet titles for only the rows in bold italic font
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Lec07_5-2-9.png?raw=true" width="700"/>
+:::
+
+And using only our prompts, we have created our figure and can save the code elsewhere like below!
+
+```{r, eval = FALSE}
+options(repr.plot.width = 16, repr.plot.height = 10)
+
+embryo.df %>%
+  filter(infectionDate == "200718", 
+         !sporeStrain %in% c("LUAm3", "MAM1")) %>% 
+  ggplot(.) +
+  # 2. Aesthetics
+  aes(x = wormStrain, y = embryos, fill = wormStrain) +
+  theme_grey() +
+  # We'll need to rotate the x-axis text if we keep the figure size about 12" wide
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        strip.text = element_text(face = "bold", size = 14),
+        strip.text.y = element_text(face = "bold.italic"),
+        strip.text.x = element_text(face = "bold")) +
+  
+  # 4. Geoms
+  geom_violin(alpha = 0.5) +
+  geom_quasirandom(alpha = 0.5, width = 0.2) +
+  # 6. Facets
+  facet_grid(sporeStrain ~ doseLevel) +
+  # Use a color-blind friendly palette
+  scale_fill_brewer(palette = "Set2")
+```
+
+------------------------------------------------------------------------
+
+# 6.0.0 There is always more to explore!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/Everything_right.jpg?raw=true" width="500"/>
+
+While this is the end for us, it's not the end for you!
+:::
+
+Let's review our time together. Over the span of this course we've discussed
+
+1.  Basic data types, objects and classes in R.
+2.  Data manipulation with the `dplyr` package.
+3.  Principles of tidy data using the `tidyverse` package.
+4.  The grammar of graphics with the `ggplot2` package.
+5.  Regular expressions and string manipulation with `stringr`.
+6.  Regression and data analysis with general linear methods.
+7.  Control flow through looping and functions.
+
+You now have the tools to accomplish quite a few tasks and the foundation to grow your skills as needed. **Let's run a final function together to celebrate!**
+
+```{r}
+# Time to run our final function together
+...
+```
+
+------------------------------------------------------------------------
+
+## 6.1.0 Post-course survey
+
+There is no post-lecture assessment this week. Your DataCamp accounts will continue to remain active for another \~4 months during which time you can choose to explore the site's different courses. Please take advantage of this opportunity to keep growing your R skills!
+
+However, we have created a post-course survey you can fill out anonymously. You can use this survey as an opportunity to tell us about your experience and help shape the future offerings of this series. Please take 5-10 minutes to fill out the survey. We really appreciate your feedback!
+
+[Anonymous Google Survey found here](https://forms.gle/MtRc4QS3Qc4q5qGc6)
+
+------------------------------------------------------------------------
+
+## 6.2.0 Submit your completed skeleton notebook (2% of final grade)
+
+At the end of this lecture a Quercus assignment portal will be available to submit a **RMD** version of your completed skeletons from today (including the comprehension question answers!). These will be due one week later, before the next lecture. Each lecture skeleton is worth 2% of your final grade but a **bonus 0.5%** will also be awarded for submissions made within 24 hours from the end of lecture (ie 1600 hours the following day). To save your notebook:
+
+1.  From the RStudio Notebook in the lower right pane (**Files** tab), select the skeleton file checkbox (left-hand side of the file name)
+2.  Under the **More** button drop down, select the **Export** button and save to your hard drive.
+3.  Upload your RMD file to the Quercus skeleton portal.
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/RStudioServerExportFile.png?raw=true" width="700"/>
+:::
+
+------------------------------------------------------------------------
+
+## 6.3.0 Final assignment guidelines (50% of final grade)
+
+Your final project will be due two weeks after this lecture at 2359 hours on Tuesday October 28th. Please submit your final assignment as a **single compressed file** which will include:
+
+1.  Your R Markdown Notebook final project
+2.  A **PDF version** of the notebook with all output from the code cell. This will be used for markup and comments that I can return to you about your projects. From the RStudio server, you can "knit" your project to HTML and then print as a PDF.
+3.  Any associated data needed to run your project. When you create your compressed file for submission, you can preserve the folder structure by exporting the entire folder with the needed files. Selecting the folder for export will automatically compress it as a `.zip` file.
+
+Please refer to the marking rubric found in this course's root directory on the datatools RStudio for additional instructions.
+
+You can also build your R Markdown Notebooks on the UofT JupyterHub and save/download the files to your personal computer for compressing before submitting on Quercus.
+
+Any additional questions can be emailed to me or the TAs or posted to the Discussion section of Quercus. Best of luck!
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/squid_term_project2.jpg?raw=true" width="500"/>
+
+Don't forget to submit your term project!
+:::
+
+------------------------------------------------------------------------
+
+## 6.4.0 Acknowledgements
+
+**Revision 1.0.0**: materials prepared in R Markdown by Oscar Montoya, M.Sc. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2021 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2022 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.1.2**: edited and prepared for **CSB1020H F LEC0142**, 09-2023 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.0**: edited and prepared for **CSB1020H F LEC0142**, 09-2024 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+**Revision 1.2.1**: edited and prepared for **CSB1020H F LEC0142**, 09-2025 by Calvin Mok, Ph.D. *Bioinformatician, Education and Outreach, CAGEF.*
+
+------------------------------------------------------------------------
+
+## 6.5.0 Your DataCamp academic subscription
+
+This class is supported by DataCamp, the most intuitive learning platform for data science and analytics. Learn any time, anywhere and become an expert in R, Python, SQL, and more. DataCamp's learn-by-doing methodology combines short expert videos and hands-on-the-keyboard exercises to help learners retain knowledge. DataCamp offers 350+ courses by expert instructors on topics such as importing data, data visualization, and machine learning. They?re constantly expanding their curriculum to keep up with the latest technology trends and to provide the best learning experience for all skill levels. Join over 6 million learners around the world and close your skills gap.
+
+Your DataCamp academic subscription grants you free access to the DataCamp's catalog for 6 months from the beginning of this course. You are free to look for additional tutorials and courses to help grow your skills for your data science journey. Learn more (literally!) at [DataCamp.com](https://learn.datacamp.com/).
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/DataCampLogo.png?raw=true" width="500"/>
+:::
+
+------------------------------------------------------------------------
+
+## 6.6.0 Resources
+
+-   A primer on flow control <https://adv-r.hadley.nz/control-flow.html>
+-   Conditional statements and for loops <https://resbaz.github.io/2014-r-materials/lessons/30-control-flow/>
+-   More on control structures <https://bookdown.org/rdpeng/rprogdatascience/control-structures.html>
+
+::: {align="center"}
+<img src="https://github.com/uoft-csb-datasci/CSBdatasci_Course_Materials/blob/main/IntroR/CAGEF_new.png?raw=true" width="700"/>
+:::
